@@ -1,6 +1,6 @@
 -- ============================================================
--- POKÉDEX AUTO SKOR BRIDGE — FISH IT ROBLOX EXECUTOR (ZERO LAG)
--- Khusus untuk Pokédex Light Combo Scoreboard (ftwa/pokemon)
+-- POKÉDEX AUTO SKOR BRIDGE — PURE NTFY.SH EDITION (ZERO LAG)
+-- Kirim tangkapan Roblox Fish It langsung ke ntfy.sh Live Bus
 -- ============================================================
 local cloneref = cloneref or function(o) return o end
 local cclosure = newcclosure or function(f) return f end
@@ -22,17 +22,16 @@ if not httpRequest then
 end
 
 -- ============================================================
--- KONFIGURASI TARGET SERVER (BISA DIUBAH SESUAI CHANNEL ROOM)
+-- KONFIGURASI CHANNEL NTFY.SH
 -- ============================================================
-local CLOUD_URL             = "https://pokemon-wawa-908e.vercel.app"
 local NTFY_TOPIC            = "pokedex_auto_skor_live_bus_v1"
+local NTFY_URL              = "https://ntfy.sh/" .. NTFY_TOPIC
 local ENABLE_ANTI_LAG_BOOST = true
 local HTTP_TIMEOUT_SEC      = 3.0
 
 print("============================================================")
-print("  ⚡ POKÉDEX AUTO SKOR — ROBLOX FISH IT BRIDGE (AKTIF)")
-print("  🌐 Cloud API : " .. CLOUD_URL .. "/api/catch")
-print("  📡 Live Bus  : ntfy.sh/" .. NTFY_TOPIC)
+print("  ⚡ POKÉDEX AUTO SKOR — PURE NTFY.SH BRIDGE (AKTIF)")
+print("  📡 Target    : " .. NTFY_URL)
 print("  🚀 Anti-Lag  : " .. (ENABLE_ANTI_LAG_BOOST and "ON" or "OFF"))
 print("============================================================")
 
@@ -225,9 +224,9 @@ local function splitFishAndVariant(fullFishName)
 end
 
 -- ============================================================
--- 3. PENGIRIMAN DUAL-DELIVERY (CLOUD /api/catch -> FALLBACK NTFY)
+-- 3. KIRIM LANGSUNG KE NTFY.SH LIVE BUS
 -- ============================================================
-local function sendCatchEvent(player, fish, variant, tier, displayName, userId)
+local function sendCatchToNtfy(player, fish, variant, tier, displayName, userId)
     if not httpRequest then return end
     if tier == "NORMAL" or tier == "RARE" then return end
 
@@ -239,71 +238,40 @@ local function sendCatchEvent(player, fish, variant, tier, displayName, userId)
     end
     processedCatchHash[catchKey] = now
 
-    local eventId = string.format("rbx_%d_%d", os.time(), math.random(10000, 99999))
+    local eventId = string.format("ntfy_%d_%d", os.time(), math.random(10000, 99999))
     local tsMs = os.time() * 1000
 
     task.spawn(function()
-        local deliveredViaCloud = false
-
-        -- 1. Kirim ke Vercel Serverless API (/api/catch)
         pcall(function()
             local res = httpRequest({
-                Url = CLOUD_URL .. "/api/catch",
+                Url = NTFY_URL,
                 Method = "POST",
-                Headers = { ["Content-Type"] = "application/json" },
+                Headers = {
+                    ["Content-Type"] = "application/json",
+                    ["Priority"] = "urgent"
+                },
                 Timeout = HTTP_TIMEOUT_SEC,
                 Body = HttpService:JSONEncode({
                     id = eventId,
-                    player = mainDisplay,
+                    type = "SYNC_CATCH",
+                    user = mainDisplay,
                     displayName = mainDisplay,
                     username = tostring(player or mainDisplay),
                     userId = userId or 0,
                     fish = fish,
                     variant = variant,
                     tier = tier,
-                    room = NTFY_TOPIC,
+                    kategori = tier,
+                    source = "ntfy_direct",
                     timestamp = tsMs
                 })
             })
             if res and (res.StatusCode == 200 or res.StatusCode == 201) then
-                local bodyStr = tostring(res.Body or "")
-                -- Pastikan respon benar-benar JSON sukses dari /api/catch (bukan halaman Login Vercel)
-                if string.find(bodyStr, '"sukses":true', 1, true) then
-                    deliveredViaCloud = true
-                    print(string.format("⚡ [POKÉDEX CLOUD] Terkirim: %s -> %s [%s]", mainDisplay, fish, tier))
-                end
+                print(string.format("📡 [NTFY AUTO] Terkirim: %s -> %s [%s]", mainDisplay, fish, tier))
+            else
+                warn("⚠️ [NTFY AUTO] Gagal kirim status: " .. tostring(res and res.StatusCode or "timeout"))
             end
         end)
-
-        -- 2. Fallback Otomatis ke ntfy.sh Live Bus (Tetap jalan meski Vercel Protected/Timeout)
-        if not deliveredViaCloud then
-            pcall(function()
-                httpRequest({
-                    Url = "https://ntfy.sh/" .. NTFY_TOPIC,
-                    Method = "POST",
-                    Headers = {
-                        ["Content-Type"] = "application/json",
-                        ["Priority"] = "urgent"
-                    },
-                    Timeout = HTTP_TIMEOUT_SEC,
-                    Body = HttpService:JSONEncode({
-                        id = eventId,
-                        type = "SYNC_CATCH",
-                        user = mainDisplay,
-                        displayName = mainDisplay,
-                        username = tostring(player or mainDisplay),
-                        userId = userId or 0,
-                        fish = fish,
-                        variant = variant,
-                        tier = tier,
-                        kategori = tier,
-                        source = "lua_direct",
-                        timestamp = tsMs
-                    })
-                })
-                print(string.format("📡 [POKÉDEX LIVE BUS] Terkirim langsung: %s -> %s [%s]", mainDisplay, fish, tier))
-            end)
-        end
     end)
 end
 
@@ -360,7 +328,7 @@ local function processChatMessage(rawText)
     local tier = determineTier(rawText, clean)
 
     print(string.format("🐟 [TANGKAPAN] %s (@%s) -> %s [%s | %s]", playerDisplayName, playerName, baseFish, tier, variant))
-    sendCatchEvent(playerName, baseFish, variant, tier, playerDisplayName, playerUserId)
+    sendCatchToNtfy(playerName, baseFish, variant, tier, playerDisplayName, playerUserId)
 end
 
 -- ============================================================

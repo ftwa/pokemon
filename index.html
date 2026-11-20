@@ -3076,19 +3076,19 @@
     </div>
   </div>
 
-  <!-- MODAL MODE AUTO-SKOR ROBLOX (CLOUD /api/catch + LIVE BUS) -->
+  <!-- MODAL MODE AUTO-SKOR ROBLOX (PURE NTFY.SH LIVE BUS) -->
   <div class="modal-overlay" id="modalAutoSkor" onclick="if(event.target.id==='modalAutoSkor')tutupModalAuto()">
     <div class="modal-box-px" style="width: 540px; max-height: 92vh; overflow-y: auto;">
       <button class="btn-close-hud" onclick="tutupModalAuto()">✕</button>
       <div class="modal-head-px">
-        <span class="modal-sub-px">CLOUD LIVE ENGINE • ROBLOX FISH IT</span>
-        <span class="modal-title-px">⚡ Mode Auto-Skor (Otomatis)</span>
+        <span class="modal-sub-px">PURE NTFY.SH LIVE BUS • REAL-TIME SSE</span>
+        <span class="modal-title-px">⚡ Mode Auto (ntfy.sh)</span>
       </div>
 
       <!-- MASTER TOGGLE -->
       <div class="auto-switch-banner" id="autoSwitchBanner">
         <div>
-          <div style="font-weight:900; font-size:13.5px; color:#0f172a;">Aktifkan Pendengar Tangkapan Otomatis</div>
+          <div style="font-weight:900; font-size:13.5px; color:#0f172a;">Hubungkan ke ntfy.sh Live Bus</div>
           <div id="autoConnText" style="font-size:11.5px; color:#475569; margin-top:2px;">⚪ Mode Auto nonaktif (Manual)</div>
         </div>
         <button type="button" id="btnAutoToggleSwitch" class="auto-toggle-pill" onclick="toggleAutoModeActive()" aria-label="Toggle Mode Auto"></button>
@@ -3101,10 +3101,15 @@
       </div>
 
       <div class="hud-field">
-        <label class="px-label">Channel Room Live Bus (ntfy.sh)</label>
+        <label class="px-label">Topic / Channel ntfy.sh</label>
         <div style="display:flex; gap:6px;">
           <input type="text" id="inputAutoTopic" class="px-input" style="font-family:'JetBrains Mono',monospace; font-size:11.5px;" value="pokedex_auto_skor_live_bus_v1" />
           <button type="button" class="btn-px" onclick="simpanPengaturanAuto(true)">Terapkan</button>
+        </div>
+        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:4px; align-items:center;">
+          <span style="font-size:10.5px; color:#64748b; font-weight:700;">Preset cepat:</span>
+          <button type="button" class="btn-px" style="font-size:10px; padding:2px 7px;" onclick="pilihPresetTopicAuto('pokedex_auto_skor_live_bus_v1')">pokedex_auto_skor_live_bus_v1</button>
+          <button type="button" class="btn-px" style="font-size:10px; padding:2px 7px;" onclick="pilihPresetTopicAuto('galatama_auto_skor_live_bus_v1')">galatama_auto_skor_live_bus_v1</button>
         </div>
       </div>
 
@@ -3135,7 +3140,7 @@
           🎮 Script Roblox Executor (<code style="font-family:'JetBrains Mono',monospace;">inject.lua</code>)
         </div>
         <div style="font-size:11px; color:#334155; line-height:1.4; margin-bottom:8px;">
-          Cukup jalankan <b>1 script</b> ini di akun host/spectator pada server Roblox. Tidak perlu server Python lokal.
+          Kirim tangkapan <b>langsung ke ntfy.sh</b> (tanpa server lokal &amp; tanpa API Vercel). Cukup tempel di Roblox Executor atau pilih channel ntfy yang sudah berjalan.
         </div>
         <div style="display:flex; gap:6px; flex-wrap:wrap;">
           <button type="button" class="btn-px-primary" style="font-size:11.5px; padding:6px 10px;" onclick="salinLoadstringAuto()">📋 Copy Loadstring</button>
@@ -4987,7 +4992,7 @@
     }
 
     /* =========================================================================
-       13. MODE AUTO-SKOR ENGINE (CLOUD /api/catch + NTFY SSE + BROADCAST)
+       13. MODE AUTO-SKOR ENGINE (PURE NTFY.SH SSE + BROADCAST)
        ========================================================================= */
     const AUTO_CONFIG_KEY = 'pokedex_auto_config_v1';
     const DEFAULT_AUTO_CONFIG = {
@@ -5175,7 +5180,7 @@
             const rawMsg = outer.message;
             if (!rawMsg) return;
             const payload = typeof rawMsg === 'string' ? JSON.parse(rawMsg) : rawMsg;
-            if (payload && payload.type === 'SYNC_CATCH') {
+            if (payload && (payload.type === 'SYNC_CATCH' || ((payload.fish || payload.ikan) && (payload.user || payload.player || payload.displayName || payload.username)))) {
               prosesEventCatchAuto(payload);
             }
           } catch (_) {}
@@ -5466,6 +5471,11 @@
       }
     }
 
+    function pilihPresetTopicAuto(topicName) {
+      document.getElementById('inputAutoTopic').value = topicName;
+      simpanPengaturanAuto(true);
+    }
+
     async function unduhInjectLuaAuto() {
       const status = document.getElementById('autoActionStatus');
       status.textContent = '⏳ Menyiapkan file inject.lua...';
@@ -5474,14 +5484,13 @@
         if (!res.ok) throw new Error('not found');
         let luaText = await res.text();
         luaText = luaText.replace(/local NTFY_TOPIC\s*=\s*"[^"]*"/, `local NTFY_TOPIC            = "${autoConfig.topic}"`);
-        luaText = luaText.replace(/local CLOUD_URL\s*=\s*"[^"]*"/, `local CLOUD_URL             = "${window.location.origin}"`);
         const blob = new Blob([luaText], { type: 'text/plain;charset=utf-8' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
         a.download = 'inject.lua';
         a.click();
         URL.revokeObjectURL(a.href);
-        status.textContent = `✅ inject.lua terunduh (Channel: ${autoConfig.topic}).`;
+        status.textContent = `✅ inject.lua terunduh (ntfy.sh/${autoConfig.topic}).`;
       } catch (_) {
         window.open('https://raw.githubusercontent.com/ftwa/pokemon/main/inject.lua', '_blank');
         status.textContent = '✅ Membuka inject.lua dari GitHub.';
@@ -5501,40 +5510,36 @@
       const targetUser = firstFilled ? (firstFilled.robloxUser || firstFilled.user || firstFilled.nick) : 'Bobohu';
       const targetDisplay = firstFilled ? (firstFilled.nick || firstFilled.user || targetUser) : 'Bobol';
       const samplePayload = {
-        id: `sim_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+        id: `ntfy_sim_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
         type: 'SYNC_CATCH',
-        player: targetDisplay,
+        user: targetDisplay,
         displayName: targetDisplay,
         username: targetUser,
         fish: 'Megalodon',
         variant: 'Shiny',
         tier: 'SECRET',
-        room: autoConfig.topic,
+        source: 'ntfy_test',
         timestamp: Date.now()
       };
 
-      status.textContent = '⏳ Mengirim simulasi tangkapan ke /api/catch...';
+      status.textContent = `⏳ Mengirim tes langsung ke ntfy.sh/${autoConfig.topic}...`;
       try {
-        const res = await fetchWithTimeout('/api/catch', {
+        const res = await fetchWithTimeout(`https://ntfy.sh/${encodeURIComponent(autoConfig.topic)}`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Priority': 'urgent' },
           body: JSON.stringify(samplePayload)
-        }, 4000);
+        }, 4500);
         if (res.ok) {
-          const d = await res.json();
-          if (d && d.sukses) {
-            status.textContent = `✅ /api/catch aktif! Simulasi ${samplePayload.fish} (+${d.data?.poin || 4}) terkirim.`;
-            if (!d.ntfyDelivered || autoConnState !== 'live') {
-              prosesEventCatchAuto(d.data || samplePayload);
-            }
-            return;
+          status.textContent = `✅ Terkirim ke ntfy.sh/${autoConfig.topic}!`;
+          if (autoConnState !== 'live') {
+            prosesEventCatchAuto(samplePayload);
           }
+          return;
         }
       } catch (_) {}
 
-      // Fallback simulasi langsung bila offline / preview
       prosesEventCatchAuto(samplePayload);
-      status.textContent = '✅ Simulasi tangkapan diproses langsung ke Scoreboard!';
+      status.textContent = '✅ Simulasi diproses lokal (gagal menghubungi ntfy.sh).';
     }
 
     function inisialisasiModeAuto() {
