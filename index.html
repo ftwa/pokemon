@@ -252,6 +252,170 @@
       box-shadow: 0 0 7px rgba(22, 163, 74, 0.7);
     }
 
+    /* MODE AUTO-SKOR BUTTON & MODAL */
+    .btn-px-auto {
+      background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+      color: #334155;
+      border: 1.5px solid #cbd5e1;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-px-auto:hover {
+      border-color: #0284c7;
+      color: #0369a1;
+      background: #f0f9ff;
+    }
+    .btn-px-auto.is-live {
+      background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+      color: #ffffff;
+      border-color: #047857;
+      box-shadow: 0 2px 10px rgba(16, 185, 129, 0.38);
+    }
+    .btn-px-auto.is-live:hover {
+      background: linear-gradient(180deg, #059669 0%, #047857 100%);
+      color: #ffffff;
+    }
+    .btn-px-auto.is-connecting {
+      background: linear-gradient(180deg, #fef3c7 0%, #fde68a 100%);
+      color: #92400e;
+      border-color: #f59e0b;
+    }
+    .auto-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #94a3b8;
+      display: inline-block;
+      transition: all 0.2s ease;
+    }
+    .btn-px-auto.is-live .auto-dot {
+      background: #ecfdf5;
+      box-shadow: 0 0 0 3px rgba(236, 253, 245, 0.4);
+      animation: autoPulseDot 1.4s infinite;
+    }
+    .btn-px-auto.is-connecting .auto-dot {
+      background: #f59e0b;
+      animation: autoPulseDot 0.8s infinite;
+    }
+    @keyframes autoPulseDot {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.3); opacity: 0.65; }
+    }
+    .auto-switch-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1.5px solid #e2e8f0;
+      background: #f8fafc;
+      transition: all 0.2s ease;
+    }
+    .auto-switch-banner.is-live {
+      background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+      border-color: #34d399;
+    }
+    .auto-toggle-pill {
+      position: relative;
+      width: 50px;
+      height: 28px;
+      border-radius: 999px;
+      background: #cbd5e1;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      flex-shrink: 0;
+    }
+    .auto-toggle-pill::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #ffffff;
+      box-shadow: 0 2px 5px rgba(15, 23, 42, 0.25);
+      transition: transform 0.2s ease;
+    }
+    .auto-toggle-pill.active {
+      background: #10b981;
+    }
+    .auto-toggle-pill.active::after {
+      transform: translateX(22px);
+    }
+    .auto-rules-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+    .auto-rule-cell {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .auto-rule-cell label {
+      font-size: 10px;
+      font-weight: 800;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .auto-rule-cell input {
+      width: 100%;
+      padding: 4px 6px;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 800;
+      color: #0f172a;
+      background: #ffffff;
+    }
+    .auto-feed-box {
+      max-height: 112px;
+      overflow-y: auto;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 6px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 11px;
+    }
+    .auto-feed-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 6px;
+      border-radius: 6px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+    }
+    .auto-check-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      font-size: 12px;
+      font-weight: 700;
+      color: #334155;
+    }
+    .auto-check-row label {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+    }
+
     .btn-px-sort {
       background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%);
       color: #ffffff;
@@ -2599,6 +2763,10 @@
     <div class="top-bar">
       <div class="top-left">
         <button id="btnModeToggle" class="btn-px" onclick="toggleModeDuoSolo()">👤 MODE: SOLO (20)</button>
+        <button id="btnAutoMode" class="btn-px btn-px-auto" onclick="bukaModalAuto()" title="Mode Auto-Skor dari Roblox (inject.lua)">
+          <span id="autoBtnLabel">⚡ AUTO: OFF</span>
+          <span id="autoStatusDot" class="auto-dot"></span>
+        </button>
         <button class="btn-px" onclick="bukaModalPreset()">Point Preset</button>
         <button class="btn-px" onclick="bukaModalAudio()">Settings Audio</button>
 
@@ -2904,6 +3072,88 @@
       <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:4px;">
         <button type="button" class="btn-px" onclick="tutupModalEditTim()">Batal</button>
         <button type="button" class="btn-px-primary" onclick="simpanEditTim()">Simpan Tim</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL MODE AUTO-SKOR ROBLOX (CLOUD /api/catch + LIVE BUS) -->
+  <div class="modal-overlay" id="modalAutoSkor" onclick="if(event.target.id==='modalAutoSkor')tutupModalAuto()">
+    <div class="modal-box-px" style="width: 540px; max-height: 92vh; overflow-y: auto;">
+      <button class="btn-close-hud" onclick="tutupModalAuto()">✕</button>
+      <div class="modal-head-px">
+        <span class="modal-sub-px">CLOUD LIVE ENGINE • ROBLOX FISH IT</span>
+        <span class="modal-title-px">⚡ Mode Auto-Skor (Otomatis)</span>
+      </div>
+
+      <!-- MASTER TOGGLE -->
+      <div class="auto-switch-banner" id="autoSwitchBanner">
+        <div>
+          <div style="font-weight:900; font-size:13.5px; color:#0f172a;">Aktifkan Pendengar Tangkapan Otomatis</div>
+          <div id="autoConnText" style="font-size:11.5px; color:#475569; margin-top:2px;">⚪ Mode Auto nonaktif (Manual)</div>
+        </div>
+        <button type="button" id="btnAutoToggleSwitch" class="auto-toggle-pill" onclick="toggleAutoModeActive()" aria-label="Toggle Mode Auto"></button>
+      </div>
+
+      <!-- OPSI PERILAKU & CHANNEL -->
+      <div class="auto-check-row">
+        <label><input type="checkbox" id="chkAutoFillSeat" onchange="simpanPengaturanAuto()" /> Auto-Isi Kursi Kosong</label>
+        <label><input type="checkbox" id="chkAutoSortRank" onchange="simpanPengaturanAuto()" /> Auto-Urutkan Peringkat</label>
+      </div>
+
+      <div class="hud-field">
+        <label class="px-label">Channel Room Live Bus (ntfy.sh)</label>
+        <div style="display:flex; gap:6px;">
+          <input type="text" id="inputAutoTopic" class="px-input" style="font-family:'JetBrains Mono',monospace; font-size:11.5px;" value="pokedex_auto_skor_live_bus_v1" />
+          <button type="button" class="btn-px" onclick="simpanPengaturanAuto(true)">Terapkan</button>
+        </div>
+      </div>
+
+      <!-- MATRIX POIN OTOMATIS -->
+      <div class="hud-field">
+        <label class="px-label">Aturan Poin Tier &amp; Bonus (Otomatis)</label>
+        <div class="auto-rules-grid">
+          <div class="auto-rule-cell"><label>Forgotten</label><input type="number" id="ruleForgotten" min="0" value="4" onchange="simpanPengaturanAuto()" /></div>
+          <div class="auto-rule-cell"><label>Secret</label><input type="number" id="ruleSecret" min="0" value="3" onchange="simpanPengaturanAuto()" /></div>
+          <div class="auto-rule-cell"><label>Mitos</label><input type="number" id="ruleMitos" min="0" value="2" onchange="simpanPengaturanAuto()" /></div>
+          <div class="auto-rule-cell"><label>Legend</label><input type="number" id="ruleLegend" min="0" value="1" onchange="simpanPengaturanAuto()" /></div>
+          <div class="auto-rule-cell"><label>+ Big</label><input type="number" id="ruleBig" min="0" value="1" onchange="simpanPengaturanAuto()" /></div>
+          <div class="auto-rule-cell"><label>+ Shiny</label><input type="number" id="ruleShiny" min="0" value="1" onchange="simpanPengaturanAuto()" /></div>
+          <div class="auto-rule-cell"><label>+ Mutasi</label><input type="number" id="ruleMutasi" min="0" value="1" onchange="simpanPengaturanAuto()" /></div>
+          <div class="auto-rule-cell"><label>Khusus</label><input type="number" id="ruleKhususBase" min="0" value="5" onchange="simpanPengaturanAuto()" /></div>
+        </div>
+      </div>
+
+      <!-- IKAN KHUSUS -->
+      <div class="hud-field">
+        <label class="px-label">Target Ikan Khusus (Pisahkan dengan koma)</label>
+        <input type="text" id="inputIkanKhusus" class="px-input" placeholder="Contoh: Megalodon, Kraken, Ancient Whale" onchange="simpanPengaturanAuto()" />
+      </div>
+
+      <!-- SCRIPT EXECUTOR ROBLOX -->
+      <div class="hud-field" style="background:#f0f9ff; border:1px solid #bae6fd; border-radius:10px; padding:10px;">
+        <div style="font-size:11.5px; font-weight:800; color:#0369a1; margin-bottom:6px;">
+          🎮 Script Roblox Executor (<code style="font-family:'JetBrains Mono',monospace;">inject.lua</code>)
+        </div>
+        <div style="font-size:11px; color:#334155; line-height:1.4; margin-bottom:8px;">
+          Cukup jalankan <b>1 script</b> ini di akun host/spectator pada server Roblox. Tidak perlu server Python lokal.
+        </div>
+        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+          <button type="button" class="btn-px-primary" style="font-size:11.5px; padding:6px 10px;" onclick="salinLoadstringAuto()">📋 Copy Loadstring</button>
+          <button type="button" class="btn-px" style="font-size:11.5px; padding:6px 10px;" onclick="unduhInjectLuaAuto()">⬇️ Download inject.lua</button>
+          <button type="button" class="btn-px" style="font-size:11.5px; padding:6px 10px; border-color:#10b981; color:#047857;" onclick="tesSimulasiCatchAuto()">🧪 Tes Simulasi Catch</button>
+        </div>
+        <div id="autoActionStatus" class="modal-status-line" style="color:#0369a1; margin-top:5px;"></div>
+      </div>
+
+      <!-- LIVE CATCH FEED -->
+      <div class="hud-field">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <label class="px-label">Tangkapan Auto Terbaru</label>
+          <span id="autoCatchCounter" style="font-family:'JetBrains Mono',monospace; font-size:10.5px; font-weight:800; color:#64748b;">0 tangkapan</span>
+        </div>
+        <div class="auto-feed-box" id="autoFeedList">
+          <div style="color:#94a3b8; font-style:italic; text-align:center; padding:8px;">Belum ada tangkapan masuk di sesi ini.</div>
+        </div>
       </div>
     </div>
   </div>
@@ -3940,7 +4190,7 @@
     /* =========================================================================
        7. MODE HYBRID: FULL TCG 3D HOLOGRAPHIC CARD TOAST
        ========================================================================= */
-    function tampilkanToastTcg(seatIdx, deltaPoin, labelAtas = 'TAMBAH POIN') {
+    function tampilkanToastTcg(seatIdx, deltaPoin, labelAtas = 'TAMBAH POIN', extraDetail = '') {
       const popup = document.getElementById('centerNotifPopup');
       const backdrop = document.getElementById('tcgNotifBackdrop');
       if (!popup || !backdrop) return;
@@ -4002,9 +4252,11 @@
         ? `${teamInfo.name} • ${labelAtas}`
         : `${labelAtas}${p.robloxUser ? ' • @' + p.robloxUser : ''}`;
 
-      const totalText = teamInfo
-        ? `Total Tim: ${teamInfo.score} Pts (Individu: ${p.poin})`
-        : `Total: ${p.poin} Poin`;
+      const totalText = extraDetail
+        ? `${extraDetail} • ${teamInfo ? `Total Tim: ${teamInfo.score} Pts` : `Total: ${p.poin} Poin`}`
+        : (teamInfo
+          ? `Total Tim: ${teamInfo.score} Pts (Individu: ${p.poin})`
+          : `Total: ${p.poin} Poin`);
 
       popup.innerHTML = `
         <div class="tcg-card-inner">
@@ -4734,6 +4986,573 @@
       document.getElementById('iconFoldLog').textContent = isLogFolded ? '▶' : '▼';
     }
 
+    /* =========================================================================
+       13. MODE AUTO-SKOR ENGINE (CLOUD /api/catch + NTFY SSE + BROADCAST)
+       ========================================================================= */
+    const AUTO_CONFIG_KEY = 'pokedex_auto_config_v1';
+    const DEFAULT_AUTO_CONFIG = {
+      enabled: false,
+      topic: 'pokedex_auto_skor_live_bus_v1',
+      autoFillSeat: true,
+      autoSort: true,
+      rules: {
+        forgotten: 4,
+        secret: 3,
+        mitos: 2,
+        legend: 1,
+        big: 1,
+        shiny: 1,
+        mutasi: 1,
+        khususNama: '',
+        khususBase: 5,
+        khususBig: 2,
+        khususShiny: 2,
+        khususMutasi: 3
+      }
+    };
+
+    let autoConfig = JSON.parse(JSON.stringify(DEFAULT_AUTO_CONFIG));
+    let autoEventSource = null;
+    let autoReconnectTimer = null;
+    let autoConnState = 'off'; // 'off' | 'connecting' | 'live'
+    let autoBroadcastChannel = null;
+    let autoCatchHistory = [];
+    const processedAutoIds = new Set();
+    const processedAutoKeys = new Map();
+
+    function muatPengaturanAuto() {
+      try {
+        const raw = localStorage.getItem(AUTO_CONFIG_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          autoConfig = {
+            ...DEFAULT_AUTO_CONFIG,
+            ...parsed,
+            rules: { ...DEFAULT_AUTO_CONFIG.rules, ...(parsed.rules || {}) }
+          };
+        }
+      } catch (_) {}
+      autoConfig.topic = sanitizeAutoTopic(autoConfig.topic);
+    }
+
+    function sanitizeAutoTopic(raw) {
+      const clean = String(raw || DEFAULT_AUTO_CONFIG.topic).trim().replace(/[^a-zA-Z0-9_\-]/g, '');
+      return clean || DEFAULT_AUTO_CONFIG.topic;
+    }
+
+    function simpanConfigAutoStorage() {
+      try { localStorage.setItem(AUTO_CONFIG_KEY, JSON.stringify(autoConfig)); } catch (_) {}
+    }
+
+    function updateAutoModeUI() {
+      const btn = document.getElementById('btnAutoMode');
+      const label = document.getElementById('autoBtnLabel');
+      const sw = document.getElementById('btnAutoToggleSwitch');
+      const banner = document.getElementById('autoSwitchBanner');
+      const connText = document.getElementById('autoConnText');
+      if (!btn || !label) return;
+
+      btn.classList.remove('is-live', 'is-connecting');
+      if (banner) banner.classList.remove('is-live');
+      if (sw) sw.classList.toggle('active', Boolean(autoConfig.enabled));
+
+      if (!autoConfig.enabled) {
+        label.textContent = '⚡ AUTO: OFF';
+        if (connText) connText.textContent = '⚪ Mode Auto nonaktif (Manual)';
+      } else if (autoConnState === 'live') {
+        btn.classList.add('is-live');
+        if (banner) banner.classList.add('is-live');
+        label.textContent = '⚡ AUTO: LIVE';
+        if (connText) connText.textContent = `🟢 Terhubung ke Live Bus (${autoConfig.topic}) — menunggu tangkapan...`;
+      } else {
+        btn.classList.add('is-connecting');
+        label.textContent = '⚡ AUTO: ...';
+        if (connText) connText.textContent = `🟡 Menghubungkan ke ntfy.sh/${autoConfig.topic}...`;
+      }
+    }
+
+    function bukaModalAuto() {
+      tutupSemuaPopupKecil();
+      document.getElementById('chkAutoFillSeat').checked = Boolean(autoConfig.autoFillSeat);
+      document.getElementById('chkAutoSortRank').checked = Boolean(autoConfig.autoSort);
+      document.getElementById('inputAutoTopic').value = autoConfig.topic;
+      document.getElementById('ruleForgotten').value = autoConfig.rules.forgotten;
+      document.getElementById('ruleSecret').value = autoConfig.rules.secret;
+      document.getElementById('ruleMitos').value = autoConfig.rules.mitos;
+      document.getElementById('ruleLegend').value = autoConfig.rules.legend;
+      document.getElementById('ruleBig').value = autoConfig.rules.big;
+      document.getElementById('ruleShiny').value = autoConfig.rules.shiny;
+      document.getElementById('ruleMutasi').value = autoConfig.rules.mutasi;
+      document.getElementById('ruleKhususBase').value = autoConfig.rules.khususBase;
+      document.getElementById('inputIkanKhusus').value = autoConfig.rules.khususNama || '';
+      document.getElementById('autoActionStatus').textContent = '';
+      renderAutoFeedList();
+      updateAutoModeUI();
+      document.getElementById('modalAutoSkor').classList.add('show');
+    }
+
+    function tutupModalAuto() {
+      const m = document.getElementById('modalAutoSkor');
+      if (m) m.classList.remove('show');
+    }
+
+    function simpanPengaturanAuto(reconnectIfChanged = false) {
+      const prevTopic = autoConfig.topic;
+      autoConfig.autoFillSeat = Boolean(document.getElementById('chkAutoFillSeat').checked);
+      autoConfig.autoSort = Boolean(document.getElementById('chkAutoSortRank').checked);
+      autoConfig.topic = sanitizeAutoTopic(document.getElementById('inputAutoTopic').value);
+      document.getElementById('inputAutoTopic').value = autoConfig.topic;
+
+      autoConfig.rules.forgotten = Math.max(0, parseInt(document.getElementById('ruleForgotten').value, 10) || 0);
+      autoConfig.rules.secret = Math.max(0, parseInt(document.getElementById('ruleSecret').value, 10) || 0);
+      autoConfig.rules.mitos = Math.max(0, parseInt(document.getElementById('ruleMitos').value, 10) || 0);
+      autoConfig.rules.legend = Math.max(0, parseInt(document.getElementById('ruleLegend').value, 10) || 0);
+      autoConfig.rules.big = Math.max(0, parseInt(document.getElementById('ruleBig').value, 10) || 0);
+      autoConfig.rules.shiny = Math.max(0, parseInt(document.getElementById('ruleShiny').value, 10) || 0);
+      autoConfig.rules.mutasi = Math.max(0, parseInt(document.getElementById('ruleMutasi').value, 10) || 0);
+      autoConfig.rules.khususBase = Math.max(0, parseInt(document.getElementById('ruleKhususBase').value, 10) || 0);
+      autoConfig.rules.khususNama = String(document.getElementById('inputIkanKhusus').value || '').trim();
+
+      simpanConfigAutoStorage();
+      if (reconnectIfChanged && autoConfig.enabled && prevTopic !== autoConfig.topic) {
+        hentikanKoneksiAuto();
+        mulaiKoneksiAuto();
+        document.getElementById('autoActionStatus').textContent = `✅ Channel diperbarui ke ${autoConfig.topic}`;
+      } else if (reconnectIfChanged) {
+        document.getElementById('autoActionStatus').textContent = '✅ Pengaturan Mode Auto tersimpan.';
+      }
+      updateAutoModeUI();
+    }
+
+    function toggleAutoModeActive() {
+      autoConfig.enabled = !autoConfig.enabled;
+      simpanConfigAutoStorage();
+      if (autoConfig.enabled) {
+        mulaiKoneksiAuto();
+        tambahLog('AUTO', `Mode Auto DIAKTIFKAN (Channel: ${autoConfig.topic})`);
+      } else {
+        hentikanKoneksiAuto();
+        tambahLog('AUTO', 'Mode Auto DINONAKTIFKAN (Kembali ke Manual)');
+      }
+      updateAutoModeUI();
+    }
+
+    function hentikanKoneksiAuto() {
+      if (autoReconnectTimer) {
+        clearTimeout(autoReconnectTimer);
+        autoReconnectTimer = null;
+      }
+      if (autoEventSource) {
+        try { autoEventSource.close(); } catch (_) {}
+        autoEventSource = null;
+      }
+      autoConnState = 'off';
+      updateAutoModeUI();
+    }
+
+    function mulaiKoneksiAuto() {
+      if (!autoConfig.enabled) return;
+      hentikanKoneksiAuto();
+      autoConnState = 'connecting';
+      updateAutoModeUI();
+
+      const sseUrl = `https://ntfy.sh/${encodeURIComponent(autoConfig.topic)}/sse?since=now`;
+      try {
+        const es = new EventSource(sseUrl);
+        autoEventSource = es;
+
+        es.onopen = () => {
+          if (autoEventSource !== es) return;
+          autoConnState = 'live';
+          updateAutoModeUI();
+        };
+
+        es.onmessage = (ev) => {
+          if (!autoConfig.enabled || !ev || !ev.data) return;
+          try {
+            const outer = JSON.parse(ev.data);
+            if (outer.event && outer.event !== 'message') return;
+            const rawMsg = outer.message;
+            if (!rawMsg) return;
+            const payload = typeof rawMsg === 'string' ? JSON.parse(rawMsg) : rawMsg;
+            if (payload && payload.type === 'SYNC_CATCH') {
+              prosesEventCatchAuto(payload);
+            }
+          } catch (_) {}
+        };
+
+        es.onerror = () => {
+          if (autoEventSource !== es) return;
+          try { es.close(); } catch (_) {}
+          autoEventSource = null;
+          if (!autoConfig.enabled) {
+            autoConnState = 'off';
+            updateAutoModeUI();
+            return;
+          }
+          autoConnState = 'connecting';
+          updateAutoModeUI();
+          autoReconnectTimer = setTimeout(() => {
+            if (autoConfig.enabled) mulaiKoneksiAuto();
+          }, 3500);
+        };
+      } catch (err) {
+        autoConnState = 'connecting';
+        updateAutoModeUI();
+        autoReconnectTimer = setTimeout(() => {
+          if (autoConfig.enabled) mulaiKoneksiAuto();
+        }, 4000);
+      }
+    }
+
+    function hitungPoinAutoClient(tierStr, namaIkan, varianStr) {
+      const tierClean = String(tierStr || '').toLowerCase().trim();
+      const namaClean = String(namaIkan || '').toLowerCase().trim();
+      const varianClean = String(varianStr || '').toLowerCase().trim();
+      const rules = autoConfig.rules;
+
+      const targetKhusus = String(rules.khususNama || '').toLowerCase().trim();
+      let isKhusus = false;
+      if (targetKhusus && namaClean) {
+        const list = targetKhusus.split(',').map(s => s.trim()).filter(Boolean);
+        if (list.some(k => namaClean.includes(k))) isKhusus = true;
+      }
+
+      const teksCek = `${namaIkan} ${varianStr}`.toUpperCase();
+      const bukanMutasi = ['none', '-', 'no', 'normal', '', 'shiny', 'big'];
+      const varianTokens = varianClean.split(',').map(v => v.trim()).filter(v => v && !bukanMutasi.includes(v));
+
+      if (isKhusus || tierClean.includes('khusus') || tierClean.includes('special')) {
+        const base = Number(rules.khususBase) || 5;
+        let total = base;
+        const rincian = [`khusus +${base}`];
+        if (/\bBIG\b/.test(teksCek)) {
+          const b = Number(rules.khususBig) || 0;
+          if (b > 0) { total += b; rincian.push(`big +${b}`); }
+        }
+        if (/\bSHINY\b/.test(teksCek)) {
+          const s = Number(rules.khususShiny) || 0;
+          if (s > 0) { total += s; rincian.push(`shiny +${s}`); }
+        }
+        if (varianTokens.length > 0) {
+          const m = Number(rules.khususMutasi) || 0;
+          if (m > 0) { total += m; rincian.push(`mutasi +${m}`); }
+        }
+        return { poin: total, rincian: rincian.join(', '), kategori: 'KHUSUS', valid: true };
+      }
+
+      let kategori = 'LEGEND';
+      if (tierClean.includes('forgotten')) kategori = 'FORGOTTEN';
+      else if (tierClean.includes('secret')) kategori = 'SECRET';
+      else if (tierClean.includes('mythic') || tierClean.includes('mitos')) kategori = 'MITOS';
+      else if (tierClean.includes('legend')) kategori = 'LEGEND';
+      else if (['normal', 'rare', 'common', 'uncommon'].includes(tierClean)) {
+        return { poin: 0, rincian: 'Bukan tier turnamen', kategori: 'NORMAL', valid: false };
+      }
+
+      const mapDasar = {
+        FORGOTTEN: Number(rules.forgotten) || 4,
+        SECRET: Number(rules.secret) || 3,
+        MITOS: Number(rules.mitos) || 2,
+        LEGEND: Number(rules.legend) || 1
+      };
+      const basePoint = mapDasar[kategori] || 1;
+      let total = basePoint;
+      const rincian = [`${kategori.toLowerCase()} +${basePoint}`];
+
+      if (/\bBIG\b/.test(teksCek)) {
+        const b = Number(rules.big) || 0;
+        if (b > 0) { total += b; rincian.push(`big +${b}`); }
+      }
+      if (/\bSHINY\b/.test(teksCek)) {
+        const s = Number(rules.shiny) || 0;
+        if (s > 0) { total += s; rincian.push(`shiny +${s}`); }
+      }
+      if (varianTokens.length > 0) {
+        const m = Number(rules.mutasi) || 0;
+        if (m > 0) { total += m; rincian.push(`mutasi +${m}`); }
+      }
+      return { poin: total, rincian: rincian.join(', '), kategori, valid: true };
+    }
+
+    async function lengkapiAvatarPemainAuto(seatObj, username, userId) {
+      try {
+        const query = userId ? `userId=${encodeURIComponent(userId)}` : `username=${encodeURIComponent(username)}`;
+        const res = await fetchWithTimeout(`/api/cari-roblox?${query}`, {}, 4000);
+        if (res.ok) {
+          const d = await res.json();
+          if (d && d.sukses) {
+            if (d.avatar) seatObj.avatar = d.avatar;
+            if (d.avatar3d || d.fullBody) seatObj.avatar3d = d.avatar3d || d.fullBody;
+            if (d.username) seatObj.robloxUser = d.username;
+            if (d.userId) seatObj.robloxId = d.userId;
+            if (d.displayName && (!seatObj.user || seatObj.user === username)) seatObj.user = d.displayName;
+            simpanDB();
+            renderPokedexTables();
+            return;
+          }
+        }
+      } catch (_) {}
+
+      if (userId) {
+        try {
+          const [rHead, rBody] = await Promise.all([
+            fetchWithTimeout(`https://thumbnails.roproxy.com/v1/users/avatar-headshot?userIds=${userId}&size=150x150&format=Png&isCircular=true`, {}, 4000),
+            fetchWithTimeout(`https://thumbnails.roproxy.com/v1/users/avatar?userIds=${userId}&size=720x720&format=Png&isCircular=false`, {}, 4000)
+          ]);
+          if (rHead.ok) {
+            const dh = await rHead.json();
+            if (dh?.data?.[0]?.imageUrl) seatObj.avatar = dh.data[0].imageUrl;
+          }
+          if (rBody.ok) {
+            const dbd = await rBody.json();
+            if (dbd?.data?.[0]?.imageUrl) seatObj.avatar3d = dbd.data[0].imageUrl;
+          }
+          simpanDB();
+          renderPokedexTables();
+        } catch (_) {}
+      }
+    }
+
+    function cariAtauBuatKursiPemainAuto(info) {
+      const data = getActiveData();
+      const players = data.players;
+      const maxSearch = db.gameMode === 'duo' ? 20 : 19; // slot 19 = HOST di mode solo
+
+      const candidates = [info.username, info.displayName, info.user]
+        .map(s => String(s || '').trim().replace(/^@+/, '').toLowerCase())
+        .filter(Boolean);
+      const targetUid = Number(info.userId || 0) || 0;
+
+      // 1. Cari pemain yang sudah ada di kursi
+      for (let i = 0; i < players.length; i++) {
+        const p = players[i];
+        if (!hasPlayerContent(p)) continue;
+        if (targetUid && p.robloxId && Number(p.robloxId) === targetUid) return i;
+        const fields = [p.robloxUser, p.user, p.nick]
+          .map(s => String(s || '').trim().replace(/^@+/, '').toLowerCase())
+          .filter(Boolean);
+        if (candidates.some(c => fields.includes(c))) return i;
+      }
+
+      // 2. Jika belum ada & Auto-Isi Kursi Kosong aktif, klaim kursi kosong pertama
+      if (!autoConfig.autoFillSeat) return -1;
+      for (let i = 0; i < maxSearch; i++) {
+        const p = players[i];
+        if (!hasPlayerContent(p)) {
+          const display = info.displayName || info.user || info.username || `Pemain ${i + 1}`;
+          const rbx = info.username || info.displayName || info.user || '';
+          p.nick = display;
+          p.user = display;
+          p.robloxUser = rbx.replace(/^@+/, '');
+          if (targetUid) p.robloxId = targetUid;
+          p.avatar = getFallbackCharacterUrl(p.robloxUser || display);
+          p.poin = 0;
+          lengkapiAvatarPemainAuto(p, p.robloxUser, targetUid);
+          return i;
+        }
+      }
+      return -1;
+    }
+
+    function prosesEventCatchAuto(evt) {
+      if (!evt) return;
+
+      // Deduplikasi ketat agar tidak pernah double-poin
+      const evtId = evt.id ? String(evt.id) : '';
+      if (evtId && processedAutoIds.has(evtId)) return;
+
+      const rawUser = String(evt.displayName || evt.user || evt.username || '').trim();
+      const rawFish = String(evt.fish || evt.ikan || '').trim();
+      const rawVariant = String(evt.variant || '').trim();
+      const rawTier = String(evt.tier || evt.kategori || '').trim();
+      if (!rawUser || !rawFish) return;
+
+      const dedupKey = `${rawUser.toLowerCase()}|${rawFish.toLowerCase()}|${rawVariant.toLowerCase()}|${rawTier.toLowerCase()}`;
+      const now = Date.now();
+      if (processedAutoKeys.has(dedupKey) && (now - processedAutoKeys.get(dedupKey)) < 2000) return;
+
+      if (evtId) {
+        processedAutoIds.add(evtId);
+        if (processedAutoIds.size > 250) {
+          const firstKey = processedAutoIds.values().next().value;
+          processedAutoIds.delete(firstKey);
+        }
+      }
+      processedAutoKeys.set(dedupKey, now);
+
+      // Hitung poin sesuai aturan live di Pokédex UI
+      const kalkulasi = hitungPoinAutoClient(rawTier, rawFish, rawVariant);
+      if (!kalkulasi.valid || kalkulasi.poin <= 0) return;
+
+      const cleanVar = (rawVariant && !['none', '-', ''].includes(rawVariant.toLowerCase())) ? rawVariant : '';
+      const fullFish = cleanVar ? `${cleanVar} ${rawFish}` : rawFish;
+
+      const seatIdx = cariAtauBuatKursiPemainAuto({
+        username: evt.username || rawUser,
+        displayName: evt.displayName || rawUser,
+        user: evt.user || rawUser,
+        userId: evt.userId || 0
+      });
+
+      if (seatIdx < 0) {
+        tambahLog('AUTO-SKIP', `${rawUser} dapat ${fullFish} (+${kalkulasi.poin}), tidak ada di tabel / kursi penuh.`);
+        return;
+      }
+
+      const p = getSeat(seatIdx);
+      const awal = p.poin || 0;
+      p.poin = awal + kalkulasi.poin;
+      simpanDB();
+
+      const labelAtas = `🎣 ${kalkulasi.kategori} • ${fullFish}`;
+      tampilkanToastTcg(seatIdx, kalkulasi.poin, labelAtas, kalkulasi.rincian);
+
+      if (autoConfig.autoSort) {
+        urutkanOtomatis();
+      } else {
+        renderPokedexTables();
+      }
+
+      const jam = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      autoCatchHistory.unshift({
+        time: jam,
+        player: p.nick || p.user || rawUser,
+        fish: fullFish,
+        tier: kalkulasi.kategori,
+        poin: kalkulasi.poin,
+        rincian: kalkulasi.rincian
+      });
+      if (autoCatchHistory.length > 20) autoCatchHistory.pop();
+      renderAutoFeedList();
+
+      tambahLog('AUTO 🎣', `${p.nick || p.user} dapat ${fullFish} [${kalkulasi.rincian}] (${awal} ➔ ${p.poin})`);
+    }
+
+    function renderAutoFeedList() {
+      const box = document.getElementById('autoFeedList');
+      const cnt = document.getElementById('autoCatchCounter');
+      if (cnt) cnt.textContent = `${autoCatchHistory.length} tangkapan`;
+      if (!box) return;
+      if (!autoCatchHistory.length) {
+        box.innerHTML = `<div style="color:#94a3b8; font-style:italic; text-align:center; padding:8px;">Belum ada tangkapan masuk di sesi ini.</div>`;
+        return;
+      }
+      box.innerHTML = autoCatchHistory.slice(0, 8).map(item => `
+        <div class="auto-feed-item">
+          <div>
+            <b style="color:#0f172a;">${item.player}</b>
+            <span style="color:#0284c7; font-weight:700;"> ${item.fish}</span>
+            <span style="color:#64748b;"> (${item.rincian})</span>
+          </div>
+          <div style="white-space:nowrap; font-family:'JetBrains Mono',monospace; font-weight:900; color:#059669;">
+            +${item.poin} <span style="color:#94a3b8; font-weight:600; font-size:10px;">${item.time}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function salinLoadstringAuto() {
+      const code = `loadstring(game:HttpGet("https://raw.githubusercontent.com/ftwa/pokemon/main/inject.lua"))()`;
+      const status = document.getElementById('autoActionStatus');
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code).then(() => {
+          status.textContent = '✅ Loadstring disalin! Paste langsung ke Roblox Executor.';
+        }).catch(() => {
+          prompt('Salin Loadstring Roblox Executor ini:', code);
+        });
+      } else {
+        prompt('Salin Loadstring Roblox Executor ini:', code);
+      }
+    }
+
+    async function unduhInjectLuaAuto() {
+      const status = document.getElementById('autoActionStatus');
+      status.textContent = '⏳ Menyiapkan file inject.lua...';
+      try {
+        const res = await fetch('/inject.lua');
+        if (!res.ok) throw new Error('not found');
+        let luaText = await res.text();
+        luaText = luaText.replace(/local NTFY_TOPIC\s*=\s*"[^"]*"/, `local NTFY_TOPIC            = "${autoConfig.topic}"`);
+        luaText = luaText.replace(/local CLOUD_URL\s*=\s*"[^"]*"/, `local CLOUD_URL             = "${window.location.origin}"`);
+        const blob = new Blob([luaText], { type: 'text/plain;charset=utf-8' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'inject.lua';
+        a.click();
+        URL.revokeObjectURL(a.href);
+        status.textContent = `✅ inject.lua terunduh (Channel: ${autoConfig.topic}).`;
+      } catch (_) {
+        window.open('https://raw.githubusercontent.com/ftwa/pokemon/main/inject.lua', '_blank');
+        status.textContent = '✅ Membuka inject.lua dari GitHub.';
+      }
+    }
+
+    async function tesSimulasiCatchAuto() {
+      const status = document.getElementById('autoActionStatus');
+      if (!autoConfig.enabled) {
+        autoConfig.enabled = true;
+        simpanConfigAutoStorage();
+        mulaiKoneksiAuto();
+        updateAutoModeUI();
+      }
+      const data = getActiveData();
+      const firstFilled = data.players.find(p => hasPlayerContent(p));
+      const targetUser = firstFilled ? (firstFilled.robloxUser || firstFilled.user || firstFilled.nick) : 'Bobohu';
+      const targetDisplay = firstFilled ? (firstFilled.nick || firstFilled.user || targetUser) : 'Bobol';
+      const samplePayload = {
+        id: `sim_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+        type: 'SYNC_CATCH',
+        player: targetDisplay,
+        displayName: targetDisplay,
+        username: targetUser,
+        fish: 'Megalodon',
+        variant: 'Shiny',
+        tier: 'SECRET',
+        room: autoConfig.topic,
+        timestamp: Date.now()
+      };
+
+      status.textContent = '⏳ Mengirim simulasi tangkapan ke /api/catch...';
+      try {
+        const res = await fetchWithTimeout('/api/catch', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(samplePayload)
+        }, 4000);
+        if (res.ok) {
+          const d = await res.json();
+          if (d && d.sukses) {
+            status.textContent = `✅ /api/catch aktif! Simulasi ${samplePayload.fish} (+${d.data?.poin || 4}) terkirim.`;
+            if (!d.ntfyDelivered || autoConnState !== 'live') {
+              prosesEventCatchAuto(d.data || samplePayload);
+            }
+            return;
+          }
+        }
+      } catch (_) {}
+
+      // Fallback simulasi langsung bila offline / preview
+      prosesEventCatchAuto(samplePayload);
+      status.textContent = '✅ Simulasi tangkapan diproses langsung ke Scoreboard!';
+    }
+
+    function inisialisasiModeAuto() {
+      muatPengaturanAuto();
+      try {
+        autoBroadcastChannel = new BroadcastChannel('pokedex_auto_skor_bc_v1');
+        autoBroadcastChannel.onmessage = (ev) => {
+          if (autoConfig.enabled && ev?.data?.type === 'SYNC_CATCH') {
+            prosesEventCatchAuto(ev.data);
+          }
+        };
+      } catch (_) {}
+      updateAutoModeUI();
+      if (autoConfig.enabled) {
+        mulaiKoneksiAuto();
+      }
+    }
+
     window.addEventListener('click', () => tutupSemuaPopupKecil());
     window.addEventListener('keydown', e => {
       if (e.key === 'Escape') {
@@ -4743,6 +5562,7 @@
         tutupModalAudio();
         tutupModalCookie();
         tutupModalEditTim();
+        tutupModalAuto();
         tutupPodium();
         tutupSemuaPopupKecil();
       }
@@ -4757,6 +5577,7 @@
       renderPokedexTables();
       sinkronAvatarBuildermanSample();
       pulihkanAvatar3dPemainAktif();
+      inisialisasiModeAuto();
       tambahLog('SISTEM', `Pokédex Light Combo siap — ${db.activeSession}`);
 
     });
