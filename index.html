@@ -1,0 +1,4379 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scoreboard Pokédex Light Combo — Trainer Stadium &amp; TCG 3D</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@700;800;900&family=Space+Grotesk:wght@600;700&family=JetBrains+Mono:wght@700;800;900&display=swap" rel="stylesheet" />
+  <!-- Three.js & Loaders untuk Render Model 3D Roblox (.obj / .mtl) Putar 360° -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/MTLLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+  <style>
+    /* ==========================================================================
+       1. DESIGN TOKENS & BRIGHT POKÉDEX / ROTOM UI BACKGROUND
+       ========================================================================== */
+    :root {
+      --bg-ice: #eef3f9;
+      --surface-white: #ffffff;
+      --surface-soft: #f8fafc;
+      --silver-trim: #cbd5e1;
+      --silver-border: #e2e8f0;
+      --crimson-top: #dc2626;
+      --crimson-bot: #b91c1c;
+      --navy-ink: #0f172a;
+      --slate-sub: #475569;
+      --muted-ink: #94a3b8;
+      --pokedex-blue: #0284c7;
+      --pokedex-cyan: #38bdf8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: var(--navy-ink);
+      background-color: var(--bg-ice);
+      background-image:
+        radial-gradient(rgba(15, 23, 42, 0.08) 1px, transparent 1px),
+        linear-gradient(180deg, #f5f8fc 0%, #e7eff8 100%);
+      background-size: 20px 20px, 100% 100%;
+    }
+
+    body {
+      padding: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    body.resizing-active {
+      user-select: none !important;
+      cursor: col-resize !important;
+    }
+
+    /* Main Pokédex Shell Container */
+    .container {
+      width: 100%;
+      max-width: 1280px;
+      background: var(--surface-white);
+      border-radius: 18px;
+      padding: 0 16px 16px;
+      border: 2px solid var(--silver-trim);
+      box-shadow:
+        0 18px 42px -12px rgba(15, 23, 42, 0.16),
+        0 0 0 1px rgba(255, 255, 255, 0.9) inset;
+      position: relative;
+      overflow: visible;
+    }
+
+    /* ==========================================================================
+       2. POKÉDEX TOP ACCENT BAR (3 GLOWING DOTS + BLUE CAMERA LENS)
+       ========================================================================== */
+    .pokedex-accent-strip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 0 -16px 12px;
+      padding: 8px 18px;
+      border-radius: 16px 16px 0 0;
+      background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+      border-bottom: 2px solid #cbd5e1;
+      position: relative;
+    }
+
+    .pokedex-accent-strip::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -2px;
+      height: 2px;
+      background: linear-gradient(90deg, #dc2626 0%, #ef4444 22%, #cbd5e1 45%, #38bdf8 100%);
+    }
+
+    .pokedex-lights-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pokedex-dots {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .px-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(15, 23, 42, 0.25);
+      box-shadow: inset 0 2px 3px rgba(255, 255, 255, 0.75);
+    }
+    .px-dot.red    { background: radial-gradient(circle at 35% 30%, #fca5a5, #dc2626); box-shadow: 0 0 8px rgba(220, 38, 38, 0.55), inset 0 1px 2px #fff; }
+    .px-dot.yellow { background: radial-gradient(circle at 35% 30%, #fef08a, #eab308); box-shadow: 0 0 8px rgba(234, 179, 8, 0.55), inset 0 1px 2px #fff; }
+    .px-dot.green  { background: radial-gradient(circle at 35% 30%, #86efac, #16a34a); box-shadow: 0 0 8px rgba(22, 163, 74, 0.55), inset 0 1px 2px #fff; }
+
+    .pokedex-brand-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .pokedex-brand-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 99px;
+      background: #fee2e2;
+      color: #b91c1c;
+      border: 1px solid #fca5a5;
+    }
+
+    /* Blue Pokédex Camera Lens Icon on Top-Right */
+    .pokedex-lens-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .pokedex-lens {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      padding: 3px;
+      background: linear-gradient(145deg, #ffffff 0%, #94a3b8 100%);
+      border: 1.5px solid #64748b;
+      box-shadow: 0 3px 10px rgba(2, 132, 199, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .pokedex-lens-core {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: radial-gradient(circle at 32% 28%, #e0f2fe 0%, #38bdf8 34%, #0284c7 68%, #0c4a6e 100%);
+      box-shadow: inset 0 0 6px rgba(15, 23, 42, 0.5);
+      position: relative;
+    }
+    .pokedex-lens-core::after {
+      content: "";
+      position: absolute;
+      top: 4px;
+      left: 5px;
+      width: 8px;
+      height: 5px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.85);
+      transform: rotate(-25deg);
+    }
+
+    /* ==========================================================================
+       3. TOP ACTION BAR (LIGHT SILVER/WHITE TACTILE PILLS + CLEAR ACCENTS)
+       ========================================================================== */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding-bottom: 12px;
+      margin-bottom: 12px;
+      border-bottom: 1.5px solid #e2e8f0;
+      position: relative;
+      z-index: 40;
+    }
+
+    .top-left, .top-right {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+
+    .btn-px {
+      background: linear-gradient(180deg, #ffffff 0%, #e2e8f0 100%);
+      color: #0f172a;
+      border: 1.5px solid #cbd5e1;
+      padding: 7px 13px;
+      border-radius: 99px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 2px 4px rgba(15, 23, 42, 0.08), inset 0 1px 0 #ffffff;
+      transition: all 0.14s ease;
+      white-space: nowrap;
+    }
+    .btn-px:hover {
+      background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+      border-color: #0284c7;
+      color: #0369a1;
+      transform: translateY(-1px);
+    }
+
+    .btn-px-cookie {
+      background: linear-gradient(180deg, #eff6ff 0%, #dbeafe 100%);
+      color: #1d4ed8;
+      border: 1.5px solid #93c5fd;
+    }
+    .btn-px-cookie:hover {
+      background: #dbeafe;
+      border-color: #2563eb;
+      color: #1e3a8a;
+    }
+    .cookie-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #94a3b8;
+      display: inline-block;
+    }
+    .cookie-dot.active {
+      background: #16a34a;
+      box-shadow: 0 0 7px rgba(22, 163, 74, 0.7);
+    }
+
+    .btn-px-sort {
+      background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%);
+      color: #ffffff;
+      border: 1.5px solid #991b1b;
+      box-shadow: 0 2px 6px rgba(185, 28, 28, 0.28);
+    }
+    .btn-px-sort:hover {
+      background: linear-gradient(180deg, #dc2626 0%, #991b1b 100%);
+      color: #ffffff;
+      border-color: #7f1d1d;
+    }
+
+    .btn-px-podium {
+      background: linear-gradient(180deg, #fbbf24 0%, #d97706 100%);
+      color: #ffffff;
+      border: 1.5px solid #b45309;
+      box-shadow: 0 2px 6px rgba(217, 119, 6, 0.3);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    }
+    .btn-px-podium:hover {
+      filter: brightness(1.06);
+      color: #ffffff;
+      border-color: #92400e;
+    }
+
+    .btn-px-notif {
+      background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+      color: #ffffff;
+      border: 1.5px solid #047857;
+      box-shadow: 0 2px 6px rgba(5, 150, 105, 0.28);
+    }
+    .btn-px-notif:hover {
+      background: linear-gradient(180deg, #059669 0%, #047857 100%);
+      color: #ffffff;
+      border-color: #065f46;
+    }
+
+    .btn-px-anim {
+      background: linear-gradient(180deg, #f3e8ff 0%, #e9d5ff 100%);
+      color: #6b21a8;
+      border: 1.5px solid #c084fc;
+      box-shadow: 0 2px 6px rgba(147, 51, 234, 0.18);
+    }
+    .btn-px-anim:hover {
+      background: #e9d5ff;
+      border-color: #9333ea;
+      color: #581c87;
+    }
+
+    /* Dropdowns (Light Pokédex Style) */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      min-width: 165px;
+      background: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 12px;
+      box-shadow: 0 14px 32px rgba(15, 23, 42, 0.16);
+      z-index: 1200;
+      overflow: hidden;
+    }
+    .dropdown.show .dropdown-menu {
+      display: block;
+    }
+
+    .dropdown-reset-menu {
+      min-width: 230px;
+      padding: 6px;
+    }
+
+    .dropdown-action-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      color: #0f172a;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.14s ease;
+    }
+    .dropdown-action-btn:hover {
+      background: #eff6ff;
+      border-color: #93c5fd;
+      color: #1d4ed8;
+    }
+    .dropdown-action-btn.danger:hover {
+      background: #fef2f2;
+      border-color: #fca5a5;
+      color: #b91c1c;
+    }
+    .dd-title {
+      display: block;
+      font-family: 'Outfit', sans-serif;
+      font-size: 12.5px;
+      font-weight: 800;
+    }
+    .dd-desc {
+      display: block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: #64748b;
+    }
+
+    .session-scroll-list {
+      max-height: 210px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #cbd5e1 #f8fafc;
+    }
+    .session-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 8px 12px;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #1e293b;
+      cursor: pointer;
+      border-bottom: 1px solid #f1f5f9;
+      white-space: nowrap;
+    }
+    .session-item:hover {
+      background: #f1f5f9;
+      color: #0284c7;
+    }
+    .session-item.active {
+      background: #eff6ff;
+      color: #0284c7;
+    }
+    .session-del-btn {
+      background: transparent;
+      border: none;
+      color: #ef4444;
+      font-weight: 900;
+      font-size: 15px;
+      cursor: pointer;
+      padding: 0 5px;
+      border-radius: 4px;
+    }
+    .session-del-btn:hover {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+    .btn-add-session {
+      width: 100%;
+      text-align: left;
+      padding: 9px 12px;
+      border: none;
+      border-top: 1px solid #e2e8f0;
+      background: #f8fafc;
+      color: #0284c7;
+      font-family: 'Outfit', sans-serif;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .btn-add-session:hover {
+      background: #eff6ff;
+      color: #0369a1;
+    }
+
+    /* ==========================================================================
+       4. BRIGHT POKÉDEX TWO-COLUMN 20-SEAT TABLES WITH RESIZERS
+       ========================================================================== */
+    .grid-tables {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      width: 100%;
+    }
+
+    @media (max-width: 920px) {
+      .grid-tables {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .table-container {
+      background: #ffffff;
+      border-radius: 12px;
+      border: 1.5px solid #cbd5e1;
+      overflow: hidden;
+      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+    }
+
+    table {
+      border-collapse: separate;
+      border-spacing: 0;
+      width: 100%;
+      table-layout: fixed;
+    }
+
+    /* Crimson-Red Metallic Table Headers */
+    th {
+      padding: 10px 6px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 12px;
+      font-weight: 900;
+      color: #ffffff;
+      text-align: center;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      position: relative;
+      user-select: none;
+      background: linear-gradient(180deg, var(--crimson-top) 0%, var(--crimson-bot) 100%);
+      border-bottom: 2.5px solid #cbd5e1;
+      border-right: 1px solid rgba(255, 255, 255, 0.22);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    }
+    th:last-child { border-right: none; }
+
+    th .col-resizer {
+      position: absolute;
+      right: -4px;
+      top: 0;
+      bottom: 0;
+      width: 8px;
+      cursor: col-resize;
+      z-index: 20;
+    }
+    th .col-resizer:hover,
+    th.resizing .col-resizer {
+      background: #38bdf8;
+    }
+
+    tbody tr {
+      position: relative;
+      transition: background 0.14s ease;
+    }
+    tbody tr.moving-row {
+      transition: transform 0.52s cubic-bezier(0.2, 1, 0.25, 1) !important;
+      z-index: 10;
+    }
+
+    td {
+      padding: 5px 7px;
+      font-size: 13.5px;
+      height: 48px;
+      border-bottom: 1px solid var(--silver-border);
+      border-right: 1px solid var(--silver-border);
+      background: #ffffff;
+      color: var(--navy-ink);
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      vertical-align: middle;
+    }
+    td:last-child { border-right: none; }
+    tbody tr:nth-child(even) td {
+      background: #f8fafc;
+    }
+    tbody tr:hover td {
+      background: #f1f5f9;
+    }
+
+    /* Rank / Seat Number Column */
+    .td-no {
+      text-align: center;
+      font-weight: 900;
+      background: #f1f5f9 !important;
+      border-right: 1.5px solid #cbd5e1 !important;
+    }
+
+    .rank-num-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 28px;
+      height: 24px;
+      padding: 0 6px;
+      border-radius: 7px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 12.5px;
+      font-weight: 900;
+      color: #475569;
+      background: #e2e8f0;
+      border: 1px solid #cbd5e1;
+    }
+
+    tr.is-rank-1 .rank-num-pill {
+      background: linear-gradient(180deg, #fef08a 0%, #facc15 100%);
+      color: #713f12;
+      border-color: #eab308;
+      box-shadow: 0 2px 6px rgba(234, 179, 8, 0.35);
+    }
+    tr.is-rank-2 .rank-num-pill {
+      background: linear-gradient(180deg, #f8fafc 0%, #cbd5e1 100%);
+      color: #1e293b;
+      border-color: #94a3b8;
+    }
+    tr.is-rank-3 .rank-num-pill {
+      background: linear-gradient(180deg, #fed7aa 0%, #fb923c 100%);
+      color: #7c2d12;
+      border-color: #ea580c;
+    }
+
+    /* Subtle icy highlight for active Rank #1 when no custom color tag is applied */
+    tr.is-rank-1:not([class*="tag-"]) td {
+      background: #eff6ff !important;
+    }
+
+    /* Clickable Player & Display Name Cells */
+    .cell-click {
+      cursor: pointer;
+    }
+    .player-cell-flex {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      min-width: 0;
+    }
+    .name-player {
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      color: #0f172a;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .name-empty {
+      color: #94a3b8 !important;
+      font-weight: 600 !important;
+      font-style: italic;
+    }
+
+    .display-cell-flex {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      min-width: 0;
+    }
+    .avatar-mini {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #e2e8f0;
+      border: 1.5px solid #94a3b8;
+      flex-shrink: 0;
+    }
+    .avatar-placeholder {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      border: 1.5px solid #cbd5e1;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 800;
+      color: #64748b;
+    }
+    .display-name-wrap {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.15;
+    }
+    .name-display {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #0369a1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .sub-handle {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9.5px;
+      color: #64748b;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Status Pill & Palette Trigger */
+    .inline-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+    .pay-status-tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 900;
+      padding: 2.5px 7px;
+      border-radius: 6px;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.12s ease;
+    }
+    .pay-status-tag:hover { transform: scale(1.07); }
+    .pay-status-tag.done {
+      background: #16a34a;
+      color: #ffffff;
+      border: 1px solid #15803d;
+      box-shadow: 0 2px 6px rgba(22, 163, 74, 0.3);
+    }
+    .pay-status-tag.ready {
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #cbd5e1;
+    }
+    .pay-status-tag.host-pill {
+      background: #059669;
+      color: #ffffff;
+      border: 1px solid #047857;
+    }
+
+    .btn-color-palette {
+      font-size: 13.5px;
+      cursor: pointer;
+      user-select: none;
+      display: inline-flex;
+      align-items: center;
+      transition: transform 0.12s ease;
+    }
+    .btn-color-palette:hover { transform: scale(1.25); }
+
+    /* Score Box (Elevated Metallic Light Box) */
+    .score-box {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .score-val {
+      min-width: 56px;
+      padding: 4px 10px;
+      border-radius: 8px;
+      background: linear-gradient(180deg, #ffffff 0%, #e2e8f0 100%);
+      border: 1.5px solid #cbd5e1;
+      color: #0f172a;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 17px;
+      font-weight: 900;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+      box-shadow: 0 2px 4px rgba(15, 23, 42, 0.08), inset 0 1px 0 #ffffff;
+      transition: all 0.14s ease;
+    }
+    .score-val:hover {
+      background: #ffffff;
+      border-color: #0284c7;
+      color: #0284c7;
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25);
+      transform: scale(1.05);
+    }
+
+    /* Duo Team Divider Row inside Table */
+    tr.team-divider-row td {
+      height: auto !important;
+      padding: 5px 10px !important;
+      background: linear-gradient(90deg, #f8fafc 0%, var(--team-fade, #e0f2fe) 50%, #f8fafc 100%) !important;
+      border-left: 4px solid var(--team-color, #0284c7);
+      border-bottom: 1.5px solid #cbd5e1 !important;
+      cursor: pointer;
+    }
+    .team-div-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .team-div-rank {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 900;
+      padding: 2px 7px;
+      border-radius: 5px;
+      background: #ffffff;
+      color: #334155;
+      border: 1px solid #cbd5e1;
+    }
+    .team-div-rank.is-leader {
+      background: #fef08a;
+      color: #713f12;
+      border-color: #eab308;
+    }
+    .team-div-name {
+      font-family: 'Outfit', sans-serif;
+      font-size: 12.5px;
+      font-weight: 900;
+      letter-spacing: 0.7px;
+      text-transform: uppercase;
+      color: #0f172a;
+    }
+    .team-div-pts {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      font-weight: 900;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: #ffffff;
+      color: #0f172a;
+      border: 1.5px solid var(--team-color, #0284c7);
+    }
+
+    /* ==========================================================================
+       5. 13 ELEMENTAL ROW COLORS (HIGH-CONTRAST MATCHED FOR LIGHT MODE)
+       ========================================================================== */
+    tr.tag-blue td   { background: #dbeafe !important; border-color: #93c5fd !important; color: #0f172a !important; }
+    tr.tag-blue .td-no { background: #93c5fd !important; }
+    tr.tag-blue .name-player { color: #0f172a !important; }
+    tr.tag-blue .name-display { color: #1d4ed8 !important; }
+    tr.tag-blue .score-val { background: #ffffff !important; border-color: #60a5fa !important; color: #1e3a8a !important; }
+
+    tr.tag-pink td   { background: #fce7f3 !important; border-color: #f9a8d4 !important; color: #500724 !important; }
+    tr.tag-pink .td-no { background: #f472b6 !important; }
+    tr.tag-pink .name-player { color: #831843 !important; }
+    tr.tag-pink .name-display { color: #be185d !important; }
+    tr.tag-pink .score-val { background: #ffffff !important; border-color: #f472b6 !important; color: #831843 !important; }
+
+    tr.tag-purple td { background: #581c87 !important; border-color: #7e22ce !important; color: #ffffff !important; }
+    tr.tag-purple .td-no { background: #6b21a8 !important; }
+    tr.tag-purple .name-player { color: #ffffff !important; }
+    tr.tag-purple .name-display { color: #e9d5ff !important; }
+    tr.tag-purple .sub-handle { color: #d8b4fe !important; }
+    tr.tag-purple .score-val { background: #2e1065 !important; border-color: #c084fc !important; color: #ffffff !important; }
+
+    tr.tag-red td    { background: #dc2626 !important; border-color: #b91c1c !important; color: #ffffff !important; }
+    tr.tag-red .td-no { background: #991b1b !important; }
+    tr.tag-red .name-player { color: #ffffff !important; }
+    tr.tag-red .name-display { color: #fee2e2 !important; }
+    tr.tag-red .sub-handle { color: #fecaca !important; }
+    tr.tag-red .score-val { background: #ffffff !important; border-color: #fecaca !important; color: #991b1b !important; }
+
+    tr.tag-yellow td { background: #fef08a !important; border-color: #facc15 !important; color: #422006 !important; }
+    tr.tag-yellow .td-no { background: #facc15 !important; }
+    tr.tag-yellow .name-player { color: #422006 !important; }
+    tr.tag-yellow .name-display { color: #854d0e !important; }
+    tr.tag-yellow .score-val { background: #ffffff !important; border-color: #eab308 !important; color: #713f12 !important; }
+
+    tr.tag-green td  { background: #bbf7d0 !important; border-color: #4ade80 !important; color: #052e16 !important; }
+    tr.tag-green .td-no { background: #22c55e !important; }
+    tr.tag-green .name-player { color: #064e3b !important; }
+    tr.tag-green .name-display { color: #047857 !important; }
+    tr.tag-green .score-val { background: #ffffff !important; border-color: #22c55e !important; color: #065f46 !important; }
+
+    tr.tag-orange td { background: #fed7aa !important; border-color: #fb923c !important; color: #431407 !important; }
+    tr.tag-orange .td-no { background: #f97316 !important; }
+    tr.tag-orange .name-player { color: #7c2d12 !important; }
+    tr.tag-orange .name-display { color: #c2410c !important; }
+    tr.tag-orange .score-val { background: #ffffff !important; border-color: #fb923c !important; color: #9a3412 !important; }
+
+    tr.tag-teal td   { background: #99f6e4 !important; border-color: #2dd4bf !important; color: #042f2e !important; }
+    tr.tag-teal .td-no { background: #14b8a6 !important; }
+    tr.tag-teal .name-player { color: #134e4a !important; }
+    tr.tag-teal .name-display { color: #0f766e !important; }
+    tr.tag-teal .score-val { background: #ffffff !important; border-color: #14b8a6 !important; color: #115e59 !important; }
+
+    tr.tag-indigo td { background: #312e81 !important; border-color: #4338ca !important; color: #ffffff !important; }
+    tr.tag-indigo .td-no { background: #4338ca !important; }
+    tr.tag-indigo .name-player { color: #ffffff !important; }
+    tr.tag-indigo .name-display { color: #c7d2fe !important; }
+    tr.tag-indigo .sub-handle { color: #a5b4fc !important; }
+    tr.tag-indigo .score-val { background: #1e1b4b !important; border-color: #818cf8 !important; color: #ffffff !important; }
+
+    tr.tag-cyan td   { background: #cffafe !important; border-color: #22d3ee !important; color: #083344 !important; }
+    tr.tag-cyan .td-no { background: #06b6d4 !important; }
+    tr.tag-cyan .name-player { color: #164e63 !important; }
+    tr.tag-cyan .name-display { color: #0e7490 !important; }
+    tr.tag-cyan .score-val { background: #ffffff !important; border-color: #22d3ee !important; color: #155e75 !important; }
+
+    tr.tag-lime td   { background: #d9f99d !important; border-color: #a3e635 !important; color: #1a2e05 !important; }
+    tr.tag-lime .td-no { background: #84cc16 !important; }
+    tr.tag-lime .name-player { color: #365314 !important; }
+    tr.tag-lime .name-display { color: #4d7c0f !important; }
+    tr.tag-lime .score-val { background: #ffffff !important; border-color: #84cc16 !important; color: #3f6212 !important; }
+
+    tr.tag-rose td   { background: #9f1239 !important; border-color: #be123c !important; color: #ffffff !important; }
+    tr.tag-rose .td-no { background: #be123c !important; }
+    tr.tag-rose .name-player { color: #ffffff !important; }
+    tr.tag-rose .name-display { color: #fecdd3 !important; }
+    tr.tag-rose .sub-handle { color: #fda4af !important; }
+    tr.tag-rose .score-val { background: #4c0519 !important; border-color: #fb7185 !important; color: #ffffff !important; }
+
+    tr.tag-slate td  { background: #1e293b !important; border-color: #334155 !important; color: #f8fafc !important; }
+    tr.tag-slate .td-no { background: #334155 !important; }
+    tr.tag-slate .name-player { color: #f8fafc !important; }
+    tr.tag-slate .name-display { color: #93c5fd !important; }
+    tr.tag-slate .sub-handle { color: #94a3b8 !important; }
+    tr.tag-slate .score-val { background: #0f172a !important; border-color: #64748b !important; color: #38bdf8 !important; }
+
+    /* ==========================================================================
+       6. BRIGHT POKÉDEX LOG AKTIVITAS PANEL
+       ========================================================================== */
+    .log-panel {
+      margin-top: 14px;
+      background: #f8fafc;
+      border-radius: 12px;
+      border: 1.5px solid #cbd5e1;
+      padding: 9px 14px;
+    }
+    .log-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .log-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 12.5px;
+      font-weight: 900;
+      color: #b91c1c;
+      letter-spacing: 0.7px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .btn-clear-log {
+      background: #ffffff;
+      color: #475569;
+      border: 1px solid #cbd5e1;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 10.5px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .btn-clear-log:hover {
+      background: #fee2e2;
+      color: #b91c1c;
+      border-color: #fca5a5;
+    }
+    .log-list {
+      margin-top: 8px;
+      max-height: 112px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+    }
+    .log-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 5px 9px;
+      background: #ffffff;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+      border-left: 3.5px solid #dc2626;
+      color: #1e293b;
+    }
+
+    /* ==========================================================================
+       7. FLOATING QUICK POINT POPOVER & MINI COLOR PICKER (LIGHT MODE)
+       ========================================================================== */
+    .color-picker-mini {
+      position: fixed;
+      z-index: 21500;
+      display: none;
+      background: #ffffff;
+      border: 1.5px solid #94a3b8;
+      border-radius: 12px;
+      padding: 9px 10px;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 7px;
+      box-shadow: 0 14px 32px rgba(15, 23, 42, 0.22);
+    }
+    .color-picker-mini.show { display: grid; }
+
+    .quick-point-popover {
+      display: none;
+      position: fixed;
+      z-index: 21600;
+      background: #ffffff;
+      color: #0f172a;
+      width: 248px;
+      padding: 12px;
+      border-radius: 14px;
+      border: 2px solid #dc2626;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.24);
+      flex-direction: column;
+      gap: 9px;
+    }
+    .quick-point-popover.show { display: flex; }
+    .qp-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 6px;
+    }
+    .qp-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 900;
+      color: #0f172a;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .qp-close {
+      background: none;
+      border: none;
+      color: #64748b;
+      font-size: 18px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+    .qp-close:hover { color: #dc2626; }
+    .qp-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 5px;
+    }
+    .btn-qp {
+      border: 1.5px solid #cbd5e1;
+      background: #f8fafc;
+      color: #0f172a;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12.5px;
+      font-weight: 900;
+      padding: 7px 0;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: all 0.12s ease;
+    }
+    .btn-qp:hover {
+      background: #0284c7;
+      border-color: #0284c7;
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+    .qp-footer { display: flex; gap: 6px; }
+    .qp-input {
+      flex: 1;
+      width: 100%;
+      background: #f8fafc;
+      border: 1.5px solid #cbd5e1;
+      color: #0f172a;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 900;
+      padding: 6px;
+      border-radius: 7px;
+      text-align: center;
+      outline: none;
+    }
+    .qp-input:focus { border-color: #0284c7; background: #ffffff; }
+    .btn-qp-set {
+      background: linear-gradient(180deg, #dc2626 0%, #b91c1c 100%);
+      color: #ffffff;
+      border: none;
+      font-family: 'Outfit', sans-serif;
+      font-size: 11.5px;
+      font-weight: 800;
+      padding: 6px 12px;
+      border-radius: 7px;
+      cursor: pointer;
+    }
+    .btn-qp-set:hover { filter: brightness(1.08); }
+
+    /* ==========================================================================
+       8. HORIZONTAL "TRAINER PROFILE CARD" SEAT EDIT MODAL (OPTION 3 COMBO)
+       ========================================================================== */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.72);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 22000;
+      justify-content: center;
+      align-items: center;
+      padding: 14px;
+    }
+    .modal-overlay.show { display: flex; }
+
+    /* Metallic-Silver & Dark-Navy/Crimson Stadium Frame */
+    .trainer-modal-shell {
+      position: relative;
+      width: 660px;
+      max-width: 96vw;
+      border-radius: 18px;
+      padding: 2.5px;
+      background: linear-gradient(135deg, #f8fafc 0%, #dc2626 30%, #94a3b8 55%, #38bdf8 82%, #e2e8f0 100%);
+      box-shadow: 0 28px 70px rgba(15, 23, 42, 0.55), 0 0 32px rgba(56, 189, 248, 0.28);
+    }
+
+    .trainer-modal-inner {
+      position: relative;
+      border-radius: 16px;
+      background: linear-gradient(160deg, #111b31 0%, #090f1e 100%);
+      padding: 26px 20px 20px;
+      color: #f8fafc;
+    }
+
+    /* Top Slanted Header Bar */
+    .trainer-notch-header {
+      position: absolute;
+      top: -16px;
+      left: 50%;
+      transform: translateX(-50%) skewX(-12deg);
+      padding: 5px 34px;
+      background: linear-gradient(180deg, #dc2626 0%, #991b1b 100%);
+      border: 2px solid #e2e8f0;
+      border-radius: 9px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+      white-space: nowrap;
+    }
+    .trainer-notch-title {
+      display: inline-block;
+      transform: skewX(12deg);
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: 0.7px;
+    }
+
+    .btn-close-hud {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: rgba(239, 68, 68, 0.16);
+      border: 1px solid rgba(239, 68, 68, 0.45);
+      color: #fca5a5;
+      font-weight: 900;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.14s ease;
+      z-index: 5;
+    }
+    .btn-close-hud:hover {
+      background: #ef4444;
+      color: #ffffff;
+      transform: rotate(90deg);
+    }
+
+    .trainer-modal-body {
+      display: grid;
+      grid-template-columns: 255px 1fr;
+      gap: 18px;
+      align-items: stretch;
+      margin-top: 4px;
+    }
+
+    @media (max-width: 680px) {
+      .trainer-modal-body { grid-template-columns: 1fr; }
+      .trainer-stage-box { height: 230px !important; }
+    }
+
+    /* Left Panel: Glowing 3D Full-Body Avatar Showcase Stage */
+    .trainer-stage-box {
+      --stage-aura: #38bdf8;
+      --stage-aura-glow: rgba(56, 189, 248, 0.55);
+      position: relative;
+      height: 320px;
+      border-radius: 14px;
+      border: 1.5px solid rgba(203, 213, 225, 0.45);
+      background:
+        radial-gradient(circle at 50% 60%, color-mix(in srgb, var(--stage-aura) 46%, transparent) 0%, transparent 66%),
+        radial-gradient(circle at 50% 100%, rgba(250, 204, 21, 0.2) 0%, transparent 55%),
+        linear-gradient(180deg, #0d1c36 0%, #081124 65%, #060b17 100%);
+      box-shadow: inset 0 0 28px rgba(0, 0, 0, 0.72), 0 0 22px var(--stage-aura-glow);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 12px;
+      transition: box-shadow 0.25s ease, background 0.25s ease;
+    }
+
+    .trainer-stage-box::before {
+      content: "";
+      position: absolute;
+      bottom: -24px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 215px;
+      height: 68px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse at center, var(--stage-aura-glow) 0%, transparent 72%);
+      border-top: 2px solid color-mix(in srgb, var(--stage-aura) 72%, #ffffff);
+      pointer-events: none;
+    }
+
+    .stage-seat-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      padding: 4px 12px;
+      border-radius: 6px;
+      transform: skewX(-12deg);
+      background: rgba(248, 250, 252, 0.95);
+      border: 1.5px solid #94a3b8;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.45);
+      z-index: 4;
+    }
+    .stage-seat-badge span {
+      display: block;
+      transform: skewX(12deg);
+      font-family: 'Outfit', sans-serif;
+      font-size: 11px;
+      font-weight: 900;
+      color: #0f172a;
+      letter-spacing: 0.6px;
+    }
+
+    .stage-headshot-chip {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid var(--stage-aura);
+      background: #070b14;
+      overflow: hidden;
+      z-index: 4;
+      display: none;
+      box-shadow: 0 0 12px var(--stage-aura-glow);
+    }
+    .stage-headshot-chip img { width: 100%; height: 100%; object-fit: cover; }
+
+    .stage-avatar-3d {
+      position: relative;
+      z-index: 3;
+      max-height: 252px;
+      max-width: 94%;
+      object-fit: contain;
+      filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.72));
+      transform-origin: bottom center;
+      will-change: transform, filter;
+    }
+
+    /* Animasi 2.5D Hidup (Breathing + Bobbing + Sway) */
+    body[data-anim-mode="2.5d"] .stage-avatar-3d,
+    body[data-anim-mode="3d"] .stage-avatar-3d,
+    body[data-anim-mode="2.5d"] .tcg-avatar-3d,
+    body[data-anim-mode="3d"] .tcg-avatar-3d,
+    body[data-anim-mode="2.5d"] .podium-img-3d,
+    body[data-anim-mode="3d"] .podium-img-3d {
+      animation: livingAvatarIdle 3.2s ease-in-out infinite;
+    }
+
+    body[data-anim-mode="static"] .stage-avatar-3d,
+    body[data-anim-mode="static"] .tcg-avatar-3d,
+    body[data-anim-mode="static"] .podium-img-3d {
+      animation: none !important;
+    }
+
+    @keyframes livingAvatarIdle {
+      0%, 100% {
+        transform: translateY(0px) scaleY(1) scaleX(1) rotateZ(0deg);
+        filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.65));
+      }
+      25% {
+        transform: translateY(-5px) scaleY(1.028) scaleX(0.988) rotateZ(-1.1deg);
+        filter: drop-shadow(0 15px 22px rgba(0, 0, 0, 0.78));
+      }
+      50% {
+        transform: translateY(-2px) scaleY(1.012) scaleX(0.995) rotateZ(0.4deg);
+        filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.7));
+      }
+      75% {
+        transform: translateY(-6px) scaleY(1.025) scaleX(0.99) rotateZ(1.1deg);
+        filter: drop-shadow(0 16px 22px rgba(0, 0, 0, 0.8));
+      }
+    }
+
+    /* Wadah Canvas Three.js 360° di Stage Edit Kursi & TCG Toast */
+    .stage-3d-canvas-wrap {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      display: none;
+      cursor: grab;
+    }
+    .stage-3d-canvas-wrap:active { cursor: grabbing; }
+    .stage-3d-canvas-wrap canvas {
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    .stage-anim-badge {
+      position: absolute;
+      bottom: 54px;
+      right: 10px;
+      z-index: 5;
+      padding: 2px 8px;
+      border-radius: 99px;
+      background: rgba(15, 23, 42, 0.82);
+      border: 1px solid rgba(56, 189, 248, 0.55);
+      color: #7dd3fc;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      pointer-events: none;
+    }
+
+    /* Lapisan Partikel Energi Elemental (Sparks / Motes) */
+    .el-particles-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 2;
+    }
+    .el-mote {
+      position: absolute;
+      bottom: -10px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ffffff 0%, var(--mote-color, #38bdf8) 55%, transparent 100%);
+      box-shadow: 0 0 8px var(--mote-color, #38bdf8);
+      opacity: 0;
+      animation: moteRise var(--mote-dur, 3.2s) ease-in infinite;
+      animation-delay: var(--mote-delay, 0s);
+    }
+    body[data-anim-mode="static"] .el-particles-layer { display: none; }
+
+    @keyframes moteRise {
+      0%   { transform: translateY(0) translateX(0) scale(0.5); opacity: 0; }
+      20%  { opacity: 0.92; }
+      80%  { opacity: 0.75; }
+      100% { transform: translateY(-220px) translateX(var(--mote-drift, 14px)) scale(1.15); opacity: 0; }
+    }
+
+    /* Pemilih Mode Animasi & Kontrol GIF di Popup Edit Kursi */
+    .anim-pills-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 5px;
+    }
+    .btn-anim-pill {
+      padding: 5px 6px;
+      border-radius: 7px;
+      border: 1px solid #334155;
+      background: #070d1b;
+      color: #94a3b8;
+      font-family: 'Outfit', sans-serif;
+      font-size: 10.5px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.14s ease;
+      white-space: nowrap;
+    }
+    .btn-anim-pill:hover { border-color: #38bdf8; color: #e0f2fe; }
+    .btn-anim-pill.active {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.25), rgba(168, 85, 247, 0.28));
+      border-color: #38bdf8;
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.35);
+    }
+
+    .gif-upload-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .btn-gif-pick {
+      background: linear-gradient(180deg, #a855f7 0%, #7e22ce 100%);
+      color: #ffffff;
+      border: 1px solid #c084fc;
+      padding: 6px 10px;
+      border-radius: 7px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .btn-gif-pick:hover { filter: brightness(1.12); }
+    .btn-gif-clear {
+      background: rgba(239, 68, 68, 0.16);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.45);
+      padding: 6px 8px;
+      border-radius: 7px;
+      font-size: 11px;
+      font-weight: 900;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .btn-gif-clear:hover { background: #ef4444; color: #ffffff; }
+
+    .stage-empty-placeholder {
+      position: relative;
+      z-index: 3;
+      margin-bottom: 58px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: #94a3b8;
+      text-align: center;
+    }
+
+    .stage-nameplate {
+      position: relative;
+      z-index: 4;
+      width: 100%;
+      margin-top: 4px;
+      padding: 4px 10px;
+      border-radius: 8px;
+      background: rgba(7, 11, 20, 0.8);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      text-align: center;
+    }
+    .stage-nameplate-nick {
+      font-family: 'Outfit', sans-serif;
+      font-size: 13.5px;
+      font-weight: 800;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .stage-nameplate-user {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: #38bdf8;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Right Panel: Form & Elemental Dots */
+    .trainer-controls-col {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 11px;
+      background: rgba(11, 18, 34, 0.76);
+      border: 1px solid #263652;
+      border-radius: 14px;
+      padding: 14px 16px;
+    }
+
+    .hud-field { display: flex; flex-direction: column; gap: 4px; }
+    .hud-label {
+      font-family: 'Outfit', sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      color: #cbd5e1;
+      letter-spacing: 0.4px;
+    }
+    .hud-input-row { display: flex; gap: 6px; }
+    .hud-input {
+      width: 100%;
+      padding: 8px 11px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      background: #070d1b;
+      color: #f8fafc;
+      font-size: 13.5px;
+      font-weight: 700;
+      outline: none;
+    }
+    .hud-input:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.25);
+    }
+
+    .btn-cari-cyan {
+      background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+      color: #04101f;
+      border: 1px solid #7dd3fc;
+      padding: 0 14px;
+      border-radius: 8px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 12.5px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-cari-cyan:hover { filter: brightness(1.1); }
+    .btn-cari-cyan:disabled { opacity: 0.6; cursor: wait; }
+
+    .btn-add-emerald {
+      background: linear-gradient(180deg, #10b981 0%, #047857 100%);
+      color: #ffffff;
+      border: 1px solid #34d399;
+      padding: 0 12px;
+      border-radius: 8px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 12px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-add-emerald:hover { filter: brightness(1.1); }
+    .btn-add-emerald:disabled { opacity: 0.6; cursor: wait; }
+
+    .modal-status-line {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      min-height: 14px;
+      color: #94a3b8;
+    }
+
+    .elemental-dots-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      align-items: center;
+      padding-top: 2px;
+    }
+    .el-dot {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid rgba(15, 23, 42, 0.22);
+      transition: transform 0.14s ease, box-shadow 0.14s ease, border-color 0.14s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 900;
+      color: #ffffff;
+    }
+    .trainer-controls-col .el-dot {
+      border-color: rgba(255, 255, 255, 0.28);
+    }
+    .el-dot:hover { transform: scale(1.22); border-color: #ffffff; }
+    .el-dot.active {
+      transform: scale(1.22);
+      border-color: #ffffff;
+      box-shadow: 0 0 12px var(--dot-color), 0 0 4px #ffffff;
+    }
+
+    .trainer-action-row {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 10px;
+      margin-top: 4px;
+      padding-top: 8px;
+      border-top: 1px solid #1e293b;
+    }
+    .btn-trainer-reset {
+      background: rgba(239, 68, 68, 0.16);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.45);
+      padding: 9px 18px;
+      border-radius: 8px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 12.5px;
+      cursor: pointer;
+    }
+    .btn-trainer-reset:hover { background: #ef4444; color: #ffffff; }
+
+    .btn-trainer-save {
+      padding: 9px 30px;
+      border-radius: 9px;
+      transform: skewX(-10deg);
+      background: linear-gradient(135deg, #fef08a 0%, #bef264 52%, #eab308 100%);
+      border: 1.5px solid #fef9c3;
+      color: #1a2e05;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: 0 0 18px rgba(190, 242, 100, 0.5), 0 4px 12px rgba(0, 0, 0, 0.45);
+      transition: all 0.15s ease;
+    }
+    .btn-trainer-save span { display: inline-block; transform: skewX(10deg); }
+    .btn-trainer-save:hover { filter: brightness(1.08); transform: skewX(-10deg) translateY(-1px); }
+
+    /* ==========================================================================
+       9. STANDARD POKÉDEX LIGHT MODALS (RESET, PRESET, AUDIO, COOKIE, TEAM)
+       ========================================================================== */
+    .modal-box-px {
+      background: #ffffff;
+      color: #0f172a;
+      width: 390px;
+      max-width: 95vw;
+      border-radius: 16px;
+      border: 2px solid #cbd5e1;
+      box-shadow: 0 24px 55px rgba(15, 23, 42, 0.28);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+    .modal-box-px::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #dc2626 0%, #ef4444 45%, #0284c7 100%);
+    }
+    .modal-head-px {
+      border-bottom: 1.5px solid #e2e8f0;
+      padding-bottom: 8px;
+      padding-right: 34px;
+    }
+    .modal-sub-px {
+      display: block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9.5px;
+      font-weight: 800;
+      color: #dc2626;
+      letter-spacing: 1.3px;
+    }
+    .modal-title-px {
+      font-family: 'Outfit', sans-serif;
+      font-size: 17px;
+      font-weight: 900;
+      color: #0f172a;
+    }
+    .px-label {
+      font-family: 'Outfit', sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      color: #334155;
+    }
+    .px-input {
+      width: 100%;
+      padding: 8px 11px;
+      border-radius: 8px;
+      border: 1.5px solid #cbd5e1;
+      background: #f8fafc;
+      color: #0f172a;
+      font-size: 13.5px;
+      font-weight: 700;
+      outline: none;
+    }
+    .px-input:focus { border-color: #0284c7; background: #ffffff; }
+    .btn-px-primary {
+      background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%);
+      color: #ffffff;
+      border: none;
+      padding: 9px 16px;
+      border-radius: 9px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 12.5px;
+      cursor: pointer;
+    }
+    .btn-px-primary:hover { filter: brightness(1.08); }
+    .btn-px-danger {
+      background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%);
+      color: #ffffff;
+      border: none;
+      padding: 9px 16px;
+      border-radius: 9px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 12.5px;
+      cursor: pointer;
+    }
+    .btn-px-danger:hover { filter: brightness(1.08); }
+
+    /* ==========================================================================
+       10. MODE HYBRID: FULL TCG 3D HOLOGRAPHIC CARD TOAST
+       ========================================================================== */
+    #tcgNotifBackdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.56);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      z-index: 24990;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    #tcgNotifBackdrop.show { opacity: 1; }
+
+    #centerNotifPopup.tcg-toast-card {
+      --tcg-bg-1: #e0f2fe;
+      --tcg-bg-2: #38bdf8;
+      --tcg-accent: #0284c7;
+      --tcg-ink: #0f172a;
+      --tcg-sub-ink: #1e293b;
+      --tcg-panel-bg: rgba(255, 255, 255, 0.56);
+      --tcg-glow: rgba(56, 189, 248, 0.68);
+
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: 324px;
+      max-width: 90vw;
+      padding: 9px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #f8fafc 0%, #94a3b8 24%, #f1f5f9 50%, #64748b 76%, #e2e8f0 100%);
+      box-shadow:
+        0 28px 65px rgba(15, 23, 42, 0.65),
+        0 0 42px var(--tcg-glow),
+        inset 0 1px 2px rgba(255, 255, 255, 0.9);
+      z-index: 25000;
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, -50%) perspective(900px) rotateY(-14deg) scale(0.82);
+      transition: opacity 0.26s ease, transform 0.42s cubic-bezier(0.2, 1.22, 0.35, 1);
+      overflow: hidden;
+    }
+    #centerNotifPopup.tcg-toast-card.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) perspective(900px) rotateY(0deg) scale(1);
+    }
+    body[data-anim-mode="2.5d"] #centerNotifPopup.tcg-toast-card.show,
+    body[data-anim-mode="3d"] #centerNotifPopup.tcg-toast-card.show {
+      animation: tcgInteractiveTilt 4.2s ease-in-out 0.35s infinite;
+    }
+    @keyframes tcgInteractiveTilt {
+      0%, 100% { transform: translate(-50%, -50%) perspective(900px) rotateY(0deg) rotateX(0deg) scale(1); }
+      25%      { transform: translate(-50%, -50%) perspective(900px) rotateY(5deg) rotateX(2.5deg) scale(1.015); }
+      75%      { transform: translate(-50%, -50%) perspective(900px) rotateY(-5deg) rotateX(-2deg) scale(1.015); }
+    }
+
+    .tcg-card-inner {
+      position: relative;
+      border-radius: 13px;
+      padding: 10px 12px 9px;
+      background:
+        radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.44), transparent 45%),
+        linear-gradient(165deg, var(--tcg-bg-1) 0%, var(--tcg-bg-2) 100%);
+      color: var(--tcg-ink);
+      overflow: hidden;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.45);
+    }
+    .tcg-card-inner::after {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background: linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, 0.5) 48%, rgba(255, 255, 255, 0.14) 54%, transparent 65%);
+      transform: translateX(-120%);
+      pointer-events: none;
+      z-index: 6;
+    }
+    #centerNotifPopup.tcg-toast-card.show .tcg-card-inner::after {
+      animation: tcgHoloSweep 1.15s ease-out 0.1s forwards;
+    }
+    @keyframes tcgHoloSweep { to { transform: translateX(120%); } }
+
+    .tcg-header {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .tcg-header-left { display: flex; align-items: center; gap: 7px; min-width: 0; flex: 1; }
+    .tcg-rank-pill {
+      flex-shrink: 0;
+      padding: 2px 8px;
+      border-radius: 99px;
+      background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%);
+      border: 1.5px solid #64748b;
+      color: #0f172a;
+      font-family: 'Outfit', sans-serif;
+      font-size: 11px;
+      font-weight: 900;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+    .tcg-player-name {
+      font-family: 'Outfit', sans-serif;
+      font-size: 19px;
+      font-weight: 900;
+      color: var(--tcg-ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .tcg-hp-wrap { flex-shrink: 0; display: flex; align-items: center; gap: 5px; }
+    .tcg-hp-label {
+      font-family: 'Outfit', sans-serif;
+      font-size: 10px;
+      font-weight: 900;
+      opacity: 0.8;
+      margin-right: -2px;
+      align-self: flex-end;
+      padding-bottom: 2px;
+    }
+    .tcg-hp-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 21px;
+      font-weight: 900;
+      line-height: 1;
+      color: var(--tcg-ink);
+    }
+    .tcg-element-orb {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 32% 30%, #ffffff 0%, var(--tcg-accent) 52%, #0f172a 100%);
+      border: 1.5px solid rgba(255, 255, 255, 0.88);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.32);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: #ffffff;
+    }
+
+    .tcg-art-frame {
+      position: relative;
+      z-index: 2;
+      height: 176px;
+      border-radius: 10px;
+      padding: 4px;
+      background: linear-gradient(135deg, #f8fafc, #94a3b8, #e2e8f0, #64748b);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.28);
+    }
+    .tcg-art-window {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 7px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 45%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.15) 38%, transparent 65%),
+        conic-gradient(from 45deg at 50% 50%, var(--tcg-accent), #38bdf8, #a855f7, #f472b6, #facc15, var(--tcg-accent));
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 6px;
+    }
+    .tcg-avatar-3d {
+      position: relative;
+      z-index: 2;
+      max-height: 162px;
+      max-width: 88%;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.55));
+      transform-origin: bottom center;
+      will-change: transform, filter;
+    }
+    .tcg-art-window.is-duo .tcg-avatar-3d { max-width: 47%; max-height: 148px; }
+    .tcg-art-3d-wrap {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      display: none;
+    }
+    .tcg-art-3d-wrap canvas {
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+    }
+    .tcg-avatar-fallback {
+      position: relative;
+      z-index: 2;
+      width: 90px;
+      height: 90px;
+      margin-bottom: 36px;
+      border-radius: 50%;
+      background: #0f172a;
+      border: 3px solid #ffffff;
+      color: #ffffff;
+      font-family: 'Outfit', sans-serif;
+      font-size: 36px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+    }
+    @keyframes tcgAvatarPop {
+      0% { transform: translateY(18px) scale(0.9); opacity: 0; }
+      100% { transform: translateY(0) scale(1); opacity: 1; }
+    }
+
+    .tcg-info-ribbon {
+      position: relative;
+      z-index: 3;
+      margin: -6px 8px 10px;
+      padding: 3px 10px;
+      border-radius: 99px;
+      background: linear-gradient(180deg, #f8fafc 0%, #cbd5e1 100%);
+      border: 1px solid #94a3b8;
+      color: #1e293b;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9.5px;
+      font-weight: 800;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.22);
+    }
+
+    .tcg-score-panel {
+      position: relative;
+      z-index: 2;
+      background: var(--tcg-panel-bg);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 10px;
+      padding: 10px 12px;
+      text-align: center;
+      backdrop-filter: blur(4px);
+    }
+    .tcg-delta-main {
+      font-family: 'Outfit', sans-serif;
+      font-size: 32px;
+      font-weight: 900;
+      line-height: 1.05;
+      color: var(--tcg-ink);
+    }
+    .tcg-total-line {
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px solid rgba(15, 23, 42, 0.16);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--tcg-sub-ink);
+    }
+    .tcg-footer {
+      position: relative;
+      z-index: 2;
+      margin-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9.5px;
+      font-weight: 800;
+      opacity: 0.82;
+      color: var(--tcg-ink);
+    }
+
+    /* ==========================================================================
+       11. 3D PODIUM CEREMONY OVERLAY (NO TROPHY/MEDAL EMOJIS)
+       ========================================================================== */
+    .podium-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at 50% 15%, rgba(15, 23, 42, 0.96), rgba(3, 7, 18, 0.99));
+      backdrop-filter: blur(14px);
+      z-index: 30000;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      overflow-y: auto;
+    }
+    .podium-overlay.active { display: flex; }
+
+    #fireworksCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 30001;
+    }
+
+    .btn-close-podium {
+      position: fixed;
+      top: 18px;
+      right: 22px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #f8fafc;
+      font-size: 18px;
+      font-weight: 900;
+      cursor: pointer;
+      z-index: 30010;
+    }
+    .btn-close-podium:hover { background: #ef4444; border-color: #ef4444; }
+
+    .podium-stage {
+      position: relative;
+      z-index: 30005;
+      width: 100%;
+      max-width: 980px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .podium-subtitle {
+      font-family: 'Outfit', sans-serif;
+      font-size: 12.5px;
+      font-weight: 800;
+      letter-spacing: 5px;
+      color: #94a3b8;
+      text-transform: uppercase;
+    }
+    .podium-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(26px, 4.5vw, 40px);
+      font-weight: 900;
+      letter-spacing: 2px;
+      margin: 4px 0 28px;
+      background: linear-gradient(180deg, #fffbeb 0%, #facc15 60%, #d97706 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+    }
+
+    .podium-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 24px;
+      width: 100%;
+      flex-wrap: wrap;
+    }
+
+    .podium-rank-card {
+      width: 260px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .podium-rank-card.rank-1 { width: 290px; transform: translateY(-16px); }
+
+    .podium-avatar-stage {
+      position: relative;
+      width: 100%;
+      height: 235px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .podium-rank-card.rank-1 .podium-avatar-stage { height: 265px; }
+
+    .podium-aura {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      filter: blur(26px);
+      opacity: 0.72;
+      pointer-events: none;
+    }
+    .rank-1 .podium-aura { background: radial-gradient(circle, rgba(250, 204, 21, 0.5), rgba(168, 85, 247, 0.2), transparent 72%); }
+    .rank-2 .podium-aura { background: radial-gradient(circle, rgba(56, 189, 248, 0.45), rgba(99, 102, 241, 0.2), transparent 72%); }
+    .rank-3 .podium-aura { background: radial-gradient(circle, rgba(251, 146, 60, 0.45), rgba(244, 63, 94, 0.2), transparent 72%); }
+
+    .podium-img-3d {
+      position: relative;
+      z-index: 2;
+      max-height: 220px;
+      max-width: 90%;
+      object-fit: contain;
+      filter: drop-shadow(0 12px 20px rgba(0, 0, 0, 0.78));
+      animation: stageFloat 3.3s ease-in-out infinite;
+    }
+    .rank-1 .podium-img-3d { max-height: 250px; }
+    .podium-avatar-stage.is-duo .podium-img-3d { max-width: 47%; max-height: 205px; }
+
+    .podium-glass-box {
+      width: 100%;
+      border-radius: 15px;
+      padding: 12px 14px;
+      text-align: center;
+      backdrop-filter: blur(12px);
+    }
+    .rank-1 .podium-glass-box {
+      background: linear-gradient(180deg, rgba(72, 54, 12, 0.92), rgba(18, 15, 10, 0.98));
+      border: 1.5px solid #facc15;
+      box-shadow: 0 0 26px rgba(250, 204, 21, 0.35);
+    }
+    .rank-2 .podium-glass-box {
+      background: linear-gradient(180deg, rgba(14, 52, 75, 0.92), rgba(11, 20, 32, 0.98));
+      border: 1.5px solid #38bdf8;
+      box-shadow: 0 0 22px rgba(56, 189, 248, 0.28);
+    }
+    .rank-3 .podium-glass-box {
+      background: linear-gradient(180deg, rgba(68, 36, 22, 0.92), rgba(22, 13, 10, 0.98));
+      border: 1.5px solid #fb923c;
+      box-shadow: 0 0 22px rgba(251, 146, 60, 0.28);
+    }
+
+    .podium-badge {
+      display: inline-block;
+      font-family: 'Outfit', sans-serif;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 1.2px;
+      padding: 3px 14px;
+      border-radius: 99px;
+      margin-bottom: 6px;
+    }
+    .rank-1 .podium-badge { background: rgba(250, 204, 21, 0.22); color: #fef08a; border: 1px solid #facc15; }
+    .rank-2 .podium-badge { background: rgba(56, 189, 248, 0.2); color: #bae6fd; border: 1px solid #38bdf8; }
+    .rank-3 .podium-badge { background: rgba(251, 146, 60, 0.2); color: #fed7aa; border: 1px solid #fb923c; }
+
+    .podium-name {
+      font-family: 'Outfit', sans-serif;
+      font-size: 19px;
+      font-weight: 900;
+      color: #ffffff;
+      line-height: 1.25;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .podium-pts {
+      margin-top: 6px;
+      padding: 5px 10px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 20px;
+      font-weight: 900;
+      color: #f8fafc;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- POKÉDEX TOP ACCENT BAR (3 INDICATOR DOTS + BLUE CAMERA LENS) -->
+    <div class="pokedex-accent-strip">
+      <div class="pokedex-lights-group">
+        <div class="pokedex-dots" aria-hidden="true">
+          <span class="px-dot red"></span>
+          <span class="px-dot yellow"></span>
+          <span class="px-dot green"></span>
+        </div>
+        <div class="pokedex-brand-title">
+          <span>POKÉDEX SCOREBOARD</span>
+          <span class="pokedex-brand-tag">ROTOM UI • TCG 3D</span>
+        </div>
+      </div>
+
+      <div class="pokedex-lens-wrap" title="Pokédex Optical Sensor">
+        <div class="pokedex-lens">
+          <div class="pokedex-lens-core"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOP ACTION BAR -->
+    <div class="top-bar">
+      <div class="top-left">
+        <button id="btnModeToggle" class="btn-px" onclick="toggleModeDuoSolo()">👤 MODE: SOLO (20)</button>
+        <button class="btn-px" onclick="bukaModalPreset()">Point Preset</button>
+        <button class="btn-px" onclick="bukaModalAudio()">Settings Audio</button>
+
+        <!-- Dropdown RESET -->
+        <div class="dropdown" id="dropdownReset">
+          <button class="btn-px" onclick="toggleDropdown('dropdownReset', event)">RESET ▾</button>
+          <div class="dropdown-menu dropdown-reset-menu">
+            <button class="dropdown-action-btn" onclick="bukaModalKonfirmasiReset('POIN')">
+              <span style="font-size:16px;">🔄</span>
+              <div>
+                <span class="dd-title">Reset Poin Saja</span>
+                <span class="dd-desc">Nol-kan skor semua kursi</span>
+              </div>
+            </button>
+            <button class="dropdown-action-btn danger" onclick="bukaModalKonfirmasiReset('MEJA')">
+              <span style="font-size:16px;">🗑️</span>
+              <div>
+                <span class="dd-title">Kosongkan Meja</span>
+                <span class="dd-desc">Hapus seluruh data pemain</span>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Dropdown SESI -->
+        <div class="dropdown" id="dropdownSesi">
+          <button class="btn-px" onclick="toggleDropdown('dropdownSesi', event)">
+            <span id="labelSesiAktif">Sesi 1</span> ▾
+          </button>
+          <div class="dropdown-menu">
+            <div class="session-scroll-list" id="sessionListContainer"></div>
+            <button type="button" class="btn-add-session" onclick="tambahSesiBaru(event)">+Tambah</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="top-right">
+        <button id="btnAnimModeTop" class="btn-px btn-px-anim" onclick="cycleAnimMode()" title="Ubah mode animasi avatar 3D">✨ Animasi: 2.5D Gerak</button>
+        <button class="btn-px btn-px-cookie" onclick="bukaModalCookie()" title="Atur Cookie .ROBLOSECURITY">
+          🍪 Cookie <span id="topBarCookieDot" class="cookie-dot"></span>
+        </button>
+        <button class="btn-px btn-px-sort" onclick="eksekusiUrutkanManual()">URUTKAN</button>
+        <button class="btn-px btn-px-podium" onclick="tampilkanPodium()">#1 PODIUM</button>
+        <button class="btn-px btn-px-notif" onclick="tesNotifTcg()">🔔 NOTIF</button>
+      </div>
+    </div>
+
+    <!-- TWO-COLUMN 20-SEAT POKÉDEX TABLES -->
+    <div class="grid-tables">
+      <div class="table-container">
+        <table id="tableLeft">
+          <colgroup>
+            <col data-col="no" style="width: 44px;" />
+            <col data-col="nama" style="width: 215px;" />
+            <col data-col="display" style="width: 185px;" />
+            <col data-col="point" style="width: 92px;" />
+          </colgroup>
+          <thead>
+            <tr>
+              <th data-col="no">NO<div class="col-resizer"></div></th>
+              <th data-col="nama">NAMA PEMAIN<div class="col-resizer"></div></th>
+              <th data-col="display">DISPLAY NAME<div class="col-resizer"></div></th>
+              <th data-col="point">POIN</th>
+            </tr>
+          </thead>
+          <tbody id="bodyLeft"></tbody>
+        </table>
+      </div>
+
+      <div class="table-container">
+        <table id="tableRight">
+          <colgroup>
+            <col data-col="no" style="width: 44px;" />
+            <col data-col="nama" style="width: 215px;" />
+            <col data-col="display" style="width: 185px;" />
+            <col data-col="point" style="width: 92px;" />
+          </colgroup>
+          <thead>
+            <tr>
+              <th data-col="no">NO<div class="col-resizer"></div></th>
+              <th data-col="nama">NAMA PEMAIN<div class="col-resizer"></div></th>
+              <th data-col="display">DISPLAY NAME<div class="col-resizer"></div></th>
+              <th data-col="point">POIN</th>
+            </tr>
+          </thead>
+          <tbody id="bodyRight"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- BRIGHT POKÉDEX LOG AKTIVITAS -->
+    <div class="log-panel">
+      <div class="log-header">
+        <span class="log-title" onclick="toggleLogPanel()">
+          LOG AKTIVITAS <span id="iconFoldLog" style="font-size:10px;">▼</span>
+        </span>
+        <button class="btn-clear-log" onclick="hapusLogAktivitas()">Clear</button>
+      </div>
+      <div class="log-list" id="logList"></div>
+    </div>
+  </div>
+
+  <!-- MINI PALET 13 WARNA ELEMENTAL -->
+  <div class="color-picker-mini" id="miniColorPicker" onclick="event.stopPropagation()"></div>
+
+  <!-- POPOVER POIN CEPAT (LIGHT MODE) -->
+  <div class="quick-point-popover" id="quickPointPopover" onclick="event.stopPropagation()">
+    <div class="qp-header">
+      <span class="qp-title" id="qpTitle">Tambah Poin</span>
+      <button class="qp-close" onclick="tutupQuickPoint()">×</button>
+    </div>
+    <div class="qp-grid" id="qpGrid"></div>
+    <div class="qp-footer">
+      <input type="number" id="qpDirectInput" class="qp-input" min="0" placeholder="Set total..." onkeydown="if(event.key==='Enter')simpanSetTotalLangsung()" />
+      <button class="btn-qp-set" onclick="simpanSetTotalLangsung()">Set</button>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       HORIZONTAL "TRAINER PROFILE CARD" SEAT EDIT MODAL (OPTION 3 COMBO)
+       ======================================================================== -->
+  <div class="modal-overlay" id="modalEditKursi" onclick="if(event.target.id==='modalEditKursi')tutupModalEditKursi()">
+    <div class="trainer-modal-shell">
+      <div class="trainer-modal-inner">
+        <div class="trainer-notch-header">
+          <span class="trainer-notch-title" id="modalKursiTitle">Kursi 1</span>
+        </div>
+        <button class="btn-close-hud" onclick="tutupModalEditKursi()" title="Tutup (Esc)">✕</button>
+
+        <input type="hidden" id="editSeatIdx" value="-1" />
+        <input type="hidden" id="editAvatarHead" value="" />
+        <input type="hidden" id="editAvatar3d" value="" />
+        <input type="hidden" id="editCustomGif" value="" />
+        <input type="hidden" id="editUserId" value="" />
+        <input type="hidden" id="editSelectedColor" value="" />
+
+        <div class="trainer-modal-body">
+          <!-- LEFT PANEL: 3D AVATAR STAGE (2.5D / THREE.JS 360° / CUSTOM GIF) -->
+          <div class="trainer-stage-box" id="trainerStageBox">
+            <div class="el-particles-layer" id="stageParticles"></div>
+            <div class="stage-seat-badge">
+              <span id="stageSeatBadgeText">#1 BATTLE SEAT</span>
+            </div>
+            <div class="stage-headshot-chip" id="stageHeadshotChip">
+              <img id="stageHeadshotImg" src="" alt="Headshot" />
+            </div>
+            <div class="stage-anim-badge" id="stageAnimBadge">2.5D GERAK</div>
+
+            <div id="stage3dCanvasWrap" class="stage-3d-canvas-wrap" title="Geser mouse untuk memutar model 3D"></div>
+            <img id="stageAvatar3dImg" class="stage-avatar-3d" src="" alt="Avatar 3D" style="display:none;" />
+            <div id="stageEmptyBox" class="stage-empty-placeholder">
+              <svg width="92" height="110" viewBox="0 0 100 130" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity:0.45;">
+                <circle cx="50" cy="34" r="22" fill="#94a3b8" />
+                <path d="M18 112C18 88 32 70 50 70C68 70 82 88 82 112V124H18V112Z" fill="#94a3b8" />
+              </svg>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:800;">CARI USERNAME ROBLOX</span>
+            </div>
+
+            <div class="stage-nameplate">
+              <div class="stage-nameplate-nick" id="stagePlateNick">-</div>
+              <div class="stage-nameplate-user" id="stagePlateUser">@username_roblox</div>
+            </div>
+          </div>
+
+          <!-- RIGHT PANEL: CONTROLS -->
+          <div class="trainer-controls-col">
+            <div class="hud-field">
+              <label class="hud-label">Roblox Account ID</label>
+              <div class="hud-input-row">
+                <input type="text" id="inputRobloxUser" class="hud-input" placeholder="contoh: builderman" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();cariAkunRoblox();}" />
+                <button type="button" id="btnCariRoblox" class="btn-cari-cyan" onclick="cariAkunRoblox()">Cari</button>
+                <button type="button" id="btnAddFriend" class="btn-add-emerald" onclick="jalankanAutoAddFriend()" title="Kirim Friend Request otomatis">➕ Add</button>
+              </div>
+              <div id="modalSearchStatus" class="modal-status-line"></div>
+            </div>
+
+            <div class="hud-field">
+              <label class="hud-label">Nama Pemain</label>
+              <input type="text" id="inputNamaPemain" class="hud-input" placeholder="Nama TikTok / panggilan..." oninput="sinkronPreviewNamaStage()" onkeydown="if(event.key==='Enter')simpanDataKursi()" />
+            </div>
+
+            <div class="hud-field">
+              <label class="hud-label">Display Name</label>
+              <input type="text" id="inputDisplayName" class="hud-input" placeholder="Display Name Roblox..." oninput="sinkronPreviewNamaStage()" onkeydown="if(event.key==='Enter')simpanDataKursi()" />
+            </div>
+
+            <div class="hud-field">
+              <label class="hud-label">✨ Animasi Avatar</label>
+              <div class="anim-pills-row" id="modalAnimPills">
+                <button type="button" class="btn-anim-pill" data-mode="2.5d" onclick="setAnimMode('2.5d')">2.5D Gerak</button>
+                <button type="button" class="btn-anim-pill" data-mode="3d" onclick="setAnimMode('3d')">3D Putar 360°</button>
+                <button type="button" class="btn-anim-pill" data-mode="static" onclick="setAnimMode('static')">Diam</button>
+              </div>
+            </div>
+
+            <div class="hud-field">
+              <label class="hud-label">GIF Animasi (Opsional)</label>
+              <div class="gif-upload-row">
+                <input type="file" id="inputGifFile" accept="image/gif,image/webp" style="display:none;" onchange="unggahGifKursi(event)" />
+                <button type="button" class="btn-gif-pick" onclick="document.getElementById('inputGifFile').click()">🎞️ Upload GIF</button>
+                <input type="text" id="inputGifUrl" class="hud-input" style="padding:6px 9px; font-size:11.5px;" placeholder="atau tempel URL .gif..." onchange="terapkanUrlGif()" />
+                <button type="button" class="btn-gif-clear" onclick="hapusGifKursi()" title="Hapus GIF kustom">×</button>
+              </div>
+            </div>
+
+            <div class="hud-field">
+              <label class="hud-label">Warna Elemental</label>
+              <div class="elemental-dots-grid" id="modalElementalDots"></div>
+            </div>
+
+            <div class="trainer-action-row">
+              <button type="button" class="btn-trainer-reset" onclick="resetKursiAktif()">Reset</button>
+              <button type="button" class="btn-trainer-save" onclick="simpanDataKursi()"><span>Simpan</span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL KONFIRMASI RESET (CUSTOM) -->
+  <div class="modal-overlay" id="modalConfirmReset" onclick="if(event.target.id==='modalConfirmReset')tutupModalReset()">
+    <div class="modal-box-px" style="width: 330px; text-align:center;">
+      <div id="resetModalTitle" style="font-family:'Outfit',sans-serif; font-size:18px; font-weight:900; color:#b91c1c;">Reset Poin?</div>
+      <div id="resetModalDesc" style="font-size:12.5px; color:#475569;">Skor seluruh kursi akan dikembalikan ke 0.</div>
+      <div style="display:flex; gap:8px; margin-top:6px;">
+        <button type="button" class="btn-px" style="flex:1; justify-content:center;" onclick="tutupModalReset()">Batal</button>
+        <button type="button" class="btn-px-danger" style="flex:1;" onclick="eksekusiResetPasti()">Ya, Lanjut</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL POINT PRESET -->
+  <div class="modal-overlay" id="modalPreset" onclick="if(event.target.id==='modalPreset')tutupModalPreset()">
+    <div class="modal-box-px" style="width: 340px;">
+      <button class="btn-close-hud" onclick="tutupModalPreset()">✕</button>
+      <div class="modal-head-px">
+        <span class="modal-sub-px">SETTINGS</span>
+        <span class="modal-title-px">Preset Poin Cepat</span>
+      </div>
+      <div class="hud-field">
+        <label class="px-label">Daftar Angka (pisahkan koma)</label>
+        <input type="text" id="inputPresetPoin" class="px-input" style="font-family:'JetBrains Mono',monospace;" value="1, 2, 3, 4, 5" />
+      </div>
+      <button type="button" class="btn-px-primary" onclick="simpanPresetPoin()">Simpan Preset</button>
+    </div>
+  </div>
+
+  <!-- MODAL SETTINGS AUDIO -->
+  <div class="modal-overlay" id="modalAudio" onclick="if(event.target.id==='modalAudio')tutupModalAudio()">
+    <div class="modal-box-px" style="width: 390px;">
+      <button class="btn-close-hud" onclick="tutupModalAudio()">✕</button>
+      <div class="modal-head-px">
+        <span class="modal-sub-px">AUDIO MODULE</span>
+        <span class="modal-title-px">Settings Audio</span>
+      </div>
+
+      <div style="background:#f8fafc; border:1px solid #cbd5e1; border-left:4px solid #10b981; border-radius:10px; padding:10px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:7px;">
+          <span style="font-size:12.5px; font-weight:800; color:#047857;">🔔 Sound FX Poin</span>
+          <span id="statusAudioPoin" style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:800; color:#059669;">Synth Bawaan</span>
+        </div>
+        <input type="file" id="fileAudioPoin" accept="audio/*" style="font-size:11px; color:#475569; width:100%; margin-bottom:7px;" onchange="unggahAudio('poin', event)" />
+        <div style="display:flex; gap:6px;">
+          <button type="button" class="btn-px" style="flex:1; justify-content:center;" onclick="putarSuaraNotifPoin()">🔊 Tes Audio</button>
+          <button type="button" class="btn-px" style="flex:1; justify-content:center;" onclick="resetAudio('poin')">Reset</button>
+        </div>
+      </div>
+
+      <div style="background:#f8fafc; border:1px solid #cbd5e1; border-left:4px solid #f59e0b; border-radius:10px; padding:10px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:7px;">
+          <span style="font-size:12.5px; font-weight:800; color:#b45309;">Sound Perayaan Podium</span>
+          <span id="statusAudioPodium" style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:800; color:#d97706;">Fanfare Bawaan</span>
+        </div>
+        <input type="file" id="fileAudioPodium" accept="audio/*" style="font-size:11px; color:#475569; width:100%; margin-bottom:7px;" onchange="unggahAudio('podium', event)" />
+        <div style="display:flex; gap:6px;">
+          <button type="button" class="btn-px" style="flex:1; justify-content:center;" onclick="putarSuaraPodium()">🔊 Tes Audio</button>
+          <button type="button" class="btn-px" style="flex:1; justify-content:center;" onclick="resetAudio('podium')">Reset</button>
+        </div>
+      </div>
+
+      <div id="audioStatusMsg" class="modal-status-line" style="color:#475569;"></div>
+      <button type="button" class="btn-px-primary" onclick="tutupModalAudio()">Selesai</button>
+    </div>
+  </div>
+
+  <!-- MODAL COOKIE ROBLOX -->
+  <div class="modal-overlay" id="modalCookie" onclick="if(event.target.id==='modalCookie')tutupModalCookie()">
+    <div class="modal-box-px" style="width: 480px;">
+      <button class="btn-close-hud" onclick="tutupModalCookie()">✕</button>
+      <div class="modal-head-px">
+        <span class="modal-sub-px">ROBLOX AUTH</span>
+        <span class="modal-title-px">🍪 Pengaturan Cookie Roblox</span>
+      </div>
+      <div style="font-size:12px; color:#475569; line-height:1.45;">
+        Masukkan nilai <code style="color:#0284c7; background:#eff6ff; padding:1px 5px; border-radius:4px; font-family:'JetBrains Mono',monospace;">.ROBLOSECURITY</code> untuk fitur <b>➕ Add</b> (Auto Add Friend) pada server lokal.
+      </div>
+      <div class="hud-field">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <label class="px-label">Kode Cookie (.ROBLOSECURITY)</label>
+          <button type="button" id="btnToggleCookieVis" style="background:none; border:none; color:#0284c7; font-size:11px; font-weight:800; cursor:pointer;" onclick="toggleLihatCookie()">👁️ Tampilkan</button>
+        </div>
+        <textarea id="inputCookieVal" rows="3" class="px-input" style="font-family:'JetBrains Mono',monospace; font-size:11px; resize:vertical;" placeholder="_|WARNING:-DO-NOT-SHARE-THIS..."></textarea>
+        <div id="cookieStatusMsg" class="modal-status-line" style="color:#475569;"></div>
+      </div>
+      <div style="display:flex; justify-content:space-between; gap:8px; flex-wrap:wrap;">
+        <div style="display:flex; gap:6px;">
+          <button type="button" class="btn-px" onclick="tesCookieRoblox()">🧪 Tes</button>
+          <button type="button" class="btn-px-danger" onclick="hapusCookie()">🗑️ Hapus</button>
+        </div>
+        <button type="button" class="btn-px-primary" onclick="simpanCookie()">💾 Simpan Cookie</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL EDIT TIM DUO -->
+  <div class="modal-overlay" id="modalEditTim" onclick="if(event.target.id==='modalEditTim')tutupModalEditTim()">
+    <div class="modal-box-px" style="width: 380px;">
+      <button class="btn-close-hud" onclick="tutupModalEditTim()">✕</button>
+      <div class="modal-head-px">
+        <span class="modal-sub-px">DUO TEAM SETTINGS</span>
+        <span class="modal-title-px">Edit Nama &amp; Warna Tim</span>
+      </div>
+      <div class="hud-field">
+        <label class="px-label">Nama Tim</label>
+        <input type="text" id="inputNamaTim" class="px-input" maxlength="24" onkeydown="if(event.key==='Enter')simpanEditTim()" />
+      </div>
+      <div class="hud-field">
+        <label class="px-label">Warna Tim</label>
+        <div class="elemental-dots-grid" id="teamColorDots"></div>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:4px;">
+        <button type="button" class="btn-px" onclick="tutupModalEditTim()">Batal</button>
+        <button type="button" class="btn-px-primary" onclick="simpanEditTim()">Simpan Tim</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3D PODIUM CEREMONY OVERLAY -->
+  <div class="podium-overlay" id="podiumOverlay">
+    <canvas id="fireworksCanvas"></canvas>
+    <button class="btn-close-podium" onclick="tutupPodium()" title="Tutup">✕</button>
+    <div class="podium-stage">
+      <div class="podium-subtitle" id="podiumSub">GRAND FINALS CEREMONY</div>
+      <h1 class="podium-title" id="podiumTitle">CONGRATULATIONS</h1>
+      <div class="podium-row">
+        <div class="podium-rank-card rank-2">
+          <div class="podium-avatar-stage" id="podAv2"></div>
+          <div class="podium-glass-box">
+            <div class="podium-badge" id="podBadge2">#2 PLACE</div>
+            <div class="podium-name" id="podName2">-</div>
+            <div class="podium-pts" id="podPts2">0 PTS</div>
+          </div>
+        </div>
+        <div class="podium-rank-card rank-1">
+          <div class="podium-avatar-stage" id="podAv1"></div>
+          <div class="podium-glass-box">
+            <div class="podium-badge" id="podBadge1">#1 CHAMPION</div>
+            <div class="podium-name" id="podName1">-</div>
+            <div class="podium-pts" id="podPts1">0 PTS</div>
+          </div>
+        </div>
+        <div class="podium-rank-card rank-3">
+          <div class="podium-avatar-stage" id="podAv3"></div>
+          <div class="podium-glass-box">
+            <div class="podium-badge" id="podBadge3">#3 PLACE</div>
+            <div class="podium-name" id="podName3">-</div>
+            <div class="podium-pts" id="podPts3">0 PTS</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BACKDROP & 3D HOLOGRAPHIC TCG CARD TOAST -->
+  <div id="tcgNotifBackdrop"></div>
+  <div id="centerNotifPopup" class="tcg-toast-card" aria-live="polite"></div>
+
+  <script>
+    /* =========================================================================
+       1. CONSTANTS, 13 ELEMENTAL THEMES & STATE PERSISTENCE
+       ========================================================================= */
+    const DB_KEY = 'pokedex_light_combo_tcg_v1';
+    const AUDIO_POIN_KEY = 'pokedex_audio_poin_v1';
+    const AUDIO_PODIUM_KEY = 'pokedex_audio_podium_v1';
+    const COL_WIDTHS_KEY = 'pokedex_col_widths_v1';
+    const COOKIE_KEY = 'roblox_cookie';
+    const LOG_FOLD_KEY = 'pokedex_log_folded_v1';
+
+    const MIN_COL_WIDTHS = { no: 40, nama: 110, display: 110, point: 80 };
+
+    const ELEMENTAL_COLORS = {
+      blue:   { label: 'Blue',   hex: '#3b82f6', glow: 'rgba(59,130,246,0.58)',  tcg: { bg1: '#dbeafe', bg2: '#3b82f6', accent: '#1d4ed8', ink: '#0f172a', sub: '#1e3a8a', panel: 'rgba(255,255,255,0.56)' } },
+      pink:   { label: 'Pink',   hex: '#ec4899', glow: 'rgba(236,72,153,0.58)',  tcg: { bg1: '#fce7f3', bg2: '#f472b6', accent: '#db2777', ink: '#500724', sub: '#831843', panel: 'rgba(255,255,255,0.56)' } },
+      purple: { label: 'Purple', hex: '#a855f7', glow: 'rgba(168,85,247,0.62)',  tcg: { bg1: '#581c87', bg2: '#1e1b4b', accent: '#a855f7', ink: '#ffffff', sub: '#e9d5ff', panel: 'rgba(15,23,42,0.46)' } },
+      red:    { label: 'Red',    hex: '#ef4444', glow: 'rgba(239,68,68,0.62)',   tcg: { bg1: '#e11d48', bg2: '#881337', accent: '#fb7185', ink: '#ffffff', sub: '#ffe4e6', panel: 'rgba(15,23,42,0.40)' } },
+      yellow: { label: 'Yellow', hex: '#facc15', glow: 'rgba(250,204,21,0.62)',  tcg: { bg1: '#fef9c3', bg2: '#facc15', accent: '#ca8a04', ink: '#422006', sub: '#713f12', panel: 'rgba(255,255,255,0.56)' } },
+      green:  { label: 'Green',  hex: '#10b981', glow: 'rgba(16,185,129,0.58)',  tcg: { bg1: '#d1fae5', bg2: '#10b981', accent: '#047857', ink: '#064e3b', sub: '#065f46', panel: 'rgba(255,255,255,0.56)' } },
+      orange: { label: 'Orange', hex: '#f97316', glow: 'rgba(249,115,22,0.60)',  tcg: { bg1: '#ffedd5', bg2: '#fb923c', accent: '#c2410c', ink: '#431407', sub: '#7c2d12', panel: 'rgba(255,255,255,0.56)' } },
+      teal:   { label: 'Teal',   hex: '#14b8a6', glow: 'rgba(20,184,166,0.58)',  tcg: { bg1: '#ccfbf1', bg2: '#14b8a6', accent: '#0f766e', ink: '#134e4a', sub: '#115e59', panel: 'rgba(255,255,255,0.56)' } },
+      indigo: { label: 'Indigo', hex: '#6366f1', glow: 'rgba(99,102,241,0.62)',  tcg: { bg1: '#4338ca', bg2: '#1e1b4b', accent: '#818cf8', ink: '#ffffff', sub: '#e0e7ff', panel: 'rgba(15,23,42,0.46)' } },
+      cyan:   { label: 'Cyan',   hex: '#06b6d4', glow: 'rgba(6,182,212,0.60)',   tcg: { bg1: '#cffafe', bg2: '#06b6d4', accent: '#0e7490', ink: '#083344', sub: '#155e75', panel: 'rgba(255,255,255,0.56)' } },
+      lime:   { label: 'Lime',   hex: '#84cc16', glow: 'rgba(132,204,22,0.60)',  tcg: { bg1: '#ecfccb', bg2: '#84cc16', accent: '#4d7c0f', ink: '#1a2e05', sub: '#365314', panel: 'rgba(255,255,255,0.56)' } },
+      rose:   { label: 'Rose',   hex: '#e11d48', glow: 'rgba(225,29,72,0.62)',   tcg: { bg1: '#9d174d', bg2: '#4c0519', accent: '#f43f5e', ink: '#ffffff', sub: '#fce7f3', panel: 'rgba(15,23,42,0.42)' } },
+      slate:  { label: 'Slate',  hex: '#64748b', glow: 'rgba(100,116,139,0.52)', tcg: { bg1: '#334155', bg2: '#0f172a', accent: '#64748b', ink: '#f8fafc', sub: '#cbd5e1', panel: 'rgba(15,23,42,0.50)' } }
+    };
+
+    const DEFAULT_DUO_TEAMS = [
+      { id: 'duo_1',  name: 'DUO 1',  color: '#0284c7' },
+      { id: 'duo_2',  name: 'DUO 2',  color: '#dc2626' },
+      { id: 'duo_3',  name: 'DUO 3',  color: '#ca8a04' },
+      { id: 'duo_4',  name: 'DUO 4',  color: '#059669' },
+      { id: 'duo_5',  name: 'DUO 5',  color: '#9333ea' },
+      { id: 'duo_6',  name: 'DUO 6',  color: '#ea580c' },
+      { id: 'duo_7',  name: 'DUO 7',  color: '#0891b2' },
+      { id: 'duo_8',  name: 'DUO 8',  color: '#db2777' },
+      { id: 'duo_9',  name: 'DUO 9',  color: '#4f46e5' },
+      { id: 'duo_10', name: 'DUO 10', color: '#0d9488' }
+    ];
+
+    const SAMPLE_BOBOL_HEAD = 'https://tr.rbxcdn.com/30DAY-AvatarHeadshot-FBCE3486A51CD3FD573C6A2EAA25E6DE-Png/150/150/AvatarHeadshot/Png/noFilter';
+    const SAMPLE_BOBOL_3D   = 'https://tr.rbxcdn.com/30DAY-Avatar-FBCE3486A51CD3FD573C6A2EAA25E6DE-Png/420/420/Avatar/Png/noFilter';
+    const SAMPLE_BUILDERMAN_HEAD = 'https://api.dicebear.com/9.x/bottts/svg?seed=builderman&backgroundColor=facc15';
+    const PLACEHOLDER_SILHOUETTE = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 130' fill='none'><circle cx='50' cy='35' r='22' fill='%2394a3b8' fill-opacity='0.35'/><path d='M18 110c0-20 14-36 32-36s32 16 32 36v14H18v-14z' fill='%2394a3b8' fill-opacity='0.35'/></svg>";
+
+    function buatKursiKosong(withSample = false) {
+      const players = [];
+      for (let i = 0; i < 19; i++) {
+        if (withSample && i === 0) {
+          players.push({
+            id: `p_${Date.now()}_0`,
+            user: 'Bobol',
+            nick: 'Bobohu',
+            robloxUser: 'Bobohu',
+            userId: '156',
+            avatar: SAMPLE_BOBOL_HEAD,
+            avatar3d: SAMPLE_BOBOL_3D,
+            customGif: '',
+            poin: 63,
+            isPaid: true,
+            colorTag: 'blue'
+          });
+        } else if (withSample && i === 1) {
+          players.push({
+            id: `p_${Date.now()}_1`,
+            user: 'Builderman',
+            nick: 'builderman',
+            robloxUser: 'builderman',
+            userId: '156',
+            avatar: SAMPLE_BUILDERMAN_HEAD,
+            avatar3d: '',
+            customGif: '',
+            poin: 30,
+            isPaid: true,
+            colorTag: 'yellow'
+          });
+        } else {
+          players.push({
+            id: `p_${Date.now()}_${i}_${Math.random().toString(36).slice(2, 5)}`,
+            user: '',
+            nick: '',
+            robloxUser: '',
+            userId: '',
+            avatar: '',
+            avatar3d: '',
+            customGif: '',
+            poin: 0,
+            isPaid: false,
+            colorTag: ''
+          });
+        }
+      }
+      return {
+        players,
+        host: {
+          id: `p_host_${Date.now()}`,
+          user: '',
+          nick: '',
+          robloxUser: '',
+          userId: '',
+          avatar: '',
+          avatar3d: '',
+          customGif: '',
+          poin: 0,
+          isPaid: true,
+          colorTag: ''
+        }
+      };
+    }
+
+    function buatSesiBaru(withSample = false) {
+      return {
+        solo: buatKursiKosong(withSample),
+        duo: buatKursiKosong(withSample)
+      };
+    }
+
+    function muatDB() {
+      try {
+        const raw = localStorage.getItem(DB_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && parsed.sessions && Object.keys(parsed.sessions).length > 0) {
+            if (!parsed.quickPoints || !Array.isArray(parsed.quickPoints)) parsed.quickPoints = [1, 2, 3, 4, 5];
+            if (!parsed.duoTeams || parsed.duoTeams.length < 10) parsed.duoTeams = JSON.parse(JSON.stringify(DEFAULT_DUO_TEAMS));
+            if (!parsed.gameMode) parsed.gameMode = 'solo';
+            if (!parsed.animMode) parsed.animMode = '2.5d';
+            if (!parsed.activeSession || !parsed.sessions[parsed.activeSession]) {
+              parsed.activeSession = Object.keys(parsed.sessions)[0];
+            }
+            return parsed;
+          }
+        }
+      } catch (_) {}
+      return {
+        gameMode: 'solo',
+        animMode: '2.5d',
+        quickPoints: [1, 2, 3, 4, 5],
+        activeSession: 'Sesi 1',
+        sessions: { 'Sesi 1': buatSesiBaru(true) },
+        duoTeams: JSON.parse(JSON.stringify(DEFAULT_DUO_TEAMS))
+      };
+    }
+
+    let db = muatDB();
+    let customAudioPoin = null;
+    let customAudioPodium = null;
+    let cookieRoblox = '';
+    let isLogFolded = false;
+    let savedColWidths = { no: '44px', nama: '215px', display: '185px', point: '92px' };
+
+    try {
+      customAudioPoin = localStorage.getItem(AUDIO_POIN_KEY) || null;
+      customAudioPodium = localStorage.getItem(AUDIO_PODIUM_KEY) || null;
+      cookieRoblox = localStorage.getItem(COOKIE_KEY) || '';
+      isLogFolded = JSON.parse(localStorage.getItem(LOG_FOLD_KEY)) || false;
+      const cw = localStorage.getItem(COL_WIDTHS_KEY);
+      if (cw) savedColWidths = JSON.parse(cw);
+    } catch (_) {}
+
+    let activeQuickIdx = null;
+    let activeColorIdx = null;
+    let activeTeamEditIdx = 0;
+    let activeTeamEditColor = '#0284c7';
+    let pendingResetType = null;
+    let tcgToastTimer = null;
+    let fireworksTimer = null;
+    let fireworksRaf = null;
+    let activePodiumAudioObj = null;
+    let cookieVisible = false;
+
+    /* =========================================================================
+       1B. ANIMATED 3D AVATAR ENGINE (THREE.JS 360° + 2.5D PARTICLES + GIF)
+       ========================================================================= */
+    const activeThreeSessions = new Map();
+    const avatar3dMetaCache = new Map();
+
+    const ANIM_MODE_LABELS = {
+      '2.5d': '✨ Animasi: 2.5D Gerak',
+      '3d': '✨ Animasi: 3D Putar 360°',
+      'static': '✨ Animasi: Diam'
+    };
+
+    function updateAnimModeUI() {
+      const mode = db.animMode || '2.5d';
+      document.body.dataset.animMode = mode;
+      const topBtn = document.getElementById('btnAnimModeTop');
+      if (topBtn) topBtn.textContent = ANIM_MODE_LABELS[mode] || ANIM_MODE_LABELS['2.5d'];
+
+      document.querySelectorAll('#modalAnimPills .btn-anim-pill').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mode === mode);
+      });
+    }
+
+    function setAnimMode(mode) {
+      db.animMode = mode;
+      simpanDB();
+      updateAnimModeUI();
+      if (document.getElementById('modalEditKursi').classList.contains('show')) {
+        refreshStagePreview();
+      }
+      tambahLog('ANIMASI', `Mode animasi avatar diubah ke: ${mode.toUpperCase()}`);
+    }
+
+    function cycleAnimMode() {
+      const order = ['2.5d', '3d', 'static'];
+      const next = order[(order.indexOf(db.animMode || '2.5d') + 1) % order.length];
+      setAnimMode(next);
+    }
+
+    function renderElementalParticles(containerEl, colorHex, count = 12) {
+      if (!containerEl) return;
+      if ((db.animMode || '2.5d') === 'static') {
+        containerEl.innerHTML = '';
+        return;
+      }
+      let html = '';
+      for (let i = 0; i < count; i++) {
+        const left = Math.round(6 + Math.random() * 88);
+        const size = (4 + Math.random() * 6).toFixed(1);
+        const dur = (2.4 + Math.random() * 2.4).toFixed(2);
+        const delay = (-Math.random() * 3.5).toFixed(2);
+        const drift = Math.round((Math.random() - 0.5) * 34);
+        html += `<span class="el-mote" style="left:${left}%; width:${size}px; height:${size}px; --mote-color:${colorHex}; --mote-dur:${dur}s; --mote-delay:${delay}s; --mote-drift:${drift}px;"></span>`;
+      }
+      containerEl.innerHTML = html;
+    }
+
+    function getRobloxCdnUrl(hash) {
+      let i = 31;
+      for (let t = 0; t < hash.length; t++) {
+        i ^= hash.charCodeAt(t);
+      }
+      return `https://t${i % 8}.rbxcdn.com/${hash}`;
+    }
+
+    function cleanupThreeSession(containerId) {
+      const sess = activeThreeSessions.get(containerId);
+      if (sess) {
+        if (sess.rafId) cancelAnimationFrame(sess.rafId);
+        try {
+          sess.renderer.dispose();
+          if (sess.renderer.domElement && sess.renderer.domElement.parentNode) {
+            sess.renderer.domElement.parentNode.removeChild(sess.renderer.domElement);
+          }
+        } catch (_) {}
+        activeThreeSessions.delete(containerId);
+      }
+      const el = document.getElementById(containerId);
+      if (el) {
+        el.innerHTML = '';
+        el.style.display = 'none';
+      }
+    }
+
+    async function loadRoblox3dMeshInto(containerId, userId, onFallback) {
+      cleanupThreeSession(containerId);
+      const wrap = document.getElementById(containerId);
+      if (!wrap || !userId || typeof THREE === 'undefined' || !THREE.OBJLoader || !THREE.MTLLoader) {
+        if (onFallback) onFallback('3D loader tidak tersedia');
+        return;
+      }
+
+      try {
+        let meta = avatar3dMetaCache.get(String(userId));
+        if (!meta) {
+          const thumbRes = await fetchWithTimeout(
+            `https://thumbnails.roproxy.com/v1/users/avatar-3d?userId=${encodeURIComponent(userId)}`,
+            {},
+            4500
+          );
+          if (!thumbRes.ok) throw new Error('avatar-3d API gagal');
+          const thumbData = await thumbRes.json();
+          const jsonUrl = thumbData?.imageUrl;
+          if (!jsonUrl) throw new Error('imageUrl kosong');
+
+          const metaRes = await fetchWithTimeout(jsonUrl, {}, 4500);
+          if (!metaRes.ok) throw new Error('JSON 3D diblokir CORS');
+          meta = await metaRes.json();
+          avatar3dMetaCache.set(String(userId), meta);
+        }
+
+        if (!meta || !meta.obj || !meta.mtl) throw new Error('Mesh OBJ/MTL tidak lengkap');
+
+        const objUrl = getRobloxCdnUrl(meta.obj);
+        const mtlUrl = getRobloxCdnUrl(meta.mtl);
+
+        // Ambil teks MTL dan arahkan peta tekstur ke CDN Roblox
+        const mtlTextRes = await fetchWithTimeout(mtlUrl, {}, 4500);
+        if (!mtlTextRes.ok) throw new Error('MTL diblokir');
+        let mtlText = await mtlTextRes.text();
+        mtlText = mtlText.replace(/^(map_\w+)\s+(\S+)/gm, (m, key, hash) => {
+          return `${key} ${getRobloxCdnUrl(hash.trim())}`;
+        });
+
+        const objTextRes = await fetchWithTimeout(objUrl, {}, 4500);
+        if (!objTextRes.ok) throw new Error('OBJ diblokir');
+        const objText = await objTextRes.text();
+
+        const mtlLoader = new THREE.MTLLoader();
+        mtlLoader.setCrossOrigin('anonymous');
+        const materials = mtlLoader.parse(mtlText, '');
+        materials.preload();
+
+        const objLoader = new THREE.OBJLoader();
+        objLoader.setMaterials(materials);
+        const avatarMesh = objLoader.parse(objText);
+
+        // Pusatkan dan skalakan avatar agar pas di panggung
+        const box = new THREE.Box3().setFromObject(avatarMesh);
+        const size = box.getSize(new THREE.Vector3());
+        const center = box.getCenter(new THREE.Vector3());
+        const maxDim = Math.max(size.x, size.y, size.z) || 1;
+        const scale = 2.65 / maxDim;
+        avatarMesh.scale.setScalar(scale);
+        avatarMesh.position.set(-center.x * scale, -center.y * scale - 0.1, -center.z * scale);
+
+        const pivot = new THREE.Group();
+        pivot.add(avatarMesh);
+
+        wrap.style.display = 'block';
+        const w = wrap.clientWidth || 240;
+        const h = wrap.clientHeight || 260;
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(36, w / h, 0.1, 100);
+        camera.position.set(0, 0.35, 5.4);
+        camera.lookAt(0, 0, 0);
+
+        // Pencahayaan Studio 3 Titik
+        scene.add(new THREE.AmbientLight(0xffffff, 0.85));
+        const keyLight = new THREE.DirectionalLight(0xffffff, 0.95);
+        keyLight.position.set(4, 6, 6);
+        scene.add(keyLight);
+        const rimLight = new THREE.DirectionalLight(0x38bdf8, 0.7);
+        rimLight.position.set(-5, 3, -4);
+        scene.add(rimLight);
+        scene.add(pivot);
+
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        renderer.setSize(w, h);
+        wrap.innerHTML = '';
+        wrap.appendChild(renderer.domElement);
+
+        // Interaksi drag mouse/sentuh untuk memutar model 3D
+        let isDragging = false;
+        let lastX = 0;
+        wrap.onpointerdown = ev => { isDragging = true; lastX = ev.clientX; };
+        wrap.onpointermove = ev => {
+          if (!isDragging) return;
+          pivot.rotation.y += (ev.clientX - lastX) * 0.014;
+          lastX = ev.clientX;
+        };
+        wrap.onpointerup = () => { isDragging = false; };
+        wrap.onpointerleave = () => { isDragging = false; };
+
+        const sess = { renderer, rafId: null };
+        activeThreeSessions.set(containerId, sess);
+
+        const animate = () => {
+          if (!activeThreeSessions.has(containerId)) return;
+          if (!isDragging) pivot.rotation.y += 0.015;
+          renderer.render(scene, camera);
+          sess.rafId = requestAnimationFrame(animate);
+        };
+        animate();
+      } catch (err) {
+        cleanupThreeSession(containerId);
+        if (onFallback) onFallback(err?.message || 'Fallback ke 2.5D');
+      }
+    }
+
+    async function sinkronAvatarBuildermanSample() {
+      const data = getActiveData();
+      const p2 = data.players[1];
+      if (!p2 || p2.robloxUser !== 'builderman' || p2.avatar3d) return;
+      try {
+        const [headRes, bodyRes] = await Promise.all([
+          fetchWithTimeout('https://thumbnails.roproxy.com/v1/users/avatar-headshot?userIds=156&size=150x150&format=Png&isCircular=false', {}, 4500),
+          fetchWithTimeout('https://thumbnails.roproxy.com/v1/users/avatar?userIds=156&size=720x720&format=Png&isCircular=false', {}, 4500)
+        ]);
+        if (headRes.ok) {
+          const hd = await headRes.json();
+          if (hd?.data?.[0]?.imageUrl) p2.avatar = hd.data[0].imageUrl;
+        }
+        if (bodyRes.ok) {
+          const bd = await bodyRes.json();
+          if (bd?.data?.[0]?.imageUrl) p2.avatar3d = bd.data[0].imageUrl;
+        }
+        simpanDB();
+        renderPokedexTables();
+      } catch (_) {}
+    }
+
+    function simpanDB() {
+      try { localStorage.setItem(DB_KEY, JSON.stringify(db)); } catch (_) {}
+    }
+
+    function getActiveData() {
+      if (!db.sessions[db.activeSession]) db.sessions[db.activeSession] = buatSesiBaru(false);
+      const s = db.sessions[db.activeSession];
+      if (!s.solo) s.solo = buatKursiKosong(false);
+      if (!s.duo) s.duo = buatKursiKosong(false);
+      return s[db.gameMode];
+    }
+
+    function getSeat(idx) {
+      const data = getActiveData();
+      return idx === 19 ? data.host : data.players[idx];
+    }
+
+    function hasPlayerContent(p) {
+      return Boolean(p && ((p.user && p.user.trim()) || (p.nick && p.nick.trim()) || (p.robloxUser && p.robloxUser.trim())));
+    }
+
+    /* =========================================================================
+       2. WEB AUDIO SYNTH & CUSTOM AUDIO MODULE
+       ========================================================================= */
+    let audioCtx = null;
+    function getAudioCtx() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      return audioCtx;
+    }
+
+    function playSynthTone(freq, delay, dur, type = 'sine', vol = 0.2) {
+      try {
+        const ctx = getAudioCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const t = ctx.currentTime + delay;
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, t);
+        gain.gain.setValueAtTime(vol, t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(t);
+        osc.stop(t + dur + 0.02);
+      } catch (_) {}
+    }
+
+    function putarSuaraNotifPoin() {
+      if (customAudioPoin) {
+        try {
+          const a = new Audio(customAudioPoin);
+          a.play().catch(() => putarSynthPoin());
+          return;
+        } catch (_) {}
+      }
+      putarSynthPoin();
+    }
+
+    function putarSynthPoin() {
+      playSynthTone(587.33, 0.00, 0.12, 'triangle', 0.22);
+      playSynthTone(739.99, 0.09, 0.12, 'triangle', 0.22);
+      playSynthTone(880.00, 0.18, 0.26, 'sine', 0.24);
+    }
+
+    function putarSuaraPodium() {
+      if (activePodiumAudioObj) {
+        try { activePodiumAudioObj.pause(); activePodiumAudioObj.currentTime = 0; } catch (_) {}
+      }
+      if (customAudioPodium) {
+        try {
+          activePodiumAudioObj = new Audio(customAudioPodium);
+          activePodiumAudioObj.play().catch(() => putarFanfareBawaan());
+          return;
+        } catch (_) {}
+      }
+      putarFanfareBawaan();
+    }
+
+    function putarFanfareBawaan() {
+      const notes = [
+        { f: 523.25, d: 0.15 }, { f: 659.25, d: 0.15 }, { f: 783.99, d: 0.18 },
+        { f: 1046.50, d: 0.42 }, { f: 783.99, d: 0.15 }, { f: 1046.50, d: 0.65 }
+      ];
+      let offset = 0;
+      notes.forEach(n => {
+        playSynthTone(n.f, offset, n.d, 'sawtooth', 0.16);
+        offset += n.d * 0.92;
+      });
+    }
+
+    /* =========================================================================
+       3. RENDER TWO-COLUMN 20-SEAT POKÉDEX TABLES
+       ========================================================================= */
+    function hitungSkorTimDuo() {
+      const data = getActiveData();
+      return db.duoTeams.map((t, idx) => {
+        const p1 = data.players[idx * 2];
+        const p2 = idx === 9 ? data.host : data.players[idx * 2 + 1];
+        const totalPoints = (p1?.poin || 0) + (p2?.poin || 0);
+        return { ...t, teamIndex: idx, p1, p2, totalPoints };
+      });
+    }
+
+    function renderPokedexTables() {
+      const tbL = document.getElementById('bodyLeft');
+      const tbR = document.getElementById('bodyRight');
+      tbL.innerHTML = '';
+      tbR.innerHTML = '';
+
+      const isDuo = db.gameMode === 'duo';
+      document.getElementById('btnModeToggle').textContent = isDuo ? '👥 MODE: TIM DUO' : '👤 MODE: SOLO (20)';
+      document.getElementById('labelSesiAktif').textContent = db.activeSession;
+
+      const teamScores = isDuo ? hitungSkorTimDuo() : [];
+      const sortedTeams = isDuo ? [...teamScores].sort((a, b) => b.totalPoints - a.totalPoints) : [];
+
+      for (let i = 0; i < 20; i++) {
+        const targetBody = i < 10 ? tbL : tbR;
+
+        // Duo Team Divider Row
+        if (isDuo && i % 2 === 0) {
+          const tIdx = i / 2;
+          const t = teamScores[tIdx];
+          const rank = sortedTeams.findIndex(x => x.id === t.id) + 1;
+          const isLeader = rank === 1 && t.totalPoints > 0;
+          const trDiv = document.createElement('tr');
+          trDiv.className = 'team-divider-row';
+          trDiv.style.setProperty('--team-color', t.color);
+          trDiv.style.setProperty('--team-fade', t.color + '22');
+          trDiv.innerHTML = `
+            <td colspan="4" onclick="bukaModalEditTim(${tIdx})" title="Klik untuk edit nama & warna tim">
+              <div class="team-div-wrap">
+                <span class="team-div-rank ${isLeader ? 'is-leader' : ''}">#${rank}</span>
+                <span class="team-div-name" style="color:${t.color};">${t.name}</span>
+                <span class="team-div-pts">${t.totalPoints} PTS</span>
+              </div>
+            </td>
+          `;
+          targetBody.appendChild(trDiv);
+        }
+
+        const isHost = i === 19;
+        const p = getSeat(i);
+        const filled = hasPlayerContent(p);
+        const rankLabel = isDuo ? `${(i % 2) + 1}` : `#${i + 1}`;
+
+        const tr = document.createElement('tr');
+        tr.id = `row-kursi-${i}`;
+
+        if (!isDuo) {
+          if (i === 0 && filled) tr.classList.add('is-rank-1');
+          else if (i === 1 && filled) tr.classList.add('is-rank-2');
+          else if (i === 2 && filled) tr.classList.add('is-rank-3');
+        }
+        if (p.colorTag && ELEMENTAL_COLORS[p.colorTag]) {
+          tr.classList.add(`tag-${p.colorTag}`);
+        }
+
+        const initial = (p.nick || p.user || p.robloxUser || (isHost ? 'H' : '-')).charAt(0).toUpperCase();
+        const avatarHtml = p.avatar
+          ? `<img class="avatar-mini" src="${p.avatar}" alt="" loading="lazy" onerror="this.outerHTML='<div class=\\'avatar-placeholder\\'>${initial}</div>'" />`
+          : `<div class="avatar-placeholder">${isHost ? 'H' : initial}</div>`;
+
+        const namaPemainText = isHost ? (p.user || 'HOST') : (p.user || '(Kosong)');
+        const displayNameText = isHost ? (p.nick || 'HOST (Belum Diatur)') : (p.nick || '-');
+        const subHandle = isHost ? (p.robloxUser ? `@${p.robloxUser}` : '@host') : (p.robloxUser ? `@${p.robloxUser}` : '');
+
+        const statusBtnHtml = isHost
+          ? `<span class="pay-status-tag host-pill">HOST</span>`
+          : (filled
+              ? `<span class="pay-status-tag ${p.isPaid ? 'done' : 'ready'}" onclick="toggleStatusPaid(${i}, event)" title="Klik ganti status">${p.isPaid ? '✔' : '— READY'}</span>`
+              : '');
+
+        const paletteHtml = (filled || isHost)
+          ? `<span class="btn-color-palette" onclick="bukaMiniColorPicker(${i}, event)" title="Ganti warna elemental">🎨</span>`
+          : '';
+
+        tr.innerHTML = `
+          <td class="td-no"><span class="rank-num-pill">${rankLabel}</span></td>
+          <td class="cell-click" onclick="bukaModalEditKursi(${i})" title="Klik untuk edit Kursi ${i + 1}">
+            <div class="player-cell-flex">
+              <span class="name-player ${!filled && !isHost ? 'name-empty' : ''}">${namaPemainText}</span>
+              <div class="inline-actions">${statusBtnHtml}${paletteHtml}</div>
+            </div>
+          </td>
+          <td class="cell-click" onclick="bukaModalEditKursi(${i})" title="Klik untuk cari akun Roblox">
+            <div class="display-cell-flex">
+              ${avatarHtml}
+              <div class="display-name-wrap">
+                <span class="name-display ${!p.nick && !isHost ? 'name-empty' : ''}">${displayNameText}</span>
+                ${subHandle ? `<span class="sub-handle">${subHandle}</span>` : ''}
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="score-box">
+              <div class="score-val" onclick="bukaQuickPoint(${i}, event)" title="Klik untuk tambah poin cepat">${p.poin || 0}</div>
+            </div>
+          </td>
+        `;
+        targetBody.appendChild(tr);
+      }
+    }
+
+    /* =========================================================================
+       4. COLUMN RESIZER (PERSISTED IN LOCALSTORAGE)
+       ========================================================================= */
+    function terapkanUkuranKolom() {
+      Object.keys(savedColWidths).forEach(colName => {
+        const w = savedColWidths[colName];
+        document.querySelectorAll(`col[data-col="${colName}"]`).forEach(c => { c.style.width = w; });
+      });
+    }
+
+    function inisialisasiResizeKolom() {
+      terapkanUkuranKolom();
+      document.querySelectorAll('th .col-resizer').forEach(resizer => {
+        resizer.addEventListener('pointerdown', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          const th = this.parentElement;
+          const colName = th.getAttribute('data-col');
+          if (!colName) return;
+
+          const startX = e.clientX;
+          const startW = th.offsetWidth;
+          const minW = MIN_COL_WIDTHS[colName] || 44;
+
+          th.classList.add('resizing');
+          document.body.classList.add('resizing-active');
+
+          const onMove = ev => {
+            const widthStr = `${Math.max(minW, startW + (ev.clientX - startX))}px`;
+            document.querySelectorAll(`col[data-col="${colName}"]`).forEach(c => { c.style.width = widthStr; });
+            savedColWidths[colName] = widthStr;
+          };
+
+          const onUp = () => {
+            th.classList.remove('resizing');
+            document.body.classList.remove('resizing-active');
+            window.removeEventListener('pointermove', onMove);
+            window.removeEventListener('pointerup', onUp);
+            try { localStorage.setItem(COL_WIDTHS_KEY, JSON.stringify(savedColWidths)); } catch (_) {}
+          };
+
+          window.addEventListener('pointermove', onMove);
+          window.addEventListener('pointerup', onUp);
+        });
+      });
+    }
+
+    /* =========================================================================
+       5. AUTO-SORT WITH SMOOTH FLIP ROW ANIMATION
+       ========================================================================= */
+    function urutkanOtomatis() {
+      const data = getActiveData();
+      const isDuo = db.gameMode === 'duo';
+
+      const oldTop = {};
+      for (let i = 0; i < 20; i++) {
+        const p = getSeat(i);
+        const el = document.getElementById(`row-kursi-${i}`);
+        if (p && p.id && el) oldTop[p.id] = el.getBoundingClientRect().top;
+      }
+
+      if (isDuo) {
+        const teams = [];
+        for (let tIdx = 0; tIdx < 10; tIdx++) {
+          const meta = db.duoTeams[tIdx] || DEFAULT_DUO_TEAMS[tIdx];
+          const p1 = data.players[tIdx * 2];
+          const p2 = tIdx === 9 ? data.host : data.players[tIdx * 2 + 1];
+          const pair = [p1, p2].sort((a, b) => (b.poin || 0) - (a.poin || 0));
+          const totalPoints = (pair[0].poin || 0) + (pair[1].poin || 0);
+          const active = hasPlayerContent(pair[0]) || hasPlayerContent(pair[1]);
+          teams.push({ meta, p1: pair[0], p2: pair[1], totalPoints, active, orig: tIdx });
+        }
+        teams.sort((a, b) => {
+          if (b.totalPoints !== a.totalPoints) return b.totalPoints - a.totalPoints;
+          if (b.active !== a.active) return b.active ? 1 : -1;
+          return a.orig - b.orig;
+        });
+        teams.forEach((t, idx) => {
+          db.duoTeams[idx] = { ...t.meta };
+          data.players[idx * 2] = t.p1;
+          if (idx === 9) data.host = t.p2;
+          else data.players[idx * 2 + 1] = t.p2;
+        });
+      } else {
+        const filled = data.players.filter(p => hasPlayerContent(p));
+        const empty = data.players.filter(p => !hasPlayerContent(p));
+        filled.sort((a, b) => (b.poin || 0) - (a.poin || 0));
+        data.players = [...filled, ...empty];
+      }
+
+      simpanDB();
+      renderPokedexTables();
+
+      requestAnimationFrame(() => {
+        for (let i = 0; i < 20; i++) {
+          const p = getSeat(i);
+          const el = document.getElementById(`row-kursi-${i}`);
+          if (p && p.id && el && oldTop[p.id] !== undefined) {
+            const deltaY = oldTop[p.id] - el.getBoundingClientRect().top;
+            if (Math.abs(deltaY) > 2) {
+              el.style.transform = `translateY(${deltaY}px)`;
+              void el.offsetHeight;
+              el.classList.add('moving-row');
+              el.style.transform = 'translateY(0)';
+              setTimeout(() => {
+                el.classList.remove('moving-row');
+                el.style.transform = '';
+              }, 550);
+            }
+          }
+        }
+      });
+    }
+
+    function eksekusiUrutkanManual() {
+      tutupSemuaPopupKecil();
+      urutkanOtomatis();
+      tambahLog('SKOR', 'Papan skor berhasil diurutkan');
+    }
+
+    /* =========================================================================
+       6. HORIZONTAL TRAINER PROFILE CARD MODAL + ROBLOX API LOOKUP
+       ========================================================================= */
+    function renderModalElementalDots(selectedKey) {
+      const wrap = document.getElementById('modalElementalDots');
+      if (!wrap) return;
+      let html = Object.entries(ELEMENTAL_COLORS).map(([key, cfg]) => `
+        <span class="el-dot ${selectedKey === key ? 'active' : ''}"
+              style="background:${cfg.hex}; --dot-color:${cfg.hex};"
+              title="${cfg.label}"
+              onclick="pilihWarnaElementalModal('${key}')"></span>
+      `).join('');
+      html += `
+        <span class="el-dot ${!selectedKey ? 'active' : ''}"
+              style="background:#334155; --dot-color:#94a3b8;"
+              title="Reset Default"
+              onclick="pilihWarnaElementalModal('')">×</span>
+      `;
+      wrap.innerHTML = html;
+    }
+
+    function updateStageAura(colorKey) {
+      const box = document.getElementById('trainerStageBox');
+      if (!box) return;
+      const cfg = colorKey && ELEMENTAL_COLORS[colorKey]
+        ? ELEMENTAL_COLORS[colorKey]
+        : { hex: '#38bdf8', glow: 'rgba(56, 189, 248, 0.55)' };
+      box.style.setProperty('--stage-aura', cfg.hex);
+      box.style.setProperty('--stage-aura-glow', cfg.glow);
+      renderElementalParticles(document.getElementById('stageParticles'), cfg.hex, 14);
+    }
+
+    function pilihWarnaElementalModal(colorKey) {
+      document.getElementById('editSelectedColor').value = colorKey;
+      renderModalElementalDots(colorKey);
+      updateStageAura(colorKey);
+    }
+
+    function refreshStagePreview() {
+      const headUrl = document.getElementById('editAvatarHead').value.trim();
+      const body3dUrl = document.getElementById('editAvatar3d').value.trim();
+      const customGif = document.getElementById('editCustomGif').value.trim();
+      const userId = document.getElementById('editUserId').value.trim();
+      const colorKey = document.getElementById('editSelectedColor').value.trim();
+      updateStageAura(colorKey);
+      updateStageAvatars(headUrl, body3dUrl, customGif, userId);
+    }
+
+    function updateStageAvatars(headUrl, body3dUrl, customGif = '', userId = '') {
+      const img3d = document.getElementById('stageAvatar3dImg');
+      const emptyBox = document.getElementById('stageEmptyBox');
+      const chip = document.getElementById('stageHeadshotChip');
+      const chipImg = document.getElementById('stageHeadshotImg');
+      const badge = document.getElementById('stageAnimBadge');
+
+      cleanupThreeSession('stage3dCanvasWrap');
+
+      const showImageFallback = (badgeText) => {
+        const mainSrc = customGif || body3dUrl || headUrl;
+        if (badge) badge.textContent = badgeText;
+        if (mainSrc) {
+          img3d.src = mainSrc;
+          img3d.style.display = 'block';
+          emptyBox.style.display = 'none';
+          img3d.onerror = () => {
+            if (headUrl && img3d.src !== headUrl) {
+              img3d.src = headUrl;
+            } else {
+              img3d.style.display = 'none';
+              emptyBox.style.display = 'flex';
+            }
+          };
+        } else {
+          img3d.style.display = 'none';
+          emptyBox.style.display = 'flex';
+        }
+      };
+
+      if (headUrl) {
+        chipImg.src = headUrl;
+        chip.style.display = 'block';
+      } else {
+        chip.style.display = 'none';
+      }
+
+      // Prioritas 1: Custom GIF Animasi
+      if (customGif) {
+        showImageFallback('GIF ANIMASI');
+        return;
+      }
+
+      // Prioritas 2: Mode Three.js 360° jika aktif dan punya userId
+      if ((db.animMode || '2.5d') === '3d' && userId) {
+        img3d.style.display = 'none';
+        emptyBox.style.display = 'none';
+        if (badge) badge.textContent = '3D PUTAR 360°';
+        loadRoblox3dMeshInto('stage3dCanvasWrap', userId, () => {
+          showImageFallback('2.5D GERAK');
+        });
+        return;
+      }
+
+      // Prioritas 3: 2.5D Gerak atau Diam
+      showImageFallback((db.animMode || '2.5d') === 'static' ? 'DIAM' : '2.5D GERAK');
+    }
+
+    function unggahGifKursi(ev) {
+      const file = ev.target.files[0];
+      const statusEl = document.getElementById('modalSearchStatus');
+      if (!file) return;
+      if (file.size > 3 * 1024 * 1024) {
+        statusEl.style.color = '#f87171';
+        statusEl.textContent = 'Ukuran GIF terlalu besar! Maksimal 3MB.';
+        ev.target.value = '';
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = e => {
+        document.getElementById('editCustomGif').value = e.target.result;
+        document.getElementById('inputGifUrl').value = `[GIF Unggahan: ${file.name}]`;
+        statusEl.style.color = '#c084fc';
+        statusEl.textContent = `🎞️ GIF "${file.name}" siap dipasang! Klik Simpan.`;
+        refreshStagePreview();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function terapkanUrlGif() {
+      const val = document.getElementById('inputGifUrl').value.trim();
+      if (val && !val.startsWith('[GIF Unggahan:')) {
+        document.getElementById('editCustomGif').value = val;
+        refreshStagePreview();
+      } else if (!val) {
+        document.getElementById('editCustomGif').value = '';
+        refreshStagePreview();
+      }
+    }
+
+    function hapusGifKursi() {
+      document.getElementById('editCustomGif').value = '';
+      document.getElementById('inputGifUrl').value = '';
+      document.getElementById('inputGifFile').value = '';
+      refreshStagePreview();
+    }
+
+    function sinkronPreviewNamaStage() {
+      const nick = document.getElementById('inputDisplayName').value.trim();
+      const user = document.getElementById('inputNamaPemain').value.trim();
+      const rbx = document.getElementById('inputRobloxUser').value.trim().replace(/^@+/, '');
+      document.getElementById('stagePlateNick').textContent = nick || user || '-';
+      document.getElementById('stagePlateUser').textContent = rbx ? `@${rbx}` : '@username_roblox';
+    }
+
+    function bukaModalEditKursi(idx) {
+      tutupSemuaPopupKecil();
+      const p = getSeat(idx);
+      if (!p) return;
+
+      document.getElementById('editSeatIdx').value = idx;
+      document.getElementById('modalKursiTitle').textContent = idx === 19 ? 'Kursi 20 (Host)' : `Kursi ${idx + 1}`;
+      document.getElementById('stageSeatBadgeText').textContent = idx === 19 ? '#20 HOST SEAT' : `#${idx + 1} BATTLE SEAT`;
+
+      document.getElementById('inputRobloxUser').value = p.robloxUser || '';
+      document.getElementById('inputNamaPemain').value = p.user || '';
+      document.getElementById('inputDisplayName').value = p.nick || '';
+      document.getElementById('editAvatarHead').value = p.avatar || '';
+      document.getElementById('editAvatar3d').value = p.avatar3d || '';
+      document.getElementById('editCustomGif').value = p.customGif || '';
+      document.getElementById('inputGifUrl').value = p.customGif
+        ? (p.customGif.startsWith('data:') ? '[GIF Unggahan Tersimpan]' : p.customGif)
+        : '';
+      document.getElementById('inputGifFile').value = '';
+      document.getElementById('editUserId').value = p.userId || '';
+      document.getElementById('editSelectedColor').value = p.colorTag || '';
+      document.getElementById('modalSearchStatus').textContent = '';
+
+      const btnAdd = document.getElementById('btnAddFriend');
+      btnAdd.disabled = false;
+      btnAdd.textContent = '➕ Add';
+
+      updateAnimModeUI();
+      renderModalElementalDots(p.colorTag || '');
+      updateStageAura(p.colorTag || '');
+      updateStageAvatars(p.avatar || '', p.avatar3d || '', p.customGif || '', p.userId || '');
+      sinkronPreviewNamaStage();
+
+      document.getElementById('modalEditKursi').classList.add('show');
+      setTimeout(() => document.getElementById('inputRobloxUser').focus(), 60);
+    }
+
+    function tutupModalEditKursi() {
+      cleanupThreeSession('stage3dCanvasWrap');
+      document.getElementById('modalEditKursi').classList.remove('show');
+    }
+
+    async function fetchWithTimeout(url, options = {}, timeoutMs = 4500) {
+      const controller = new AbortController();
+      const t = setTimeout(() => controller.abort(), timeoutMs);
+      try {
+        return await fetch(url, { ...options, signal: controller.signal });
+      } finally {
+        clearTimeout(t);
+      }
+    }
+
+    async function cariAkunRoblox() {
+      const rawInput = document.getElementById('inputRobloxUser').value.trim().replace(/^@+/, '');
+      const statusEl = document.getElementById('modalSearchStatus');
+      const btn = document.getElementById('btnCariRoblox');
+
+      if (!rawInput) {
+        statusEl.style.color = '#f87171';
+        statusEl.textContent = 'Ketik username Roblox terlebih dahulu!';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = '⏳...';
+      statusEl.style.color = '#38bdf8';
+      statusEl.textContent = 'Mencari akun & Avatar 3D Roblox...';
+
+      let found = null;
+
+      // 1. Try local backend first
+      try {
+        const res = await fetchWithTimeout(`/api/cari-roblox?username=${encodeURIComponent(rawInput)}`, {}, 1500);
+        if (res.ok) {
+          const d = await res.json();
+          if (d && d.sukses) {
+            found = {
+              userId: d.userId || '',
+              userName: d.userName || rawInput,
+              displayName: d.displayName || d.userName || rawInput,
+              avatarUrl: d.avatarUrl || '',
+              avatar3dUrl: d.avatar3dUrl || ''
+            };
+          }
+        }
+      } catch (_) {}
+
+      // 2. Fallback to RoProxy Public Roblox APIs
+      if (!found) {
+        try {
+          let userId = null;
+          let userName = '';
+          let displayName = '';
+
+          try {
+            const postRes = await fetchWithTimeout('https://users.roproxy.com/v1/usernames/users', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ usernames: [rawInput], excludeBannedUsers: false })
+            }, 5000);
+            if (postRes.ok) {
+              const pd = await postRes.json();
+              if (pd && Array.isArray(pd.data) && pd.data.length > 0) {
+                userId = pd.data[0].id;
+                userName = pd.data[0].name;
+                displayName = pd.data[0].displayName || userName;
+              }
+            }
+          } catch (_) {}
+
+          if (!userId) {
+            const getRes = await fetchWithTimeout(
+              `https://users.roproxy.com/v1/users/search?keyword=${encodeURIComponent(rawInput)}&limit=10`,
+              {},
+              5000
+            );
+            if (getRes.ok) {
+              const sd = await getRes.json();
+              if (sd && Array.isArray(sd.data) && sd.data.length > 0) {
+                const exact = sd.data.find(u => u.name.toLowerCase() === rawInput.toLowerCase());
+                const best = exact || sd.data[0];
+                userId = best.id;
+                userName = best.name;
+                displayName = best.displayName || userName;
+              }
+            }
+          }
+
+          if (userId) {
+            const [headRes, bodyRes] = await Promise.all([
+              fetchWithTimeout(`https://thumbnails.roproxy.com/v1/users/avatar-headshot?userIds=${userId}&size=150x150&format=Png&isCircular=false`, {}, 5000),
+              fetchWithTimeout(`https://thumbnails.roproxy.com/v1/users/avatar?userIds=${userId}&size=720x720&format=Png&isCircular=false`, {}, 5000)
+            ]);
+            let avatarUrl = '';
+            let avatar3dUrl = '';
+            if (headRes.ok) {
+              const hd = await headRes.json();
+              avatarUrl = hd?.data?.[0]?.imageUrl || '';
+            }
+            if (bodyRes.ok) {
+              const bd = await bodyRes.json();
+              avatar3dUrl = bd?.data?.[0]?.imageUrl || '';
+            }
+            found = { userId, userName, displayName, avatarUrl, avatar3dUrl };
+          }
+        } catch (_) {}
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Cari';
+
+      if (found) {
+        document.getElementById('inputRobloxUser').value = found.userName;
+        document.getElementById('inputDisplayName').value = found.displayName;
+        if (!document.getElementById('inputNamaPemain').value.trim()) {
+          document.getElementById('inputNamaPemain').value = found.displayName;
+        }
+        document.getElementById('editAvatarHead').value = found.avatarUrl;
+        document.getElementById('editAvatar3d').value = found.avatar3dUrl;
+        document.getElementById('editUserId').value = found.userId;
+
+        updateStageAvatars(
+          found.avatarUrl,
+          found.avatar3dUrl,
+          document.getElementById('editCustomGif').value.trim(),
+          found.userId
+        );
+        sinkronPreviewNamaStage();
+        statusEl.style.color = '#4ade80';
+        statusEl.textContent = 'Akun Roblox & Avatar 3D ditemukan! ✔';
+      } else {
+        statusEl.style.color = '#f87171';
+        statusEl.textContent = 'Akun tidak ditemukan atau API Roblox sedang sibuk.';
+      }
+    }
+
+    async function jalankanAutoAddFriend() {
+      const uname = document.getElementById('inputRobloxUser').value.trim().replace(/^@+/, '');
+      const statusEl = document.getElementById('modalSearchStatus');
+      const btnAdd = document.getElementById('btnAddFriend');
+
+      if (!uname) {
+        statusEl.style.color = '#f87171';
+        statusEl.textContent = 'Ketik username Roblox dulu sebelum Add Friend!';
+        return;
+      }
+      if (!cookieRoblox) {
+        statusEl.style.color = '#fbbf24';
+        statusEl.textContent = '⚠️ Cookie belum diatur. Buka tombol 🍪 Cookie di atas.';
+        return;
+      }
+
+      btnAdd.disabled = true;
+      btnAdd.textContent = '⏳...';
+      statusEl.style.color = '#38bdf8';
+      statusEl.textContent = `Mengirim Friend Request ke @${uname}...`;
+
+      try {
+        const res = await fetchWithTimeout('/api/auto-add-friend', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: uname,
+            targetUserId: document.getElementById('editUserId').value || '',
+            cookie: cookieRoblox
+          })
+        }, 4000);
+        const d = await res.json();
+        btnAdd.disabled = false;
+        if (d && d.sukses) {
+          btnAdd.textContent = '✔ Sent';
+          statusEl.style.color = '#4ade80';
+          statusEl.textContent = `✔ Permintaan pertemanan terkirim ke @${uname}!`;
+          tambahLog('ROBLOX', `Friend request dikirim ke @${uname}`);
+        } else {
+          btnAdd.textContent = '➕ Add';
+          statusEl.style.color = '#f87171';
+          statusEl.textContent = d?.pesan || 'Gagal mengirim pertemanan.';
+        }
+      } catch (_) {
+        btnAdd.disabled = false;
+        btnAdd.textContent = '➕ Add';
+        statusEl.style.color = '#fbbf24';
+        statusEl.textContent = 'Endpoint /api/auto-add-friend membutuhkan server lokal aktif.';
+      }
+    }
+
+    function simpanDataKursi() {
+      const idx = parseInt(document.getElementById('editSeatIdx').value, 10);
+      if (isNaN(idx)) return;
+      const p = getSeat(idx);
+      if (!p) return;
+
+      const rbx = document.getElementById('inputRobloxUser').value.trim().replace(/^@+/, '');
+      let user = document.getElementById('inputNamaPemain').value.trim();
+      let nick = document.getElementById('inputDisplayName').value.trim();
+      const head = document.getElementById('editAvatarHead').value.trim();
+      const body3d = document.getElementById('editAvatar3d').value.trim();
+      const customGif = document.getElementById('editCustomGif').value.trim();
+      const uid = document.getElementById('editUserId').value.trim();
+      const col = document.getElementById('editSelectedColor').value.trim();
+
+      if (rbx && !user) user = nick || rbx;
+      if (rbx && !nick) nick = user || rbx;
+
+      p.robloxUser = rbx;
+      p.user = user;
+      p.nick = nick;
+      p.avatar = head;
+      p.avatar3d = body3d;
+      p.customGif = customGif;
+      p.userId = uid;
+      p.colorTag = col;
+
+      tutupModalEditKursi();
+      if (idx === 19) {
+        simpanDB();
+        renderPokedexTables();
+      } else {
+        urutkanOtomatis();
+      }
+      tambahLog('EDIT', `Kursi ${idx + 1} diperbarui: ${p.nick || p.user || '(Kosong)'}`);
+    }
+
+    function resetKursiAktif() {
+      const idx = parseInt(document.getElementById('editSeatIdx').value, 10);
+      if (isNaN(idx)) return;
+      const p = getSeat(idx);
+      if (!p) return;
+
+      p.robloxUser = '';
+      p.user = '';
+      p.nick = '';
+      p.avatar = '';
+      p.avatar3d = '';
+      p.customGif = '';
+      p.userId = '';
+      p.poin = 0;
+      p.isPaid = idx === 19;
+      p.colorTag = '';
+
+      tutupModalEditKursi();
+      if (idx === 19) {
+        simpanDB();
+        renderPokedexTables();
+      } else {
+        urutkanOtomatis();
+      }
+      tambahLog('RESET', `Kursi ${idx + 1} dikosongkan`);
+    }
+
+    /* =========================================================================
+       7. MODE HYBRID: FULL TCG 3D HOLOGRAPHIC CARD TOAST
+       ========================================================================= */
+    function tampilkanToastTcg(seatIdx, deltaPoin, labelAtas = 'TAMBAH POIN') {
+      const popup = document.getElementById('centerNotifPopup');
+      const backdrop = document.getElementById('tcgNotifBackdrop');
+      if (!popup || !backdrop) return;
+      if (tcgToastTimer) clearTimeout(tcgToastTimer);
+      cleanupThreeSession('tcg3dCanvasWrap');
+
+      const p = getSeat(seatIdx);
+      if (!p) return;
+
+      const isDuo = db.gameMode === 'duo';
+      let partner = null;
+      let teamInfo = null;
+      if (isDuo) {
+        const tIdx = Math.floor(seatIdx / 2);
+        const t = db.duoTeams[tIdx];
+        const partnerIdx = seatIdx % 2 === 0 ? seatIdx + 1 : seatIdx - 1;
+        partner = getSeat(partnerIdx);
+        teamInfo = { name: t.name, color: t.color, score: (p.poin || 0) + (partner?.poin || 0) };
+      }
+
+      let tcg = { bg1: '#e0f2fe', bg2: '#38bdf8', accent: '#0284c7', ink: '#0f172a', sub: '#1e293b', panel: 'rgba(255,255,255,0.56)', glow: 'rgba(56,189,248,0.68)' };
+      if (deltaPoin < 0) {
+        tcg = { ...ELEMENTAL_COLORS.red.tcg, glow: ELEMENTAL_COLORS.red.glow };
+      } else if (p.colorTag && ELEMENTAL_COLORS[p.colorTag]) {
+        tcg = { ...ELEMENTAL_COLORS[p.colorTag].tcg, glow: ELEMENTAL_COLORS[p.colorTag].glow };
+      } else if (teamInfo && teamInfo.color) {
+        tcg = {
+          bg1: teamInfo.color, bg2: '#0f172a', accent: teamInfo.color,
+          ink: '#ffffff', sub: '#e2e8f0', panel: 'rgba(15,23,42,0.48)', glow: teamInfo.color + '88'
+        };
+      }
+
+      popup.style.setProperty('--tcg-bg-1', tcg.bg1);
+      popup.style.setProperty('--tcg-bg-2', tcg.bg2);
+      popup.style.setProperty('--tcg-accent', tcg.accent);
+      popup.style.setProperty('--tcg-ink', tcg.ink);
+      popup.style.setProperty('--tcg-sub-ink', tcg.sub);
+      popup.style.setProperty('--tcg-panel-bg', tcg.panel);
+      popup.style.setProperty('--tcg-glow', tcg.glow);
+
+      const rankText = seatIdx === 19 && !isDuo ? 'HOST' : `#${seatIdx + 1}`;
+      const nama = p.nick || p.user || p.robloxUser || (seatIdx === 19 ? 'HOST' : `Kursi ${seatIdx + 1}`);
+      const tanda = deltaPoin >= 0 ? `+${deltaPoin}` : `${deltaPoin}`;
+      const hpDisplay = teamInfo ? teamInfo.score : (p.poin || 0);
+
+      const makeAvatar3d = (obj, fallbackName) => {
+        const init = (obj?.nick || obj?.user || fallbackName || '?').charAt(0).toUpperCase();
+        const primary = obj?.customGif || obj?.avatar3d || obj?.avatar || '';
+        const headFb = (obj?.avatar || '').replace(/'/g, "\\'");
+        if (!primary) return `<div class="tcg-avatar-fallback">${init}</div>`;
+        return `<img class="tcg-avatar-3d" src="${primary}" alt="${init}" onerror="if(!this.dataset.fb && '${headFb}'){this.dataset.fb='1';this.src='${headFb}';this.style.borderRadius='50%';this.style.height='108px';this.style.marginBottom='28px';}else{this.outerHTML='<div class=\\'tcg-avatar-fallback\\'>${init}</div>';}" />`;
+      };
+
+      const showDuoAvatars = Boolean(isDuo && partner && hasPlayerContent(partner));
+      const artHtml = showDuoAvatars
+        ? makeAvatar3d(p, nama) + makeAvatar3d(partner, 'P2')
+        : makeAvatar3d(p, nama);
+
+      const ribbonText = teamInfo
+        ? `${teamInfo.name} • ${labelAtas}`
+        : `${labelAtas}${p.robloxUser ? ' • @' + p.robloxUser : ''}`;
+
+      const totalText = teamInfo
+        ? `Total Tim: ${teamInfo.score} Pts (Individu: ${p.poin})`
+        : `Total: ${p.poin} Poin`;
+
+      popup.innerHTML = `
+        <div class="tcg-card-inner">
+          <div class="tcg-header">
+            <div class="tcg-header-left">
+              <span class="tcg-rank-pill">${rankText}</span>
+              <span class="tcg-player-name">${nama}</span>
+            </div>
+            <div class="tcg-hp-wrap">
+              <span class="tcg-hp-label">PTS</span>
+              <span class="tcg-hp-val">${hpDisplay}</span>
+              <span class="tcg-element-orb">✦</span>
+            </div>
+          </div>
+
+          <div class="tcg-art-frame">
+            <div class="tcg-art-window ${showDuoAvatars ? 'is-duo' : ''}">
+              <div class="el-particles-layer" id="tcgParticles"></div>
+              <div class="tcg-art-3d-wrap" id="tcg3dCanvasWrap"></div>
+              ${artHtml}
+            </div>
+          </div>
+
+          <div class="tcg-info-ribbon">${ribbonText}</div>
+
+          <div class="tcg-score-panel">
+            <div class="tcg-delta-main">${tanda} POIN</div>
+            <div class="tcg-total-line">${totalText}</div>
+          </div>
+
+          <div class="tcg-footer">
+            <span>bobo hu</span>
+            <span>${db.activeSession}</span>
+          </div>
+        </div>
+      `;
+
+      // Partikel elemental melayang di jendela kartu TCG
+      renderElementalParticles(document.getElementById('tcgParticles'), tcg.accent, 14);
+
+      // Jika mode 3D Putar 360° aktif (dan bukan Duo/GIF kustom), muat mesh Three.js 360°
+      if ((db.animMode || '2.5d') === '3d' && !showDuoAvatars && !p.customGif && p.userId) {
+        const imgEl = popup.querySelector('.tcg-avatar-3d');
+        if (imgEl) imgEl.style.opacity = '0.15';
+        loadRoblox3dMeshInto('tcg3dCanvasWrap', p.userId, () => {
+          if (imgEl) imgEl.style.opacity = '1';
+        });
+      }
+
+      backdrop.classList.add('show');
+      popup.classList.remove('show');
+      void popup.offsetWidth;
+      popup.classList.add('show');
+
+      if (deltaPoin > 0) putarSuaraNotifPoin();
+
+      tcgToastTimer = setTimeout(() => {
+        popup.classList.remove('show');
+        backdrop.classList.remove('show');
+        cleanupThreeSession('tcg3dCanvasWrap');
+        tcgToastTimer = null;
+      }, 2800);
+    }
+
+    function tesNotifTcg() {
+      tutupSemuaPopupKecil();
+      const data = getActiveData();
+      const firstFilled = data.players.findIndex(p => hasPlayerContent(p));
+      const targetIdx = firstFilled >= 0 ? firstFilled : 0;
+      tampilkanToastTcg(targetIdx, 3, 'TAMBAH POIN');
+      tambahLog('TEST', 'Menampilkan pratinjau Kartu TCG 3D');
+    }
+
+    /* =========================================================================
+       8. QUICK POINT POPOVER, STATUS TOGGLE & MINI COLOR PICKER
+       ========================================================================= */
+    function toggleStatusPaid(idx, ev) {
+      ev.stopPropagation();
+      const p = getSeat(idx);
+      if (!p) return;
+      p.isPaid = !p.isPaid;
+      simpanDB();
+      renderPokedexTables();
+      tambahLog(p.nick || p.user || `Kursi ${idx + 1}`, `Status: ${p.isPaid ? '✔ DONE' : '— READY'}`);
+    }
+
+    function bukaQuickPoint(idx, ev) {
+      ev.stopPropagation();
+      tutupSemuaPopupKecil();
+      activeQuickIdx = idx;
+      const p = getSeat(idx);
+      const pop = document.getElementById('quickPointPopover');
+      const cfg = (p.colorTag && ELEMENTAL_COLORS[p.colorTag]) ? ELEMENTAL_COLORS[p.colorTag] : { hex: '#dc2626' };
+      pop.style.borderColor = cfg.hex;
+
+      document.getElementById('qpTitle').textContent = `${p.nick || p.user || (idx === 19 ? 'HOST' : 'Kursi ' + (idx + 1))} (${p.poin || 0} Pts)`;
+      document.getElementById('qpDirectInput').value = p.poin || 0;
+      document.getElementById('qpGrid').innerHTML = db.quickPoints.map(n => `
+        <button type="button" class="btn-qp" onclick="terapkanTambahPoin(${idx}, ${n})">+${n}</button>
+      `).join('');
+
+      pop.classList.add('show');
+      const rect = ev.currentTarget.getBoundingClientRect();
+      const popW = 248;
+      const popH = pop.offsetHeight || 150;
+      let left = rect.left - popW - 10;
+      if (left < 10) left = Math.min(window.innerWidth - popW - 10, rect.right + 10);
+      const top = Math.max(10, Math.min(window.innerHeight - popH - 10, rect.top - popH / 2 + rect.height / 2));
+      pop.style.left = `${left}px`;
+      pop.style.top = `${top}px`;
+    }
+
+    function tutupQuickPoint() {
+      document.getElementById('quickPointPopover').classList.remove('show');
+      activeQuickIdx = null;
+    }
+
+    function terapkanTambahPoin(idx, delta) {
+      tutupQuickPoint();
+      const p = getSeat(idx);
+      if (!p) return;
+      const awal = p.poin || 0;
+      p.poin = Math.max(0, awal + delta);
+      const selisih = p.poin - awal;
+
+      if (selisih !== 0) tampilkanToastTcg(idx, selisih, selisih > 0 ? 'TAMBAH POIN' : 'KURANG POIN');
+      simpanDB();
+      urutkanOtomatis();
+      tambahLog(p.nick || p.user || `Kursi ${idx + 1}`, `Poin ${awal} ➔ ${p.poin} (${delta >= 0 ? '+' : ''}${delta})`);
+    }
+
+    function simpanSetTotalLangsung() {
+      if (activeQuickIdx === null) return;
+      const idx = activeQuickIdx;
+      const val = Math.max(0, parseInt(document.getElementById('qpDirectInput').value, 10) || 0);
+      tutupQuickPoint();
+      const p = getSeat(idx);
+      if (!p) return;
+      const awal = p.poin || 0;
+      p.poin = val;
+      const selisih = val - awal;
+      if (selisih !== 0) tampilkanToastTcg(idx, selisih, 'SET TOTAL');
+      simpanDB();
+      if (idx === 19) renderPokedexTables();
+      else urutkanOtomatis();
+      tambahLog(p.nick || p.user || `Kursi ${idx + 1}`, `Total poin disetel ke ${val}`);
+    }
+
+    function inisialisasiMiniColorPicker() {
+      const el = document.getElementById('miniColorPicker');
+      let html = Object.entries(ELEMENTAL_COLORS).map(([k, cfg]) => `
+        <span class="el-dot" style="width:19px; height:19px; background:${cfg.hex};" title="${cfg.label}" onclick="pilihWarnaBaris('${k}')"></span>
+      `).join('');
+      html += `<span class="el-dot" style="width:19px; height:19px; background:#64748b;" title="Reset Default" onclick="pilihWarnaBaris('')">×</span>`;
+      el.innerHTML = html;
+    }
+
+    function bukaMiniColorPicker(idx, ev) {
+      ev.stopPropagation();
+      tutupSemuaPopupKecil();
+      activeColorIdx = idx;
+      const picker = document.getElementById('miniColorPicker');
+      picker.classList.add('show');
+      const rect = ev.currentTarget.getBoundingClientRect();
+      let left = rect.right + 8;
+      if (left + 215 > window.innerWidth) left = Math.max(10, rect.left - 215);
+      const top = Math.max(10, Math.min(window.innerHeight - 85, rect.top - 10));
+      picker.style.left = `${left}px`;
+      picker.style.top = `${top}px`;
+    }
+
+    function tutupMiniColorPicker() {
+      document.getElementById('miniColorPicker').classList.remove('show');
+      activeColorIdx = null;
+    }
+
+    function pilihWarnaBaris(colorKey) {
+      if (activeColorIdx === null) return;
+      const p = getSeat(activeColorIdx);
+      if (p) p.colorTag = colorKey;
+      tutupMiniColorPicker();
+      simpanDB();
+      renderPokedexTables();
+    }
+
+    /* =========================================================================
+       9. SESSIONS, MODE, RESET, PRESET, AUDIO, COOKIE & TEAM MODALS
+       ========================================================================= */
+    function toggleDropdown(id, ev) {
+      ev.stopPropagation();
+      const target = document.getElementById(id);
+      const wasOpen = target.classList.contains('show');
+      tutupSemuaPopupKecil();
+      if (!wasOpen) {
+        if (id === 'dropdownSesi') renderDropdownSesi();
+        target.classList.add('show');
+      }
+    }
+
+    function tutupSemuaPopupKecil() {
+      document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('show'));
+      tutupQuickPoint();
+      tutupMiniColorPicker();
+    }
+
+    function renderDropdownSesi() {
+      const container = document.getElementById('sessionListContainer');
+      const keys = Object.keys(db.sessions);
+      container.innerHTML = keys.map(name => `
+        <div class="session-item ${name === db.activeSession ? 'active' : ''}" onclick="pilihSesi('${name.replace(/'/g, "\\'")}', event)">
+          <span>${name} ${name === db.activeSession ? '✔' : ''}</span>
+          ${keys.length > 1 ? `<button type="button" class="session-del-btn" onclick="hapusSesi('${name.replace(/'/g, "\\'")}', event)" title="Hapus sesi">×</button>` : ''}
+        </div>
+      `).join('');
+    }
+
+    function pilihSesi(name, ev) {
+      if (ev) ev.stopPropagation();
+      db.activeSession = name;
+      simpanDB();
+      renderPokedexTables();
+      tutupSemuaPopupKecil();
+      tambahLog('SESI', `Beralih ke ${name}`);
+    }
+
+    function tambahSesiBaru(ev) {
+      if (ev) ev.stopPropagation();
+      let num = Object.keys(db.sessions).length + 1;
+      while (db.sessions[`Sesi ${num}`]) num++;
+      const newName = `Sesi ${num}`;
+      db.sessions[newName] = buatSesiBaru(false);
+      db.activeSession = newName;
+      simpanDB();
+      renderDropdownSesi();
+      renderPokedexTables();
+      tambahLog('SESI', `Sesi baru "${newName}" dibuat`);
+    }
+
+    function hapusSesi(name, ev) {
+      if (ev) ev.stopPropagation();
+      const keys = Object.keys(db.sessions);
+      if (keys.length <= 1) return;
+      delete db.sessions[name];
+      if (db.activeSession === name) db.activeSession = Object.keys(db.sessions)[0];
+      simpanDB();
+      renderDropdownSesi();
+      renderPokedexTables();
+      tambahLog('SESI', `Sesi "${name}" dihapus`);
+    }
+
+    function toggleModeDuoSolo() {
+      db.gameMode = db.gameMode === 'solo' ? 'duo' : 'solo';
+      simpanDB();
+      urutkanOtomatis();
+      tambahLog('MODE', `Beralih ke ${db.gameMode === 'duo' ? 'MODE: TIM DUO (10 Tim)' : 'MODE: SOLO (20)'}`);
+    }
+
+    function bukaModalKonfirmasiReset(tipe) {
+      tutupSemuaPopupKecil();
+      pendingResetType = tipe;
+      document.getElementById('resetModalTitle').textContent = tipe === 'POIN' ? 'Reset Semua Poin ke 0?' : 'Kosongkan Seluruh Meja?';
+      document.getElementById('resetModalDesc').textContent = tipe === 'POIN'
+        ? 'Skor seluruh kursi pada sesi & mode aktif akan direset ke 0.'
+        : 'Seluruh data pemain pada sesi & mode aktif akan dihapus.';
+      document.getElementById('modalConfirmReset').classList.add('show');
+    }
+    function tutupModalReset() {
+      document.getElementById('modalConfirmReset').classList.remove('show');
+      pendingResetType = null;
+    }
+    function eksekusiResetPasti() {
+      const s = db.sessions[db.activeSession];
+      const data = getActiveData();
+      if (pendingResetType === 'POIN') {
+        data.players.forEach(p => { p.poin = 0; });
+        data.host.poin = 0;
+        tambahLog('RESET', `Semua poin (${db.activeSession}) direset ke 0`);
+      } else if (pendingResetType === 'MEJA') {
+        s[db.gameMode] = buatKursiKosong(false);
+        tambahLog('RESET', `Seluruh kursi (${db.activeSession}) dikosongkan`);
+      }
+      simpanDB();
+      renderPokedexTables();
+      tutupModalReset();
+    }
+
+    /* Point Preset */
+    function bukaModalPreset() {
+      tutupSemuaPopupKecil();
+      document.getElementById('inputPresetPoin').value = db.quickPoints.join(', ');
+      document.getElementById('modalPreset').classList.add('show');
+    }
+    function tutupModalPreset() { document.getElementById('modalPreset').classList.remove('show'); }
+    function simpanPresetPoin() {
+      const raw = document.getElementById('inputPresetPoin').value || '';
+      const arr = raw.split(',').map(v => parseInt(v.trim(), 10)).filter(n => !isNaN(n) && n > 0);
+      db.quickPoints = arr.length > 0 ? arr : [1, 2, 3, 4, 5];
+      simpanDB();
+      tutupModalPreset();
+      tambahLog('PRESET', `Point preset diperbarui: ${db.quickPoints.join(', ')}`);
+    }
+
+    /* Audio Settings */
+    function updateAudioStatusUI() {
+      document.getElementById('statusAudioPoin').textContent = customAudioPoin ? 'Audio Custom ✔' : 'Synth Bawaan';
+      document.getElementById('statusAudioPodium').textContent = customAudioPodium ? 'Audio Custom ✔' : 'Fanfare Bawaan';
+    }
+    function bukaModalAudio() {
+      tutupSemuaPopupKecil();
+      updateAudioStatusUI();
+      document.getElementById('audioStatusMsg').textContent = '';
+      document.getElementById('modalAudio').classList.add('show');
+    }
+    function tutupModalAudio() { document.getElementById('modalAudio').classList.remove('show'); }
+
+    function unggahAudio(tipe, ev) {
+      const file = ev.target.files[0];
+      const msg = document.getElementById('audioStatusMsg');
+      if (!file) return;
+      const maxKb = tipe === 'poin' ? 800 : 2048;
+      if (file.size > maxKb * 1024) {
+        msg.style.color = '#dc2626';
+        msg.textContent = `Ukuran file terlalu besar! Maksimal ${maxKb}KB.`;
+        ev.target.value = '';
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = e => {
+        try {
+          if (tipe === 'poin') {
+            customAudioPoin = e.target.result;
+            localStorage.setItem(AUDIO_POIN_KEY, customAudioPoin);
+            putarSuaraNotifPoin();
+          } else {
+            customAudioPodium = e.target.result;
+            localStorage.setItem(AUDIO_PODIUM_KEY, customAudioPodium);
+            putarSuaraPodium();
+          }
+          updateAudioStatusUI();
+          msg.style.color = '#16a34a';
+          msg.textContent = 'Audio custom berhasil disimpan ✔';
+        } catch (_) {
+          msg.style.color = '#dc2626';
+          msg.textContent = 'Memori browser penuh, gunakan file audio lebih kecil.';
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function resetAudio(tipe) {
+      if (tipe === 'poin') {
+        customAudioPoin = null;
+        try { localStorage.removeItem(AUDIO_POIN_KEY); } catch (_) {}
+        document.getElementById('fileAudioPoin').value = '';
+        putarSuaraNotifPoin();
+      } else {
+        customAudioPodium = null;
+        try { localStorage.removeItem(AUDIO_PODIUM_KEY); } catch (_) {}
+        document.getElementById('fileAudioPodium').value = '';
+        putarFanfareBawaan();
+      }
+      updateAudioStatusUI();
+    }
+
+    /* Cookie Modal */
+    function updateCookieDot() {
+      const dot = document.getElementById('topBarCookieDot');
+      if (dot) dot.classList.toggle('active', Boolean(cookieRoblox));
+    }
+    function bukaModalCookie() {
+      tutupSemuaPopupKecil();
+      const inp = document.getElementById('inputCookieVal');
+      inp.value = cookieRoblox;
+      inp.style.webkitTextSecurity = cookieVisible ? 'none' : 'disc';
+      document.getElementById('cookieStatusMsg').textContent = '';
+      document.getElementById('modalCookie').classList.add('show');
+    }
+    function tutupModalCookie() { document.getElementById('modalCookie').classList.remove('show'); }
+    function toggleLihatCookie() {
+      cookieVisible = !cookieVisible;
+      document.getElementById('inputCookieVal').style.webkitTextSecurity = cookieVisible ? 'none' : 'disc';
+      document.getElementById('btnToggleCookieVis').textContent = cookieVisible ? '🔒 Sembunyikan' : '👁️ Tampilkan';
+    }
+    async function tesCookieRoblox() {
+      const val = document.getElementById('inputCookieVal').value.trim();
+      const msg = document.getElementById('cookieStatusMsg');
+      if (!val) {
+        msg.style.color = '#dc2626';
+        msg.textContent = 'Tempelkan kode cookie terlebih dahulu!';
+        return;
+      }
+      msg.style.color = '#0284c7';
+      msg.textContent = 'Menguji koneksi cookie ke server lokal...';
+      try {
+        const res = await fetchWithTimeout('/api/cookie-roblox', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cookie: val })
+        }, 3500);
+        const d = await res.json();
+        if (res.ok && d && (d.isValid || d.sukses)) {
+          msg.style.color = '#16a34a';
+          msg.textContent = `✔ Cookie valid untuk akun @${d.username || d.name || 'Roblox'}!`;
+        } else {
+          msg.style.color = '#dc2626';
+          msg.textContent = d?.pesan || '✖ Cookie tidak valid atau kadaluarsa.';
+        }
+      } catch (_) {
+        msg.style.color = '#d97706';
+        msg.textContent = 'Server lokal tidak terdeteksi — cookie tetap bisa disimpan di browser.';
+      }
+    }
+    function simpanCookie() {
+      const val = document.getElementById('inputCookieVal').value.trim();
+      const msg = document.getElementById('cookieStatusMsg');
+      if (!val) {
+        msg.style.color = '#dc2626';
+        msg.textContent = 'Tempelkan kode cookie terlebih dahulu!';
+        return;
+      }
+      cookieRoblox = val;
+      try { localStorage.setItem(COOKIE_KEY, val); } catch (_) {}
+      updateCookieDot();
+      msg.style.color = '#16a34a';
+      msg.textContent = '✔ Cookie berhasil disimpan.';
+      tambahLog('COOKIE', 'Cookie Roblox disimpan');
+    }
+    function hapusCookie() {
+      cookieRoblox = '';
+      try { localStorage.removeItem(COOKIE_KEY); } catch (_) {}
+      document.getElementById('inputCookieVal').value = '';
+      updateCookieDot();
+      const msg = document.getElementById('cookieStatusMsg');
+      msg.style.color = '#16a34a';
+      msg.textContent = '✔ Cookie berhasil dihapus.';
+      tambahLog('COOKIE', 'Cookie Roblox dihapus');
+    }
+
+    /* Team Edit Modal */
+    const TEAM_PALETTE = ['#0284c7', '#dc2626', '#ca8a04', '#059669', '#9333ea', '#ea580c', '#0891b2', '#db2777', '#4f46e5', '#0d9488', '#65a30d', '#334155'];
+    function bukaModalEditTim(tIdx) {
+      activeTeamEditIdx = tIdx;
+      const t = db.duoTeams[tIdx];
+      activeTeamEditColor = t.color;
+      document.getElementById('inputNamaTim').value = t.name;
+      renderTeamColorDots();
+      document.getElementById('modalEditTim').classList.add('show');
+    }
+    function renderTeamColorDots() {
+      document.getElementById('teamColorDots').innerHTML = TEAM_PALETTE.map(hex => `
+        <span class="el-dot ${hex === activeTeamEditColor ? 'active' : ''}"
+              style="background:${hex}; --dot-color:${hex};"
+              onclick="activeTeamEditColor='${hex}'; renderTeamColorDots();">${hex === activeTeamEditColor ? '✔' : ''}</span>
+      `).join('');
+    }
+    function tutupModalEditTim() { document.getElementById('modalEditTim').classList.remove('show'); }
+    function simpanEditTim() {
+      const val = document.getElementById('inputNamaTim').value.trim();
+      if (val) db.duoTeams[activeTeamEditIdx].name = val;
+      db.duoTeams[activeTeamEditIdx].color = activeTeamEditColor;
+      simpanDB();
+      renderPokedexTables();
+      tutupModalEditTim();
+      tambahLog('TIM', `Tim diperbarui: ${db.duoTeams[activeTeamEditIdx].name}`);
+    }
+
+    /* =========================================================================
+       10. 3D PODIUM CEREMONY + FIREWORKS CANVAS (NO TROPHY/MEDAL ICONS)
+       ========================================================================= */
+    function renderPodiumAvatar(containerId, p1, p2, isDuo) {
+      const box = document.getElementById(containerId);
+      box.className = `podium-avatar-stage ${isDuo ? 'is-duo' : ''}`;
+      const makeImg = obj => {
+        const src = obj?.customGif || obj?.avatar3d || obj?.avatar || PLACEHOLDER_SILHOUETTE;
+        const head = (obj?.avatar || PLACEHOLDER_SILHOUETTE).replace(/'/g, "\\'");
+        return `<img class="podium-img-3d" src="${src}" alt="" onerror="this.onerror=null;this.src='${head}';" />`;
+      };
+      box.innerHTML = `<div class="podium-aura"></div><div class="el-particles-layer" id="${containerId}_pt"></div>` + (isDuo ? makeImg(p1) + makeImg(p2) : makeImg(p1));
+      const pColor = (p1?.colorTag && ELEMENTAL_COLORS[p1.colorTag]) ? ELEMENTAL_COLORS[p1.colorTag].hex : '#facc15';
+      renderElementalParticles(document.getElementById(`${containerId}_pt`), pColor, 10);
+    }
+
+    function tampilkanPodium() {
+      tutupSemuaPopupKecil();
+      const isDuo = db.gameMode === 'duo';
+
+      if (isDuo) {
+        const sorted = [...hitungSkorTimDuo()].sort((a, b) => b.totalPoints - a.totalPoints);
+        document.getElementById('podiumSub').textContent = 'DUO BATTLE CHAMPIONS';
+        document.getElementById('podiumTitle').textContent = 'TEAM VICTORY';
+        [0, 1, 2].forEach(r => {
+          const t = sorted[r] || { name: `DUO ${r + 1}`, totalPoints: 0, p1: null, p2: null };
+          const n1 = t.p1?.nick || t.p1?.user || 'Pemain 1';
+          const n2 = t.p2?.nick || t.p2?.user || 'Pemain 2';
+          document.getElementById(`podBadge${r + 1}`).textContent = `#${r + 1} • ${t.name}`;
+          document.getElementById(`podName${r + 1}`).textContent = `${n1} & ${n2}`;
+          document.getElementById(`podPts${r + 1}`).textContent = `${t.totalPoints} PTS`;
+          renderPodiumAvatar(`podAv${r + 1}`, t.p1, t.p2, true);
+        });
+      } else {
+        const data = getActiveData();
+        const sorted = [...data.players].filter(p => hasPlayerContent(p)).sort((a, b) => (b.poin || 0) - (a.poin || 0));
+        document.getElementById('podiumSub').textContent = 'GRAND FINALS CEREMONY';
+        document.getElementById('podiumTitle').textContent = 'CONGRATULATIONS';
+        const labels = ['#1 CHAMPION', '#2 PLACE', '#3 PLACE'];
+        [0, 1, 2].forEach(r => {
+          const p = sorted[r] || { nick: 'Belum Ada', poin: 0 };
+          document.getElementById(`podBadge${r + 1}`).textContent = labels[r];
+          document.getElementById(`podName${r + 1}`).textContent = p.nick || p.user || 'Belum Ada';
+          document.getElementById(`podPts${r + 1}`).textContent = `${p.poin || 0} PTS`;
+          renderPodiumAvatar(`podAv${r + 1}`, p, null, false);
+        });
+      }
+
+      document.getElementById('podiumOverlay').classList.add('active');
+      putarSuaraPodium();
+      mulaiPetasan();
+    }
+
+    function tutupPodium() {
+      document.getElementById('podiumOverlay').classList.remove('active');
+      if (fireworksTimer) { clearInterval(fireworksTimer); fireworksTimer = null; }
+      if (fireworksRaf) { cancelAnimationFrame(fireworksRaf); fireworksRaf = null; }
+      if (activePodiumAudioObj) {
+        try { activePodiumAudioObj.pause(); activePodiumAudioObj.currentTime = 0; } catch (_) {}
+      }
+    }
+
+    function mulaiPetasan() {
+      const canvas = document.getElementById('fireworksCanvas');
+      const ctx = canvas.getContext('2d');
+      const resizeCanvas = () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      };
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+
+      const particles = [];
+      const colors = ['#facc15', '#38bdf8', '#fb923c', '#4ade80', '#f43f5e', '#a855f7', '#ffffff'];
+      const burst = (x, y) => {
+        for (let i = 0; i < 32; i++) {
+          const ang = Math.random() * Math.PI * 2;
+          const spd = Math.random() * 5.5 + 2;
+          particles.push({
+            x, y, vx: Math.cos(ang) * spd, vy: Math.sin(ang) * spd,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            alpha: 1, decay: Math.random() * 0.022 + 0.014
+          });
+        }
+      };
+
+      if (fireworksTimer) clearInterval(fireworksTimer);
+      fireworksTimer = setInterval(() => {
+        burst(Math.random() * canvas.width * 0.8 + canvas.width * 0.1, Math.random() * canvas.height * 0.48 + 40);
+      }, 520);
+
+      function loop() {
+        if (!document.getElementById('podiumOverlay').classList.contains('active')) {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          return;
+        }
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = particles.length - 1; i >= 0; i--) {
+          const pt = particles[i];
+          pt.x += pt.vx; pt.y += pt.vy; pt.vy += 0.06; pt.alpha -= pt.decay;
+          if (pt.alpha <= 0) particles.splice(i, 1);
+          else {
+            ctx.globalAlpha = pt.alpha;
+            ctx.fillStyle = pt.color;
+            ctx.beginPath();
+            ctx.arc(pt.x, pt.y, 2.8, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+        ctx.globalAlpha = 1;
+        fireworksRaf = requestAnimationFrame(loop);
+      }
+      loop();
+    }
+
+    /* =========================================================================
+       11. LOG AKTIVITAS & GLOBAL EVENTS
+       ========================================================================= */
+    function tambahLog(tag, pesan) {
+      const list = document.getElementById('logList');
+      if (!list) return;
+      const d = new Date();
+      const jam = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`;
+      const item = document.createElement('div');
+      item.className = 'log-item';
+      item.innerHTML = `<span><b style="color:#b91c1c;">[${jam}] ${tag}:</b> ${pesan}</span>`;
+      list.insertBefore(item, list.firstChild);
+      if (list.children.length > 40) list.removeChild(list.lastChild);
+    }
+
+    function hapusLogAktivitas() {
+      document.getElementById('logList').innerHTML = `<div style="color:#64748b; font-style:italic; padding:4px;">Log dibersihkan</div>`;
+    }
+
+    function toggleLogPanel() {
+      isLogFolded = !isLogFolded;
+      try { localStorage.setItem(LOG_FOLD_KEY, JSON.stringify(isLogFolded)); } catch (_) {}
+      applyLogFold();
+    }
+
+    function applyLogFold() {
+      document.getElementById('logList').style.display = isLogFolded ? 'none' : 'flex';
+      document.getElementById('iconFoldLog').textContent = isLogFolded ? '▶' : '▼';
+    }
+
+    window.addEventListener('click', () => tutupSemuaPopupKecil());
+    window.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        tutupModalEditKursi();
+        tutupModalReset();
+        tutupModalPreset();
+        tutupModalAudio();
+        tutupModalCookie();
+        tutupModalEditTim();
+        tutupPodium();
+        tutupSemuaPopupKecil();
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      inisialisasiMiniColorPicker();
+      inisialisasiResizeKolom();
+      updateCookieDot();
+      updateAnimModeUI();
+      applyLogFold();
+      renderPokedexTables();
+      sinkronAvatarBuildermanSample();
+      tambahLog('SISTEM', `Pokédex Light Combo siap — ${db.activeSession}`);
+
+      // Tampilkan pratinjau singkat Toast Kartu TCG 3D saat halaman dimuat
+      setTimeout(() => {
+        tampilkanToastTcg(0, 3, 'TAMBAH POIN');
+      }, 650);
+    });
+  </script>
+</body>
+</html>
