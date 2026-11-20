@@ -1225,21 +1225,7 @@
       will-change: transform, filter;
     }
 
-    /* Animasi 2.5D Hidup (Breathing + Bobbing + Sway) */
-    body[data-anim-mode="2.5d"] .stage-avatar-3d,
-    body[data-anim-mode="3d"] .stage-avatar-3d,
-    body[data-anim-mode="2.5d"] .tcg-avatar-3d,
-    body[data-anim-mode="3d"] .tcg-avatar-3d,
-    body[data-anim-mode="2.5d"] .podium-img-3d,
-    body[data-anim-mode="3d"] .podium-img-3d {
-      animation: livingAvatarIdle 3.2s ease-in-out infinite;
-    }
 
-    body[data-anim-mode="static"] .stage-avatar-3d,
-    body[data-anim-mode="static"] .tcg-avatar-3d,
-    body[data-anim-mode="static"] .podium-img-3d {
-      animation: none !important;
-    }
 
     @keyframes livingAvatarIdle {
       0%, 100% {
@@ -2348,10 +2334,16 @@
     .podium-avatar-stage.is-duo .podium-img-3d { max-width: 47%; max-height: 205px; }
 
     .podium-rank-card.is-silhouette .podium-img-3d {
-      animation: avatarSilhouetteEmerge 0.58s cubic-bezier(0.2, 1.25, 0.35, 1) 0.08s forwards;
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: brightness(0) drop-shadow(0 0 14px rgba(56, 189, 248, 0.85));
+      animation: avatarSilhouetteEmerge 0.58s cubic-bezier(0.2, 1.25, 0.35, 1) 0.08s both;
     }
     .podium-rank-card.is-revealed .podium-img-3d {
-      animation: avatarFullReveal 0.55s cubic-bezier(0.2, 1.22, 0.35, 1) forwards;
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: brightness(1) saturate(1) drop-shadow(0 12px 20px rgba(0, 0, 0, 0.78));
+      animation: avatarFullReveal 0.55s cubic-bezier(0.2, 1.22, 0.35, 1) both;
     }
 
     @keyframes avatarSilhouetteEmerge {
