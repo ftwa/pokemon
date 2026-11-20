@@ -1225,21 +1225,7 @@
       will-change: transform, filter;
     }
 
-    /* Animasi 2.5D Hidup (Breathing + Bobbing + Sway) */
-    body[data-anim-mode="2.5d"] .stage-avatar-3d,
-    body[data-anim-mode="3d"] .stage-avatar-3d,
-    body[data-anim-mode="2.5d"] .tcg-avatar-3d,
-    body[data-anim-mode="3d"] .tcg-avatar-3d,
-    body[data-anim-mode="2.5d"] .podium-img-3d,
-    body[data-anim-mode="3d"] .podium-img-3d {
-      animation: livingAvatarIdle 3.2s ease-in-out infinite;
-    }
 
-    body[data-anim-mode="static"] .stage-avatar-3d,
-    body[data-anim-mode="static"] .tcg-avatar-3d,
-    body[data-anim-mode="static"] .podium-img-3d {
-      animation: none !important;
-    }
 
     @keyframes livingAvatarIdle {
       0%, 100% {
@@ -1923,14 +1909,18 @@
     }
 
     /* ==========================================================================
-       11. 3D PODIUM CEREMONY OVERLAY (NO TROPHY/MEDAL EMOJIS)
+       11. POKÉBALL PODIUM CEREMONY + SILHOUETTE ("WHO'S THAT?") + ROTOM PLAQUE
        ========================================================================== */
     .podium-overlay {
       display: none;
       position: fixed;
       inset: 0;
-      background: radial-gradient(circle at 50% 15%, rgba(15, 23, 42, 0.96), rgba(3, 7, 18, 0.99));
+      background:
+        radial-gradient(circle at 50% 18%, rgba(30, 58, 138, 0.44), transparent 52%),
+        radial-gradient(circle at 50% 85%, rgba(220, 38, 38, 0.24), transparent 55%),
+        linear-gradient(180deg, rgba(9, 14, 28, 0.97) 0%, rgba(4, 7, 16, 0.99) 100%);
       backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       z-index: 30000;
       flex-direction: column;
       align-items: center;
@@ -1939,6 +1929,27 @@
       overflow-y: auto;
     }
     .podium-overlay.active { display: flex; }
+
+    /* Subtle Giant Stadium Pokéball Watermark */
+    .podium-overlay::before {
+      content: "";
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: min(720px, 90vw);
+      height: min(720px, 90vw);
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      border: 18px solid rgba(255, 255, 255, 0.035);
+      background:
+        linear-gradient(180deg,
+          transparent 48.2%,
+          rgba(255, 255, 255, 0.035) 48.2%,
+          rgba(255, 255, 255, 0.035) 51.8%,
+          transparent 51.8%);
+      pointer-events: none;
+      z-index: 30000;
+    }
 
     #fireworksCanvas {
       position: fixed;
@@ -1953,163 +1964,612 @@
       position: fixed;
       top: 18px;
       right: 22px;
-      width: 40px;
-      height: 40px;
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
       background: rgba(255, 255, 255, 0.12);
-      border: 1px solid rgba(255, 255, 255, 0.25);
+      border: 1.5px solid rgba(255, 255, 255, 0.28);
       color: #f8fafc;
       font-size: 18px;
       font-weight: 900;
       cursor: pointer;
       z-index: 30010;
+      transition: all 0.16s ease;
     }
-    .btn-close-podium:hover { background: #ef4444; border-color: #ef4444; }
+    .btn-close-podium:hover { background: #ef4444; border-color: #ef4444; transform: rotate(90deg); }
 
     .podium-stage {
       position: relative;
       z-index: 30005;
       width: 100%;
-      max-width: 980px;
+      max-width: 1020px;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
     .podium-subtitle {
-      font-family: 'Outfit', sans-serif;
-      font-size: 12.5px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
       font-weight: 800;
-      letter-spacing: 5px;
-      color: #94a3b8;
+      letter-spacing: 4.5px;
+      color: #93c5fd;
       text-transform: uppercase;
     }
     .podium-title {
       font-family: 'Outfit', sans-serif;
-      font-size: clamp(26px, 4.5vw, 40px);
+      font-size: clamp(26px, 4.5vw, 42px);
       font-weight: 900;
       letter-spacing: 2px;
-      margin: 4px 0 28px;
-      background: linear-gradient(180deg, #fffbeb 0%, #facc15 60%, #d97706 100%);
+      margin: 4px 0 30px;
+      background: linear-gradient(180deg, #fffbeb 0%, #facc15 58%, #d97706 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       text-align: center;
+      filter: drop-shadow(0 4px 16px rgba(250, 204, 21, 0.25));
     }
 
     .podium-row {
       display: flex;
       align-items: flex-end;
       justify-content: center;
-      gap: 24px;
+      gap: 22px;
       width: 100%;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
+    }
+    @media (max-width: 820px) {
+      .podium-row { flex-wrap: wrap; gap: 26px 18px; }
     }
 
     .podium-rank-card {
-      width: 260px;
+      width: 278px;
+      flex: 0 1 278px;
       display: flex;
       flex-direction: column;
       align-items: center;
+      position: relative;
     }
-    .podium-rank-card.rank-1 { width: 290px; transform: translateY(-16px); }
+    .podium-rank-card.rank-1 {
+      width: 306px;
+      flex: 0 1 306px;
+      transform: translateY(-20px);
+    }
 
     .podium-avatar-stage {
       position: relative;
       width: 100%;
-      height: 235px;
+      height: 245px;
       display: flex;
       align-items: flex-end;
       justify-content: center;
       gap: 6px;
-      margin-bottom: 10px;
+      margin-bottom: 14px;
     }
-    .podium-rank-card.rank-1 .podium-avatar-stage { height: 265px; }
+    .podium-rank-card.rank-1 .podium-avatar-stage { height: 275px; }
+
+    /* Glowing Stadium Pedestal Pad under Pokéball / Avatar */
+    .podium-pad {
+      position: absolute;
+      bottom: 2px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 185px;
+      height: 30px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.26) 0%, transparent 72%);
+      border: 2px solid rgba(255, 255, 255, 0.22);
+      z-index: 1;
+      pointer-events: none;
+    }
+    .rank-1 .podium-pad {
+      width: 215px;
+      border-color: rgba(250, 204, 21, 0.78);
+      box-shadow: 0 0 28px rgba(250, 204, 21, 0.45);
+    }
+    .rank-2 .podium-pad {
+      border-color: rgba(56, 189, 248, 0.72);
+      box-shadow: 0 0 24px rgba(56, 189, 248, 0.35);
+    }
+    .rank-3 .podium-pad {
+      border-color: rgba(251, 146, 60, 0.72);
+      box-shadow: 0 0 24px rgba(251, 146, 60, 0.35);
+    }
 
     .podium-aura {
       position: absolute;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%);
-      width: 240px;
-      height: 240px;
+      transform: translate(-50%, -50%) scale(0.4);
+      width: 245px;
+      height: 245px;
       border-radius: 50%;
       filter: blur(26px);
-      opacity: 0.72;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.45s ease, transform 0.55s ease;
+    }
+    .podium-rank-card.is-silhouette .podium-aura {
+      opacity: 0.58;
+      transform: translate(-50%, -50%) scale(0.88);
+    }
+    .podium-rank-card.is-revealed .podium-aura {
+      opacity: 0.85;
+      transform: translate(-50%, -50%) scale(1.05);
+    }
+    .rank-1 .podium-aura { background: radial-gradient(circle, rgba(250, 204, 21, 0.58), rgba(168, 85, 247, 0.22), transparent 72%); }
+    .rank-2 .podium-aura { background: radial-gradient(circle, rgba(56, 189, 248, 0.52), rgba(99, 102, 241, 0.2), transparent 72%); }
+    .rank-3 .podium-aura { background: radial-gradient(circle, rgba(251, 146, 60, 0.52), rgba(244, 63, 94, 0.2), transparent 72%); }
+
+    /* ==========================================================================
+       POKÉBALL + SILHOUETTE ("WHO'S THAT?") ANIMATION
+       ========================================================================== */
+    .pokeball-wrap {
+      position: absolute;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 6;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: opacity 0.26s ease, transform 0.3s ease;
+    }
+    .podium-rank-card.is-silhouette .pokeball-wrap,
+    .podium-rank-card.is-revealed .pokeball-wrap {
+      opacity: 0;
+      transform: translateX(-50%) scale(1.35);
       pointer-events: none;
     }
-    .rank-1 .podium-aura { background: radial-gradient(circle, rgba(250, 204, 21, 0.5), rgba(168, 85, 247, 0.2), transparent 72%); }
-    .rank-2 .podium-aura { background: radial-gradient(circle, rgba(56, 189, 248, 0.45), rgba(99, 102, 241, 0.2), transparent 72%); }
-    .rank-3 .podium-aura { background: radial-gradient(circle, rgba(251, 146, 60, 0.45), rgba(244, 63, 94, 0.2), transparent 72%); }
 
+    .pokeball-orb {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      position: relative;
+      border: 4px solid #0f172a;
+      overflow: hidden;
+      box-shadow:
+        0 14px 28px rgba(0, 0, 0, 0.65),
+        inset -10px -10px 18px rgba(0, 0, 0, 0.35),
+        inset 8px 8px 14px rgba(255, 255, 255, 0.32);
+      transform-origin: bottom center;
+      animation: pokeballDrop 0.48s cubic-bezier(0.22, 1.25, 0.36, 1) both,
+                 pokeballWobble 0.9s ease-in-out 0.48s infinite;
+    }
+    .rank-1 .pokeball-orb { width: 110px; height: 110px; }
+
+    .pokeball-orb::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg,
+        var(--pb-top-1, #ef4444) 0%,
+        var(--pb-top-2, #b91c1c) 46%,
+        #0f172a 46%,
+        #0f172a 54%,
+        #f8fafc 54%,
+        #cbd5e1 100%);
+    }
+    .rank-1 .pokeball-orb {
+      --pb-top-1: #fde047;
+      --pb-top-2: #ca8a04;
+      box-shadow: 0 0 28px rgba(250, 204, 21, 0.55), 0 14px 28px rgba(0, 0, 0, 0.65), inset -10px -10px 18px rgba(0, 0, 0, 0.35), inset 8px 8px 14px rgba(255, 255, 255, 0.45);
+    }
+    .rank-2 .pokeball-orb {
+      --pb-top-1: #38bdf8;
+      --pb-top-2: #1d4ed8;
+      box-shadow: 0 0 24px rgba(56, 189, 248, 0.48), 0 14px 28px rgba(0, 0, 0, 0.65), inset -10px -10px 18px rgba(0, 0, 0, 0.35), inset 8px 8px 14px rgba(255, 255, 255, 0.35);
+    }
+    .rank-3 .pokeball-orb {
+      --pb-top-1: #f87171;
+      --pb-top-2: #dc2626;
+      box-shadow: 0 0 24px rgba(239, 68, 68, 0.45), 0 14px 28px rgba(0, 0, 0, 0.65), inset -10px -10px 18px rgba(0, 0, 0, 0.35), inset 8px 8px 14px rgba(255, 255, 255, 0.35);
+    }
+
+    .pokeball-orb::after {
+      content: "";
+      position: absolute;
+      top: 10px;
+      left: 16px;
+      width: 28px;
+      height: 15px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.55);
+      transform: rotate(-28deg);
+      pointer-events: none;
+    }
+
+    .pokeball-btn {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 4px solid #0f172a;
+      z-index: 3;
+      box-shadow: 0 0 14px rgba(255, 255, 255, 0.85);
+      animation: pbPulse 0.7s ease-in-out infinite alternate;
+    }
+    .pokeball-btn::after {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      border-radius: 50%;
+      background: #fef08a;
+      opacity: 0.9;
+    }
+
+    .pokeball-hint {
+      margin-top: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: #cbd5e1;
+      text-transform: uppercase;
+    }
+
+    @keyframes pokeballDrop {
+      0%   { transform: translateY(-140px) scale(0.7); opacity: 0; }
+      70%  { transform: translateY(6px) scale(1.06, 0.92); opacity: 1; }
+      100% { transform: translateY(0) scale(1); opacity: 1; }
+    }
+    @keyframes pokeballWobble {
+      0%, 100% { transform: rotate(0deg); }
+      20%      { transform: rotate(-16deg); }
+      40%      { transform: rotate(14deg); }
+      60%      { transform: rotate(-10deg); }
+      80%      { transform: rotate(6deg); }
+    }
+    @keyframes pbPulse {
+      from { box-shadow: 0 0 8px rgba(255, 255, 255, 0.7); }
+      to   { box-shadow: 0 0 22px rgba(250, 204, 21, 1); }
+    }
+
+    /* Energy Burst Flash + Vertical Light Beam */
+    .pokeball-burst {
+      position: absolute;
+      bottom: 22px;
+      left: 50%;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      transform: translateX(-50%) scale(0.2);
+      background: radial-gradient(circle, #ffffff 0%, #fef08a 42%, rgba(239, 68, 68, 0.55) 75%, transparent 100%);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 7;
+    }
+    .podium-rank-card.is-silhouette .pokeball-burst {
+      animation: pokeballBurstFlash 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .podium-rank-card.is-revealed .pokeball-burst {
+      animation: pokeballRevealFlash 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes pokeballBurstFlash {
+      0%   { opacity: 0; transform: translateX(-50%) scale(0.2); }
+      25%  { opacity: 0.95; transform: translateX(-50%) scale(4.8); }
+      100% { opacity: 0; transform: translateX(-50%) scale(7.0); }
+    }
+    @keyframes pokeballRevealFlash {
+      0%   { opacity: 0; transform: translateX(-50%) scale(0.4); }
+      22%  { opacity: 1; transform: translateX(-50%) scale(5.8); }
+      100% { opacity: 0; transform: translateX(-50%) scale(8.2); }
+    }
+
+    .pokeball-beam {
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      width: 90px;
+      height: 0;
+      transform: translateX(-50%);
+      background: linear-gradient(180deg, transparent 0%, rgba(255, 255, 255, 0.85) 55%, rgba(254, 240, 138, 0.95) 100%);
+      filter: blur(8px);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 4;
+    }
+    .podium-rank-card.is-silhouette .pokeball-beam {
+      animation: pokeballBeamShoot 0.72s ease-out forwards;
+    }
+    @keyframes pokeballBeamShoot {
+      0%   { height: 20px; opacity: 0.95; width: 40px; }
+      40%  { height: 270px; opacity: 0.88; width: 120px; }
+      100% { height: 280px; opacity: 0; width: 160px; }
+    }
+
+    /* Floating "WHO'S THAT?" Mystery Pill during Silhouette */
+    .whos-that-pill {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%) scale(0.7);
+      z-index: 9;
+      padding: 5px 14px;
+      border-radius: 99px;
+      background: linear-gradient(180deg, #fef08a 0%, #eab308 100%);
+      border: 2px solid #0f172a;
+      color: #0f172a;
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      white-space: nowrap;
+      box-shadow: 0 6px 20px rgba(250, 204, 21, 0.55);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.24s ease, transform 0.3s cubic-bezier(0.2, 1.3, 0.35, 1);
+    }
+    .podium-rank-card.is-silhouette .whos-that-pill {
+      opacity: 1;
+      transform: translateX(-50%) scale(1);
+      animation: whosThatBounce 0.85s ease-in-out infinite alternate;
+    }
+    .podium-rank-card.is-revealed .whos-that-pill {
+      opacity: 0;
+      transform: translateX(-50%) translateY(-14px) scale(0.75);
+    }
+    @keyframes whosThatBounce {
+      from { transform: translateX(-50%) translateY(0px) scale(1); }
+      to   { transform: translateX(-50%) translateY(-5px) scale(1.05); }
+    }
+
+    /* Avatar Emerge: Stage 1 Silhouette -> Stage 2 Full Color Reveal */
     .podium-img-3d {
       position: relative;
-      z-index: 2;
-      max-height: 220px;
+      z-index: 5;
+      max-height: 225px;
       max-width: 90%;
       object-fit: contain;
-      filter: drop-shadow(0 12px 20px rgba(0, 0, 0, 0.78));
-      animation: stageFloat 3.3s ease-in-out infinite;
+      opacity: 0;
+      transform: translateY(65px) scale(0.18);
+      transform-origin: bottom center;
+      cursor: pointer;
     }
-    .rank-1 .podium-img-3d { max-height: 250px; }
+    .rank-1 .podium-img-3d { max-height: 255px; }
     .podium-avatar-stage.is-duo .podium-img-3d { max-width: 47%; max-height: 205px; }
 
-    .podium-glass-box {
-      width: 100%;
-      border-radius: 15px;
-      padding: 12px 14px;
-      text-align: center;
-      backdrop-filter: blur(12px);
+    .podium-rank-card.is-silhouette .podium-img-3d {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: brightness(0) drop-shadow(0 0 14px rgba(56, 189, 248, 0.85));
+      animation: avatarSilhouetteEmerge 0.58s cubic-bezier(0.2, 1.25, 0.35, 1) 0.08s both;
     }
-    .rank-1 .podium-glass-box {
-      background: linear-gradient(180deg, rgba(72, 54, 12, 0.92), rgba(18, 15, 10, 0.98));
-      border: 1.5px solid #facc15;
-      box-shadow: 0 0 26px rgba(250, 204, 21, 0.35);
-    }
-    .rank-2 .podium-glass-box {
-      background: linear-gradient(180deg, rgba(14, 52, 75, 0.92), rgba(11, 20, 32, 0.98));
-      border: 1.5px solid #38bdf8;
-      box-shadow: 0 0 22px rgba(56, 189, 248, 0.28);
-    }
-    .rank-3 .podium-glass-box {
-      background: linear-gradient(180deg, rgba(68, 36, 22, 0.92), rgba(22, 13, 10, 0.98));
-      border: 1.5px solid #fb923c;
-      box-shadow: 0 0 22px rgba(251, 146, 60, 0.28);
+    .podium-rank-card.is-revealed .podium-img-3d {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: brightness(1) saturate(1) drop-shadow(0 12px 20px rgba(0, 0, 0, 0.78));
+      animation: avatarFullReveal 0.55s cubic-bezier(0.2, 1.22, 0.35, 1) both;
     }
 
-    .podium-badge {
+    @keyframes avatarSilhouetteEmerge {
+      0% {
+        opacity: 0;
+        transform: translateY(72px) scale(0.15);
+        filter: brightness(0) drop-shadow(0 0 24px #ffffff);
+      }
+      55% {
+        opacity: 1;
+        transform: translateY(-8px) scale(1.05);
+        filter: brightness(0) drop-shadow(0 0 18px rgba(250, 204, 21, 0.9));
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: brightness(0) drop-shadow(0 0 14px rgba(56, 189, 248, 0.85));
+      }
+    }
+    @keyframes avatarFullReveal {
+      0% {
+        opacity: 1;
+        transform: scale(1.08);
+        filter: brightness(3.8) saturate(0) drop-shadow(0 0 32px #ffffff);
+      }
+      45% {
+        opacity: 1;
+        transform: scale(0.98);
+        filter: brightness(1.35) saturate(1.1) drop-shadow(0 12px 22px rgba(0, 0, 0, 0.72));
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+        filter: brightness(1) saturate(1) drop-shadow(0 12px 20px rgba(0, 0, 0, 0.78));
+      }
+    }
+
+    /* ==========================================================================
+       NAMEPLATE OPTION 2: POKÉDEX ROTOM PLAQUE (HIGH-CONTRAST LIGHT CARD)
+       ========================================================================== */
+    .rotom-plaque {
+      position: relative;
+      width: 100%;
+      border-radius: 16px;
+      padding: 20px 14px 13px;
+      background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+      border: 2.5px solid #cbd5e1;
+      box-shadow:
+        0 18px 36px rgba(0, 0, 0, 0.55),
+        inset 0 2px 0 #ffffff;
+      text-align: center;
+      opacity: 0.25;
+      transform: translateY(16px) scale(0.95);
+      transition: opacity 0.38s ease, transform 0.42s cubic-bezier(0.2, 1.2, 0.35, 1), border-color 0.3s ease;
+    }
+    .podium-rank-card.is-silhouette .rotom-plaque {
+      opacity: 0.78;
+      transform: translateY(6px) scale(0.98);
+    }
+    .podium-rank-card.is-revealed .rotom-plaque {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .rank-1 .rotom-plaque {
+      border-color: #eab308;
+      box-shadow:
+        0 20px 42px rgba(0, 0, 0, 0.6),
+        0 0 28px rgba(250, 204, 21, 0.38),
+        inset 0 2px 0 #ffffff;
+    }
+    .rank-2 .rotom-plaque {
+      border-color: #38bdf8;
+      box-shadow:
+        0 18px 36px rgba(0, 0, 0, 0.55),
+        0 0 22px rgba(56, 189, 248, 0.32),
+        inset 0 2px 0 #ffffff;
+    }
+    .rank-3 .rotom-plaque {
+      border-color: #f97316;
+      box-shadow:
+        0 18px 36px rgba(0, 0, 0, 0.55),
+        0 0 22px rgba(249, 115, 22, 0.3),
+        inset 0 2px 0 #ffffff;
+    }
+
+    /* Top Accent Line inside Rotom Plaque */
+    .rotom-plaque::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 12px;
+      right: 12px;
+      height: 3.5px;
+      border-radius: 0 0 4px 4px;
+      background: linear-gradient(90deg, #dc2626 0%, #ef4444 35%, #cbd5e1 60%, #38bdf8 100%);
+    }
+
+    /* Slanted Rank Ribbon Perched on Top Center */
+    .rotom-rank-ribbon {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%) skewX(-12deg);
+      padding: 4px 18px;
+      border-radius: 8px;
+      border: 2px solid #ffffff;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.45);
+      white-space: nowrap;
+      z-index: 3;
+    }
+    .rotom-rank-ribbon span {
       display: inline-block;
+      transform: skewX(12deg);
       font-family: 'Outfit', sans-serif;
       font-size: 12px;
       font-weight: 900;
-      letter-spacing: 1.2px;
-      padding: 3px 14px;
-      border-radius: 99px;
-      margin-bottom: 6px;
+      letter-spacing: 1.1px;
     }
-    .rank-1 .podium-badge { background: rgba(250, 204, 21, 0.22); color: #fef08a; border: 1px solid #facc15; }
-    .rank-2 .podium-badge { background: rgba(56, 189, 248, 0.2); color: #bae6fd; border: 1px solid #38bdf8; }
-    .rank-3 .podium-badge { background: rgba(251, 146, 60, 0.2); color: #fed7aa; border: 1px solid #fb923c; }
+    .rank-1 .rotom-rank-ribbon {
+      background: linear-gradient(180deg, #fde047 0%, #ca8a04 100%);
+      color: #422006;
+      border-color: #fef9c3;
+    }
+    .rank-2 .rotom-rank-ribbon {
+      background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+      color: #ffffff;
+      border-color: #e0f2fe;
+    }
+    .rank-3 .rotom-rank-ribbon {
+      background: linear-gradient(180deg, #fb923c 0%, #ea580c 100%);
+      color: #ffffff;
+      border-color: #ffedd5;
+    }
+
+    /* Mini 3 Pokédex Dots + Blue Lens inside Plaque Header */
+    .rotom-plaque-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      padding: 0 2px;
+    }
+    .rotom-mini-dots {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .rotom-mini-dots i {
+      display: block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      border: 1px solid rgba(15, 23, 42, 0.2);
+    }
+    .rotom-mini-dots i:nth-child(1) { background: #ef4444; }
+    .rotom-mini-dots i:nth-child(2) { background: #eab308; }
+    .rotom-mini-dots i:nth-child(3) { background: #22c55e; }
+    .rotom-mini-lens {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 32% 30%, #e0f2fe, #0284c7 68%, #0c4a6e);
+      border: 1.5px solid #94a3b8;
+    }
 
     .podium-name {
-      font-family: 'Outfit', sans-serif;
-      font-size: 19px;
-      font-weight: 900;
-      color: #ffffff;
-      line-height: 1.25;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      color: #020617;
+      line-height: 1.2;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      padding: 0 2px;
     }
+    .rank-1 .podium-name { font-size: 22px; }
+
     .podium-pts {
-      margin-top: 6px;
-      padding: 5px 10px;
-      border-radius: 8px;
-      background: rgba(0, 0, 0, 0.45);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      margin-top: 8px;
+      padding: 6px 12px;
+      border-radius: 10px;
+      background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+      border: 1.5px solid #334155;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 20px;
-      font-weight: 900;
-      color: #f8fafc;
+      font-size: 19px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: 0.6px;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.35);
     }
+    .rank-1 .podium-pts {
+      color: #fde047;
+      border-color: #ca8a04;
+    }
+    .rank-2 .podium-pts {
+      color: #7dd3fc;
+      border-color: #0284c7;
+    }
+    .rank-3 .podium-pts {
+      color: #fdba74;
+      border-color: #ea580c;
+    }
+
+    .podium-controls-bar {
+      margin-top: 24px;
+      display: flex;
+      gap: 10px;
+      z-index: 30006;
+    }
+    .btn-podium-replay {
+      background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%);
+      color: #ffffff;
+      border: 1.5px solid #fca5a5;
+      padding: 9px 20px;
+      border-radius: 99px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(220, 38, 38, 0.45);
+      transition: transform 0.14s ease, filter 0.14s ease;
+    }
+    .btn-podium-replay:hover { transform: translateY(-2px); filter: brightness(1.1); }
   </style>
 </head>
 <body>
@@ -2448,38 +2908,53 @@
     </div>
   </div>
 
-  <!-- 3D PODIUM CEREMONY OVERLAY -->
+  <!-- POKÉBALL PODIUM CEREMONY OVERLAY (SILHOUETTE + ROTOM PLAQUE) -->
   <div class="podium-overlay" id="podiumOverlay">
     <canvas id="fireworksCanvas"></canvas>
     <button class="btn-close-podium" onclick="tutupPodium()" title="Tutup">✕</button>
     <div class="podium-stage">
-      <div class="podium-subtitle" id="podiumSub">GRAND FINALS CEREMONY</div>
+      <div class="podium-subtitle" id="podiumSub">HALL OF FAME • REVEAL</div>
       <h1 class="podium-title" id="podiumTitle">CONGRATULATIONS</h1>
       <div class="podium-row">
-        <div class="podium-rank-card rank-2">
+        <div class="podium-rank-card rank-2" id="podCard2">
           <div class="podium-avatar-stage" id="podAv2"></div>
-          <div class="podium-glass-box">
-            <div class="podium-badge" id="podBadge2">#2 PLACE</div>
-            <div class="podium-name" id="podName2">-</div>
-            <div class="podium-pts" id="podPts2">0 PTS</div>
+          <div class="rotom-plaque">
+            <div class="rotom-rank-ribbon"><span id="podBadge2">#2 PLACE</span></div>
+            <div class="rotom-plaque-meta">
+              <div class="rotom-mini-dots"><i></i><i></i><i></i></div>
+              <div class="rotom-mini-lens"></div>
+            </div>
+            <div class="podium-name" id="podName2">???</div>
+            <div class="podium-pts" id="podPts2">??? PTS</div>
           </div>
         </div>
-        <div class="podium-rank-card rank-1">
+        <div class="podium-rank-card rank-1" id="podCard1">
           <div class="podium-avatar-stage" id="podAv1"></div>
-          <div class="podium-glass-box">
-            <div class="podium-badge" id="podBadge1">#1 CHAMPION</div>
-            <div class="podium-name" id="podName1">-</div>
-            <div class="podium-pts" id="podPts1">0 PTS</div>
+          <div class="rotom-plaque">
+            <div class="rotom-rank-ribbon"><span id="podBadge1">#1 CHAMPION</span></div>
+            <div class="rotom-plaque-meta">
+              <div class="rotom-mini-dots"><i></i><i></i><i></i></div>
+              <div class="rotom-mini-lens"></div>
+            </div>
+            <div class="podium-name" id="podName1">???</div>
+            <div class="podium-pts" id="podPts1">??? PTS</div>
           </div>
         </div>
-        <div class="podium-rank-card rank-3">
+        <div class="podium-rank-card rank-3" id="podCard3">
           <div class="podium-avatar-stage" id="podAv3"></div>
-          <div class="podium-glass-box">
-            <div class="podium-badge" id="podBadge3">#3 PLACE</div>
-            <div class="podium-name" id="podName3">-</div>
-            <div class="podium-pts" id="podPts3">0 PTS</div>
+          <div class="rotom-plaque">
+            <div class="rotom-rank-ribbon"><span id="podBadge3">#3 PLACE</span></div>
+            <div class="rotom-plaque-meta">
+              <div class="rotom-mini-dots"><i></i><i></i><i></i></div>
+              <div class="rotom-mini-lens"></div>
+            </div>
+            <div class="podium-name" id="podName3">???</div>
+            <div class="podium-pts" id="podPts3">??? PTS</div>
           </div>
         </div>
+      </div>
+      <div class="podium-controls-bar">
+        <button type="button" class="btn-podium-replay" onclick="putarUlangPokeballPodium()">↻ Lempar Ulang Pokéball</button>
       </div>
     </div>
   </div>
@@ -2530,10 +3005,17 @@
       { id: 'duo_10', name: 'DUO 10', color: '#0d9488' }
     ];
 
-    const SAMPLE_BOBOL_HEAD = 'https://tr.rbxcdn.com/30DAY-AvatarHeadshot-FBCE3486A51CD3FD573C6A2EAA25E6DE-Png/150/150/AvatarHeadshot/Png/noFilter';
-    const SAMPLE_BOBOL_3D   = 'https://tr.rbxcdn.com/30DAY-Avatar-FBCE3486A51CD3FD573C6A2EAA25E6DE-Png/420/420/Avatar/Png/noFilter';
-    const SAMPLE_BUILDERMAN_HEAD = 'https://api.dicebear.com/9.x/bottts/svg?seed=builderman&backgroundColor=facc15';
-    const PLACEHOLDER_SILHOUETTE = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 130' fill='none'><circle cx='50' cy='35' r='22' fill='%2394a3b8' fill-opacity='0.35'/><path d='M18 110c0-20 14-36 32-36s32 16 32 36v14H18v-14z' fill='%2394a3b8' fill-opacity='0.35'/></svg>";
+    const SAMPLE_BOBOL_HEAD = 'https://api.dicebear.com/9.x/adventurer/svg?seed=Bobohu&backgroundColor=bae6fd';
+    const SAMPLE_BOBOL_3D   = 'https://api.dicebear.com/9.x/adventurer/svg?seed=Bobohu&backgroundColor=bae6fd';
+    const SAMPLE_BUILDERMAN_HEAD = 'https://api.dicebear.com/9.x/bottts/svg?seed=builderman&backgroundColor=fef08a';
+    const PLACEHOLDER_SILHOUETTE = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 130' fill='none'><circle cx='50' cy='35' r='22' fill='%2394a3b8' fill-opacity='0.45'/><path d='M18 110c0-20 14-36 32-36s32 16 32 36v14H18v-14z' fill='%2394a3b8' fill-opacity='0.45'/></svg>";
+
+    function getFallbackCharacterUrl(seedName, isBot = false) {
+      const safe = encodeURIComponent((seedName || 'trainer').trim() || 'trainer');
+      return isBot
+        ? `https://api.dicebear.com/9.x/bottts/svg?seed=${safe}&backgroundColor=fef08a`
+        : `https://api.dicebear.com/9.x/adventurer/svg?seed=${safe}&backgroundColor=e0f2fe`;
+    }
 
     function buatKursiKosong(withSample = false) {
       const players = [];
@@ -2607,12 +3089,25 @@
       };
     }
 
+    function bersihkanUrlAvatarLama(seatObj) {
+      if (!seatObj) return;
+      const isStaleSample = (u) => typeof u === 'string' && u.includes('FBCE3486A51CD3FD573C6A2EAA25E6DE');
+      if (isStaleSample(seatObj.avatar)) seatObj.avatar = SAMPLE_BOBOL_HEAD;
+      if (isStaleSample(seatObj.avatar3d)) seatObj.avatar3d = SAMPLE_BOBOL_3D;
+    }
+
     function muatDB() {
       try {
         const raw = localStorage.getItem(DB_KEY);
         if (raw) {
           const parsed = JSON.parse(raw);
           if (parsed && parsed.sessions && Object.keys(parsed.sessions).length > 0) {
+            Object.values(parsed.sessions).forEach(sess => {
+              ['solo', 'duo'].forEach(m => {
+                if (sess?.[m]?.players) sess[m].players.forEach(bersihkanUrlAvatarLama);
+                if (sess?.[m]?.host) bersihkanUrlAvatarLama(sess[m].host);
+              });
+            });
             if (!parsed.quickPoints || !Array.isArray(parsed.quickPoints)) parsed.quickPoints = [1, 2, 3, 4, 5];
             if (!parsed.duoTeams || parsed.duoTeams.length < 10) parsed.duoTeams = JSON.parse(JSON.stringify(DEFAULT_DUO_TEAMS));
             if (!parsed.gameMode) parsed.gameMode = 'solo';
@@ -2669,23 +3164,10 @@
     async function sinkronAvatarBuildermanSample() {
       const data = getActiveData();
       const p2 = data.players[1];
-      if (!p2 || p2.robloxUser !== 'builderman' || p2.avatar3d) return;
-      try {
-        const [headRes, bodyRes] = await Promise.all([
-          fetchWithTimeout('https://thumbnails.roproxy.com/v1/users/avatar-headshot?userIds=156&size=150x150&format=Png&isCircular=false', {}, 4500),
-          fetchWithTimeout('https://thumbnails.roproxy.com/v1/users/avatar?userIds=156&size=720x720&format=Png&isCircular=false', {}, 4500)
-        ]);
-        if (headRes.ok) {
-          const hd = await headRes.json();
-          if (hd?.data?.[0]?.imageUrl) p2.avatar = hd.data[0].imageUrl;
-        }
-        if (bodyRes.ok) {
-          const bd = await bodyRes.json();
-          if (bd?.data?.[0]?.imageUrl) p2.avatar3d = bd.data[0].imageUrl;
-        }
-        simpanDB();
-        renderPokedexTables();
-      } catch (_) {}
+      if (!p2) return;
+      if (!p2.avatar) p2.avatar = SAMPLE_BUILDERMAN_HEAD;
+      if (!p2.avatar3d) p2.avatar3d = SAMPLE_BUILDERMAN_HEAD;
+      simpanDB();
     }
 
     function simpanDB() {
@@ -3116,9 +3598,12 @@
       const emptyBox = document.getElementById('stageEmptyBox');
       const chip = document.getElementById('stageHeadshotChip');
       const chipImg = document.getElementById('stageHeadshotImg');
+      const labelSeed = (document.getElementById('inputDisplayName')?.value || document.getElementById('inputRobloxUser')?.value || 'trainer').trim();
+      const charFallback = getFallbackCharacterUrl(labelSeed);
 
       if (headUrl) {
         chipImg.src = headUrl;
+        chipImg.onerror = () => { chipImg.src = charFallback; };
         chip.style.display = 'block';
       } else {
         chip.style.display = 'none';
@@ -3126,12 +3611,18 @@
 
       const mainSrc = body3dUrl || headUrl;
       if (mainSrc) {
+        img3d.dataset.fbStep = '0';
         img3d.src = mainSrc;
         img3d.style.display = 'block';
         emptyBox.style.display = 'none';
         img3d.onerror = () => {
-          if (headUrl && img3d.src !== headUrl) {
+          const step = parseInt(img3d.dataset.fbStep || '0', 10);
+          if (step === 0 && headUrl && img3d.src !== headUrl) {
+            img3d.dataset.fbStep = '1';
             img3d.src = headUrl;
+          } else if (step < 2 && img3d.src !== charFallback) {
+            img3d.dataset.fbStep = '2';
+            img3d.src = charFallback;
           } else {
             img3d.style.display = 'none';
             emptyBox.style.display = 'flex';
@@ -3214,22 +3705,40 @@
 
       let found = null;
 
-      // 1. Try local backend first
+      // 1. Try Vercel / local backend first
       try {
-        const res = await fetchWithTimeout(`/api/cari-roblox?username=${encodeURIComponent(rawInput)}`, {}, 1500);
+        const res = await fetchWithTimeout(`/api/cari-roblox?username=${encodeURIComponent(rawInput)}`, {}, 4000);
         if (res.ok) {
           const d = await res.json();
-          if (d && d.sukses) {
+          if (d && (d.sukses || d.userId || d.id)) {
             found = {
-              userId: d.userId || '',
-              userName: d.userName || rawInput,
-              displayName: d.displayName || d.userName || rawInput,
-              avatarUrl: d.avatarUrl || '',
-              avatar3dUrl: d.avatar3dUrl || ''
+              userId: String(d.userId || d.id || ''),
+              userName: d.userName || d.username || d.name || rawInput,
+              displayName: d.displayName || d.userName || d.name || rawInput,
+              avatarUrl: d.avatarUrl || d.headshotUrl || d.avatar || '',
+              avatar3dUrl: d.avatar3dUrl || d.fullBodyUrl || d.bodyUrl || d.avatarFullUrl || ''
             };
           }
         }
       } catch (_) {}
+
+      // 1b. If backend returned userId without full-body avatar3dUrl, fetch full-body thumbnail via RoProxy
+      if (found && found.userId && !found.avatar3dUrl) {
+        try {
+          const [headRes, bodyRes] = await Promise.all([
+            found.avatarUrl ? Promise.resolve(null) : fetchWithTimeout(`https://thumbnails.roproxy.com/v1/users/avatar-headshot?userIds=${found.userId}&size=150x150&format=Png&isCircular=false`, {}, 4500),
+            fetchWithTimeout(`https://thumbnails.roproxy.com/v1/users/avatar?userIds=${found.userId}&size=720x720&format=Png&isCircular=false`, {}, 4500)
+          ]);
+          if (headRes && headRes.ok) {
+            const hd = await headRes.json();
+            found.avatarUrl = hd?.data?.[0]?.imageUrl || found.avatarUrl;
+          }
+          if (bodyRes && bodyRes.ok) {
+            const bd = await bodyRes.json();
+            found.avatar3dUrl = bd?.data?.[0]?.imageUrl || '';
+          }
+        } catch (_) {}
+      }
 
       // 2. Fallback to RoProxy Public Roblox APIs
       if (!found) {
@@ -3296,13 +3805,16 @@
       btn.textContent = 'Cari';
 
       if (found) {
+        const fallbackChar = getFallbackCharacterUrl(found.displayName || found.userName);
+        const finalHead = found.avatarUrl || fallbackChar;
+        const final3d = found.avatar3dUrl || finalHead;
         document.getElementById('inputRobloxUser').value = found.userName;
         document.getElementById('inputDisplayName').value = found.displayName;
-        document.getElementById('editAvatarHead').value = found.avatarUrl;
-        document.getElementById('editAvatar3d').value = found.avatar3dUrl;
+        document.getElementById('editAvatarHead').value = finalHead;
+        document.getElementById('editAvatar3d').value = final3d;
         document.getElementById('editUserId').value = found.userId;
 
-        updateStageAvatars(found.avatarUrl, found.avatar3dUrl);
+        updateStageAvatars(finalHead, final3d);
         sinkronPreviewNamaStage();
         statusEl.style.color = '#4ade80';
         statusEl.textContent = 'Akun Roblox & Avatar 3D ditemukan! ✔';
@@ -3949,59 +4461,188 @@
     }
 
     /* =========================================================================
-       10. 3D PODIUM CEREMONY + FIREWORKS CANVAS (NO TROPHY/MEDAL ICONS)
+       10. POKÉBALL PODIUM CEREMONY + SILHOUETTE ("WHO'S THAT?") + ROTOM PLAQUE
        ========================================================================= */
-    function renderPodiumAvatar(containerId, p1, p2, isDuo) {
+    let podiumRevealTimers = [];
+    let podiumWinnerData = { 1: { name: '-', pts: '0 PTS' }, 2: { name: '-', pts: '0 PTS' }, 3: { name: '-', pts: '0 PTS' } };
+
+    function bersihkanTimerPodium() {
+      podiumRevealTimers.forEach(t => clearTimeout(t));
+      podiumRevealTimers = [];
+    }
+
+    function putarSuaraSiluet(pitchBoost = 0) {
+      playSynthTone(330 + pitchBoost, 0.00, 0.12, 'triangle', 0.18);
+      playSynthTone(440 + pitchBoost, 0.10, 0.16, 'sine', 0.18);
+      playSynthTone(392 + pitchBoost, 0.22, 0.22, 'triangle', 0.14);
+    }
+
+    function putarSuaraPopPokeball(pitchBoost = 0) {
+      playSynthTone(480 + pitchBoost, 0.00, 0.08, 'sine', 0.18);
+      playSynthTone(720 + pitchBoost, 0.05, 0.14, 'triangle', 0.22);
+      playSynthTone(1046 + pitchBoost, 0.10, 0.22, 'sine', 0.20);
+    }
+
+    function munculkanSiluetPodium(rankNo) {
+      const card = document.getElementById(`podCard${rankNo}`);
+      if (!card || card.classList.contains('is-revealed') || card.classList.contains('is-silhouette')) return;
+      card.classList.add('is-silhouette');
+      document.getElementById(`podName${rankNo}`).textContent = '???';
+      document.getElementById(`podPts${rankNo}`).textContent = '??? PTS';
+      putarSuaraSiluet(rankNo === 1 ? 110 : (rankNo === 2 ? 55 : 0));
+    }
+
+    function bukaPenuhPodium(rankNo) {
+      const card = document.getElementById(`podCard${rankNo}`);
+      if (!card || card.classList.contains('is-revealed')) return;
+      card.classList.remove('is-silhouette');
+      card.classList.add('is-revealed');
+      const info = podiumWinnerData[rankNo] || { name: '-', pts: '0 PTS' };
+      document.getElementById(`podName${rankNo}`).textContent = info.name;
+      document.getElementById(`podPts${rankNo}`).textContent = info.pts;
+
+      if (rankNo === 1) {
+        putarSuaraPodium();
+        mulaiPetasan();
+      } else {
+        putarSuaraPopPokeball(rankNo === 2 ? 120 : 0);
+      }
+    }
+
+    function klikStagePodium(rankNo) {
+      const card = document.getElementById(`podCard${rankNo}`);
+      if (!card) return;
+      if (!card.classList.contains('is-silhouette') && !card.classList.contains('is-revealed')) {
+        munculkanSiluetPodium(rankNo);
+      } else if (card.classList.contains('is-silhouette')) {
+        bukaPenuhPodium(rankNo);
+      }
+    }
+
+    function renderPodiumAvatar(containerId, rankNo, p1, p2, isDuo) {
       const box = document.getElementById(containerId);
       box.className = `podium-avatar-stage ${isDuo ? 'is-duo' : ''}`;
-      const makeImg = obj => {
-        const src = obj?.customGif || obj?.avatar3d || obj?.avatar || PLACEHOLDER_SILHOUETTE;
-        const head = (obj?.avatar || PLACEHOLDER_SILHOUETTE).replace(/'/g, "\\'");
-        return `<img class="podium-img-3d" src="${src}" alt="" onerror="this.onerror=null;this.src='${head}';" />`;
+      const makeImg = (obj, fallbackSeed) => {
+        const hasAny = Boolean(obj && (obj.avatar3d || obj.avatar || obj.nick || obj.user || obj.robloxUser));
+        const charUrl = getFallbackCharacterUrl(obj?.nick || obj?.user || obj?.robloxUser || fallbackSeed);
+        const primary = hasAny ? (obj?.avatar3d || obj?.avatar || charUrl) : PLACEHOLDER_SILHOUETTE;
+        const head = (obj?.avatar || charUrl).replace(/'/g, "\\'");
+        const fbChar = charUrl.replace(/'/g, "\\'");
+        return `<img class="podium-img-3d" src="${primary}" alt="" onclick="klikStagePodium(${rankNo})" data-fb="0" onerror="if(this.dataset.fb==='0'&&this.src!=='${head}'){this.dataset.fb='1';this.src='${head}';}else if(this.dataset.fb!=='2'&&${hasAny ? 'true' : 'false'}){this.dataset.fb='2';this.src='${fbChar}';}else{this.onerror=null;this.src='${PLACEHOLDER_SILHOUETTE}';}" />`;
       };
-      box.innerHTML = `<div class="podium-aura"></div><div class="el-particles-layer" id="${containerId}_pt"></div>` + (isDuo ? makeImg(p1) + makeImg(p2) : makeImg(p1));
-      const pColor = (p1?.colorTag && ELEMENTAL_COLORS[p1.colorTag]) ? ELEMENTAL_COLORS[p1.colorTag].hex : '#facc15';
-      renderElementalParticles(document.getElementById(`${containerId}_pt`), pColor, 10);
+      const ballLabel = rankNo === 1 ? 'MASTER BALL' : (rankNo === 2 ? 'GREAT BALL' : 'POKÉBALL');
+      box.innerHTML = `
+        <div class="podium-aura"></div>
+        <div class="podium-pad"></div>
+        <div class="pokeball-beam"></div>
+        <div class="pokeball-burst"></div>
+        <div class="whos-that-pill">WHO'S THAT?</div>
+        <div class="pokeball-wrap" onclick="klikStagePodium(${rankNo})" title="Klik untuk membuka">
+          <div class="pokeball-orb"><div class="pokeball-btn"></div></div>
+          <span class="pokeball-hint">${ballLabel}</span>
+        </div>
+        ${isDuo ? makeImg(p1, 'P1') + makeImg(p2, 'P2') : makeImg(p1, 'Champion')}
+      `;
+    }
+
+    function jalankanUrutanPokeballPodium() {
+      bersihkanTimerPodium();
+      [1, 2, 3].forEach(r => {
+        const card = document.getElementById(`podCard${r}`);
+        if (card) {
+          card.classList.remove('is-revealed');
+          card.classList.remove('is-silhouette');
+        }
+        document.getElementById(`podName${r}`).textContent = '???';
+        document.getElementById(`podPts${r}`).textContent = '??? PTS';
+      });
+      if (fireworksTimer) { clearInterval(fireworksTimer); fireworksTimer = null; }
+
+      // Urutan dramatis: #3 siluet -> #3 buka -> #2 siluet -> #2 buka -> #1 siluet -> #1 buka
+      podiumRevealTimers.push(setTimeout(() => munculkanSiluetPodium(3), 650));
+      podiumRevealTimers.push(setTimeout(() => bukaPenuhPodium(3), 1650));
+      podiumRevealTimers.push(setTimeout(() => munculkanSiluetPodium(2), 2150));
+      podiumRevealTimers.push(setTimeout(() => bukaPenuhPodium(2), 3150));
+      podiumRevealTimers.push(setTimeout(() => munculkanSiluetPodium(1), 3700));
+      podiumRevealTimers.push(setTimeout(() => bukaPenuhPodium(1), 4900));
+    }
+
+    function putarUlangPokeballPodium() {
+      tampilkanPodium();
+    }
+
+    async function pulihkanAvatar3dPemainAktif() {
+      const data = getActiveData();
+      const allSeats = [...data.players, data.host];
+      const needIds = allSeats
+        .filter(p => p && p.userId && (!p.avatar3d || p.avatar3d.includes('dicebear.com')))
+        .map(p => String(p.userId));
+      const uniqueIds = [...new Set(needIds)];
+      if (uniqueIds.length === 0) return;
+      try {
+        const res = await fetchWithTimeout(
+          `https://thumbnails.roproxy.com/v1/users/avatar?userIds=${uniqueIds.join(',')}&size=720x720&format=Png&isCircular=false`,
+          {},
+          4500
+        );
+        if (!res.ok) return;
+        const json = await res.json();
+        const urlMap = {};
+        (json?.data || []).forEach(item => {
+          if (item?.targetId && item?.imageUrl && item?.state === 'Completed') {
+            urlMap[String(item.targetId)] = item.imageUrl;
+          }
+        });
+        let changed = false;
+        allSeats.forEach(p => {
+          if (p && p.userId && urlMap[String(p.userId)]) {
+            p.avatar3d = urlMap[String(p.userId)];
+            changed = true;
+          }
+        });
+        if (changed) simpanDB();
+      } catch (_) {}
     }
 
     function tampilkanPodium() {
       tutupSemuaPopupKecil();
+      bersihkanTimerPodium();
       const isDuo = db.gameMode === 'duo';
 
       if (isDuo) {
         const sorted = [...hitungSkorTimDuo()].sort((a, b) => b.totalPoints - a.totalPoints);
-        document.getElementById('podiumSub').textContent = 'DUO BATTLE CHAMPIONS';
+        document.getElementById('podiumSub').textContent = 'DUO BATTLE • REVEAL';
         document.getElementById('podiumTitle').textContent = 'TEAM VICTORY';
         [0, 1, 2].forEach(r => {
-          const t = sorted[r] || { name: `DUO ${r + 1}`, totalPoints: 0, p1: null, p2: null };
+          const rankNo = r + 1;
+          const t = sorted[r] || { name: `DUO ${rankNo}`, totalPoints: 0, p1: null, p2: null };
           const n1 = t.p1?.nick || t.p1?.user || 'Pemain 1';
           const n2 = t.p2?.nick || t.p2?.user || 'Pemain 2';
-          document.getElementById(`podBadge${r + 1}`).textContent = `#${r + 1} • ${t.name}`;
-          document.getElementById(`podName${r + 1}`).textContent = `${n1} & ${n2}`;
-          document.getElementById(`podPts${r + 1}`).textContent = `${t.totalPoints} PTS`;
-          renderPodiumAvatar(`podAv${r + 1}`, t.p1, t.p2, true);
+          document.getElementById(`podBadge${rankNo}`).textContent = `#${rankNo} • ${t.name}`;
+          podiumWinnerData[rankNo] = { name: `${n1} & ${n2}`, pts: `${t.totalPoints} PTS` };
+          renderPodiumAvatar(`podAv${rankNo}`, rankNo, t.p1, t.p2, true);
         });
       } else {
         const data = getActiveData();
         const sorted = [...data.players].filter(p => hasPlayerContent(p)).sort((a, b) => (b.poin || 0) - (a.poin || 0));
-        document.getElementById('podiumSub').textContent = 'GRAND FINALS CEREMONY';
+        document.getElementById('podiumSub').textContent = 'HALL OF FAME • REVEAL';
         document.getElementById('podiumTitle').textContent = 'CONGRATULATIONS';
         const labels = ['#1 CHAMPION', '#2 PLACE', '#3 PLACE'];
         [0, 1, 2].forEach(r => {
+          const rankNo = r + 1;
           const p = sorted[r] || { nick: 'Belum Ada', poin: 0 };
-          document.getElementById(`podBadge${r + 1}`).textContent = labels[r];
-          document.getElementById(`podName${r + 1}`).textContent = p.nick || p.user || 'Belum Ada';
-          document.getElementById(`podPts${r + 1}`).textContent = `${p.poin || 0} PTS`;
-          renderPodiumAvatar(`podAv${r + 1}`, p, null, false);
+          document.getElementById(`podBadge${rankNo}`).textContent = labels[r];
+          podiumWinnerData[rankNo] = { name: p.nick || p.user || 'Belum Ada', pts: `${p.poin || 0} PTS` };
+          renderPodiumAvatar(`podAv${rankNo}`, rankNo, p, null, false);
         });
       }
 
       document.getElementById('podiumOverlay').classList.add('active');
-      putarSuaraPodium();
-      mulaiPetasan();
+      jalankanUrutanPokeballPodium();
     }
 
     function tutupPodium() {
+      bersihkanTimerPodium();
       document.getElementById('podiumOverlay').classList.remove('active');
       if (fireworksTimer) { clearInterval(fireworksTimer); fireworksTimer = null; }
       if (fireworksRaf) { cancelAnimationFrame(fireworksRaf); fireworksRaf = null; }
@@ -4115,6 +4756,7 @@
       applyLogFold();
       renderPokedexTables();
       sinkronAvatarBuildermanSample();
+      pulihkanAvatar3dPemainAktif();
       tambahLog('SISTEM', `Pokédex Light Combo siap — ${db.activeSession}`);
 
     });
