@@ -5019,6 +5019,8 @@
     let autoConfig = JSON.parse(JSON.stringify(DEFAULT_AUTO_CONFIG));
     let autoEventSource = null;
     let autoReconnectTimer = null;
+    let autoReconnectDelay = 5000;
+    let autoConnectedAt = 0;
     let autoConnState = 'off'; // 'off' | 'connecting' | 'live'
     let autoBroadcastChannel = null;
     let autoCatchHistory = [];
@@ -5161,7 +5163,8 @@
       autoConnState = 'connecting';
       updateAutoModeUI();
 
-      const sseUrl = `https://ntfy.sh/${encodeURIComponent(autoConfig.topic)}/sse?since=now`;
+      // Default /sse di ntfy.sh otomatis hanya mengirim pesan baru secara live (tanpa ?since=now)
+      const sseUrl = `https://ntfy.sh/${encodeURIComponent(autoConfig.topic)}/sse`;
       try {
         const es = new EventSource(sseUrl);
         autoEventSource = es;
@@ -5169,6 +5172,8 @@
         es.onopen = () => {
           if (autoEventSource !== es) return;
           autoConnState = 'live';
+          autoReconnectDelay = 5000;
+          autoConnectedAt = Date.now();
           updateAutoModeUI();
         };
 
@@ -5197,16 +5202,20 @@
           }
           autoConnState = 'connecting';
           updateAutoModeUI();
+          const waitMs = autoReconnectDelay;
+          autoReconnectDelay = Math.min(autoReconnectDelay * 2, 30000);
           autoReconnectTimer = setTimeout(() => {
             if (autoConfig.enabled) mulaiKoneksiAuto();
-          }, 3500);
+          }, waitMs);
         };
       } catch (err) {
         autoConnState = 'connecting';
         updateAutoModeUI();
+        const waitMs = autoReconnectDelay;
+        autoReconnectDelay = Math.min(autoReconnectDelay * 2, 30000);
         autoReconnectTimer = setTimeout(() => {
           if (autoConfig.enabled) mulaiKoneksiAuto();
-        }, 4000);
+        }, waitMs);
       }
     }
 
