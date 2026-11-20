@@ -3013,10 +3013,17 @@
       { id: 'duo_10', name: 'DUO 10', color: '#0d9488' }
     ];
 
-    const SAMPLE_BOBOL_HEAD = 'https://tr.rbxcdn.com/30DAY-AvatarHeadshot-FBCE3486A51CD3FD573C6A2EAA25E6DE-Png/150/150/AvatarHeadshot/Png/noFilter';
-    const SAMPLE_BOBOL_3D   = 'https://tr.rbxcdn.com/30DAY-Avatar-FBCE3486A51CD3FD573C6A2EAA25E6DE-Png/420/420/Avatar/Png/noFilter';
-    const SAMPLE_BUILDERMAN_HEAD = 'https://api.dicebear.com/9.x/bottts/svg?seed=builderman&backgroundColor=facc15';
-    const PLACEHOLDER_SILHOUETTE = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 130' fill='none'><circle cx='50' cy='35' r='22' fill='%2394a3b8' fill-opacity='0.35'/><path d='M18 110c0-20 14-36 32-36s32 16 32 36v14H18v-14z' fill='%2394a3b8' fill-opacity='0.35'/></svg>";
+    const SAMPLE_BOBOL_HEAD = 'https://api.dicebear.com/9.x/adventurer/svg?seed=Bobohu&backgroundColor=bae6fd';
+    const SAMPLE_BOBOL_3D   = 'https://api.dicebear.com/9.x/adventurer/svg?seed=Bobohu&backgroundColor=bae6fd';
+    const SAMPLE_BUILDERMAN_HEAD = 'https://api.dicebear.com/9.x/bottts/svg?seed=builderman&backgroundColor=fef08a';
+    const PLACEHOLDER_SILHOUETTE = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 130' fill='none'><circle cx='50' cy='35' r='22' fill='%2394a3b8' fill-opacity='0.45'/><path d='M18 110c0-20 14-36 32-36s32 16 32 36v14H18v-14z' fill='%2394a3b8' fill-opacity='0.45'/></svg>";
+
+    function getFallbackCharacterUrl(seedName, isBot = false) {
+      const safe = encodeURIComponent((seedName || 'trainer').trim() || 'trainer');
+      return isBot
+        ? `https://api.dicebear.com/9.x/bottts/svg?seed=${safe}&backgroundColor=fef08a`
+        : `https://api.dicebear.com/9.x/adventurer/svg?seed=${safe}&backgroundColor=e0f2fe`;
+    }
 
     function buatKursiKosong(withSample = false) {
       const players = [];
@@ -3090,12 +3097,25 @@
       };
     }
 
+    function bersihkanUrlAvatarLama(seatObj) {
+      if (!seatObj) return;
+      const isStaleSample = (u) => typeof u === 'string' && u.includes('FBCE3486A51CD3FD573C6A2EAA25E6DE');
+      if (isStaleSample(seatObj.avatar)) seatObj.avatar = SAMPLE_BOBOL_HEAD;
+      if (isStaleSample(seatObj.avatar3d)) seatObj.avatar3d = SAMPLE_BOBOL_3D;
+    }
+
     function muatDB() {
       try {
         const raw = localStorage.getItem(DB_KEY);
         if (raw) {
           const parsed = JSON.parse(raw);
           if (parsed && parsed.sessions && Object.keys(parsed.sessions).length > 0) {
+            Object.values(parsed.sessions).forEach(sess => {
+              ['solo', 'duo'].forEach(m => {
+                if (sess?.[m]?.players) sess[m].players.forEach(bersihkanUrlAvatarLama);
+                if (sess?.[m]?.host) bersihkanUrlAvatarLama(sess[m].host);
+              });
+            });
             if (!parsed.quickPoints || !Array.isArray(parsed.quickPoints)) parsed.quickPoints = [1, 2, 3, 4, 5];
             if (!parsed.duoTeams || parsed.duoTeams.length < 10) parsed.duoTeams = JSON.parse(JSON.stringify(DEFAULT_DUO_TEAMS));
             if (!parsed.gameMode) parsed.gameMode = 'solo';
@@ -3152,23 +3172,10 @@
     async function sinkronAvatarBuildermanSample() {
       const data = getActiveData();
       const p2 = data.players[1];
-      if (!p2 || p2.robloxUser !== 'builderman' || p2.avatar3d) return;
-      try {
-        const [headRes, bodyRes] = await Promise.all([
-          fetchWithTimeout('https://thumbnails.roproxy.com/v1/users/avatar-headshot?userIds=156&size=150x150&format=Png&isCircular=false', {}, 4500),
-          fetchWithTimeout('https://thumbnails.roproxy.com/v1/users/avatar?userIds=156&size=720x720&format=Png&isCircular=false', {}, 4500)
-        ]);
-        if (headRes.ok) {
-          const hd = await headRes.json();
-          if (hd?.data?.[0]?.imageUrl) p2.avatar = hd.data[0].imageUrl;
-        }
-        if (bodyRes.ok) {
-          const bd = await bodyRes.json();
-          if (bd?.data?.[0]?.imageUrl) p2.avatar3d = bd.data[0].imageUrl;
-        }
-        simpanDB();
-        renderPokedexTables();
-      } catch (_) {}
+      if (!p2) return;
+      if (!p2.avatar) p2.avatar = SAMPLE_BUILDERMAN_HEAD;
+      if (!p2.avatar3d) p2.avatar3d = SAMPLE_BUILDERMAN_HEAD;
+      simpanDB();
     }
 
     function simpanDB() {
@@ -3599,9 +3606,12 @@
       const emptyBox = document.getElementById('stageEmptyBox');
       const chip = document.getElementById('stageHeadshotChip');
       const chipImg = document.getElementById('stageHeadshotImg');
+      const labelSeed = (document.getElementById('inputDisplayName')?.value || document.getElementById('inputRobloxUser')?.value || 'trainer').trim();
+      const charFallback = getFallbackCharacterUrl(labelSeed);
 
       if (headUrl) {
         chipImg.src = headUrl;
+        chipImg.onerror = () => { chipImg.src = charFallback; };
         chip.style.display = 'block';
       } else {
         chip.style.display = 'none';
@@ -3609,12 +3619,18 @@
 
       const mainSrc = body3dUrl || headUrl;
       if (mainSrc) {
+        img3d.dataset.fbStep = '0';
         img3d.src = mainSrc;
         img3d.style.display = 'block';
         emptyBox.style.display = 'none';
         img3d.onerror = () => {
-          if (headUrl && img3d.src !== headUrl) {
+          const step = parseInt(img3d.dataset.fbStep || '0', 10);
+          if (step === 0 && headUrl && img3d.src !== headUrl) {
+            img3d.dataset.fbStep = '1';
             img3d.src = headUrl;
+          } else if (step < 2 && img3d.src !== charFallback) {
+            img3d.dataset.fbStep = '2';
+            img3d.src = charFallback;
           } else {
             img3d.style.display = 'none';
             emptyBox.style.display = 'flex';
@@ -3697,22 +3713,40 @@
 
       let found = null;
 
-      // 1. Try local backend first
+      // 1. Try Vercel / local backend first
       try {
-        const res = await fetchWithTimeout(`/api/cari-roblox?username=${encodeURIComponent(rawInput)}`, {}, 1500);
+        const res = await fetchWithTimeout(`/api/cari-roblox?username=${encodeURIComponent(rawInput)}`, {}, 4000);
         if (res.ok) {
           const d = await res.json();
-          if (d && d.sukses) {
+          if (d && (d.sukses || d.userId || d.id)) {
             found = {
-              userId: d.userId || '',
-              userName: d.userName || rawInput,
-              displayName: d.displayName || d.userName || rawInput,
-              avatarUrl: d.avatarUrl || '',
-              avatar3dUrl: d.avatar3dUrl || ''
+              userId: String(d.userId || d.id || ''),
+              userName: d.userName || d.username || d.name || rawInput,
+              displayName: d.displayName || d.userName || d.name || rawInput,
+              avatarUrl: d.avatarUrl || d.headshotUrl || d.avatar || '',
+              avatar3dUrl: d.avatar3dUrl || d.fullBodyUrl || d.bodyUrl || d.avatarFullUrl || ''
             };
           }
         }
       } catch (_) {}
+
+      // 1b. If backend returned userId without full-body avatar3dUrl, fetch full-body thumbnail via RoProxy
+      if (found && found.userId && !found.avatar3dUrl) {
+        try {
+          const [headRes, bodyRes] = await Promise.all([
+            found.avatarUrl ? Promise.resolve(null) : fetchWithTimeout(`https://thumbnails.roproxy.com/v1/users/avatar-headshot?userIds=${found.userId}&size=150x150&format=Png&isCircular=false`, {}, 4500),
+            fetchWithTimeout(`https://thumbnails.roproxy.com/v1/users/avatar?userIds=${found.userId}&size=720x720&format=Png&isCircular=false`, {}, 4500)
+          ]);
+          if (headRes && headRes.ok) {
+            const hd = await headRes.json();
+            found.avatarUrl = hd?.data?.[0]?.imageUrl || found.avatarUrl;
+          }
+          if (bodyRes && bodyRes.ok) {
+            const bd = await bodyRes.json();
+            found.avatar3dUrl = bd?.data?.[0]?.imageUrl || '';
+          }
+        } catch (_) {}
+      }
 
       // 2. Fallback to RoProxy Public Roblox APIs
       if (!found) {
@@ -3779,13 +3813,16 @@
       btn.textContent = 'Cari';
 
       if (found) {
+        const fallbackChar = getFallbackCharacterUrl(found.displayName || found.userName);
+        const finalHead = found.avatarUrl || fallbackChar;
+        const final3d = found.avatar3dUrl || finalHead;
         document.getElementById('inputRobloxUser').value = found.userName;
         document.getElementById('inputDisplayName').value = found.displayName;
-        document.getElementById('editAvatarHead').value = found.avatarUrl;
-        document.getElementById('editAvatar3d').value = found.avatar3dUrl;
+        document.getElementById('editAvatarHead').value = finalHead;
+        document.getElementById('editAvatar3d').value = final3d;
         document.getElementById('editUserId').value = found.userId;
 
-        updateStageAvatars(found.avatarUrl, found.avatar3dUrl);
+        updateStageAvatars(finalHead, final3d);
         sinkronPreviewNamaStage();
         statusEl.style.color = '#4ade80';
         statusEl.textContent = 'Akun Roblox & Avatar 3D ditemukan! ✔';
@@ -4493,10 +4530,13 @@
     function renderPodiumAvatar(containerId, rankNo, p1, p2, isDuo) {
       const box = document.getElementById(containerId);
       box.className = `podium-avatar-stage ${isDuo ? 'is-duo' : ''}`;
-      const makeImg = obj => {
-        const src = obj?.avatar3d || obj?.avatar || PLACEHOLDER_SILHOUETTE;
-        const head = (obj?.avatar || PLACEHOLDER_SILHOUETTE).replace(/'/g, "\\'");
-        return `<img class="podium-img-3d" src="${src}" alt="" onclick="klikStagePodium(${rankNo})" onerror="this.onerror=null;this.src='${head}';" />`;
+      const makeImg = (obj, fallbackSeed) => {
+        const hasAny = Boolean(obj && (obj.avatar3d || obj.avatar || obj.nick || obj.user || obj.robloxUser));
+        const charUrl = getFallbackCharacterUrl(obj?.nick || obj?.user || obj?.robloxUser || fallbackSeed);
+        const primary = hasAny ? (obj?.avatar3d || obj?.avatar || charUrl) : PLACEHOLDER_SILHOUETTE;
+        const head = (obj?.avatar || charUrl).replace(/'/g, "\\'");
+        const fbChar = charUrl.replace(/'/g, "\\'");
+        return `<img class="podium-img-3d" src="${primary}" alt="" onclick="klikStagePodium(${rankNo})" data-fb="0" onerror="if(this.dataset.fb==='0'&&this.src!=='${head}'){this.dataset.fb='1';this.src='${head}';}else if(this.dataset.fb!=='2'&&${hasAny ? 'true' : 'false'}){this.dataset.fb='2';this.src='${fbChar}';}else{this.onerror=null;this.src='${PLACEHOLDER_SILHOUETTE}';}" />`;
       };
       const ballLabel = rankNo === 1 ? 'MASTER BALL' : (rankNo === 2 ? 'GREAT BALL' : 'POKÉBALL');
       box.innerHTML = `
@@ -4509,7 +4549,7 @@
           <div class="pokeball-orb"><div class="pokeball-btn"></div></div>
           <span class="pokeball-hint">${ballLabel}</span>
         </div>
-        ${isDuo ? makeImg(p1) + makeImg(p2) : makeImg(p1)}
+        ${isDuo ? makeImg(p1, 'P1') + makeImg(p2, 'P2') : makeImg(p1, 'Champion')}
       `;
     }
 
@@ -4537,6 +4577,39 @@
 
     function putarUlangPokeballPodium() {
       tampilkanPodium();
+    }
+
+    async function pulihkanAvatar3dPemainAktif() {
+      const data = getActiveData();
+      const allSeats = [...data.players, data.host];
+      const needIds = allSeats
+        .filter(p => p && p.userId && (!p.avatar3d || p.avatar3d.includes('dicebear.com')))
+        .map(p => String(p.userId));
+      const uniqueIds = [...new Set(needIds)];
+      if (uniqueIds.length === 0) return;
+      try {
+        const res = await fetchWithTimeout(
+          `https://thumbnails.roproxy.com/v1/users/avatar?userIds=${uniqueIds.join(',')}&size=720x720&format=Png&isCircular=false`,
+          {},
+          4500
+        );
+        if (!res.ok) return;
+        const json = await res.json();
+        const urlMap = {};
+        (json?.data || []).forEach(item => {
+          if (item?.targetId && item?.imageUrl && item?.state === 'Completed') {
+            urlMap[String(item.targetId)] = item.imageUrl;
+          }
+        });
+        let changed = false;
+        allSeats.forEach(p => {
+          if (p && p.userId && urlMap[String(p.userId)]) {
+            p.avatar3d = urlMap[String(p.userId)];
+            changed = true;
+          }
+        });
+        if (changed) simpanDB();
+      } catch (_) {}
     }
 
     function tampilkanPodium() {
@@ -4691,6 +4764,7 @@
       applyLogFold();
       renderPokedexTables();
       sinkronAvatarBuildermanSample();
+      pulihkanAvatar3dPemainAktif();
       tambahLog('SISTEM', `Pokédex Light Combo siap — ${db.activeSession}`);
 
     });
