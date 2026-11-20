@@ -5533,9 +5533,9 @@
 
       status.textContent = `⏳ Mengirim tes langsung ke ntfy.sh/${autoConfig.topic}...`;
       try {
+        // Simple POST tanpa custom header agar bebas CORS preflight (OPTIONS)
         const res = await fetchWithTimeout(`https://ntfy.sh/${encodeURIComponent(autoConfig.topic)}`, {
           method: 'POST',
-          headers: { 'Priority': 'urgent' },
           body: JSON.stringify(samplePayload)
         }, 4500);
         if (res.ok) {
