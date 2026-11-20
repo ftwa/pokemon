@@ -6,11 +6,7 @@
   <title>Scoreboard Pokédex Light Combo — Trainer Stadium &amp; TCG 3D</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@700;800;900&family=Space+Grotesk:wght@600;700&family=JetBrains+Mono:wght@700;800;900&display=swap" rel="stylesheet" />
-  <!-- Three.js & Loaders untuk Render Model 3D Roblox (.obj / .mtl) Putar 360° -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/MTLLoader.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@700;800;900&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet" />
   <style>
     /* ==========================================================================
        1. DESIGN TOKENS & BRIGHT POKÉDEX / ROTOM UI BACKGROUND
@@ -34,7 +30,9 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     html, body {
@@ -462,7 +460,7 @@
     th {
       padding: 10px 6px;
       font-family: 'Outfit', sans-serif;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 900;
       color: #ffffff;
       text-align: center;
@@ -533,14 +531,14 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-width: 28px;
-      height: 24px;
+      min-width: 30px;
+      height: 26px;
       padding: 0 6px;
       border-radius: 7px;
       font-family: 'Outfit', sans-serif;
-      font-size: 12.5px;
+      font-size: 13.5px;
       font-weight: 900;
-      color: #475569;
+      color: #1e293b;
       background: #e2e8f0;
       border: 1px solid #cbd5e1;
     }
@@ -571,6 +569,22 @@
     .cell-click {
       cursor: pointer;
     }
+    .inline-name-input {
+      flex: 1;
+      min-width: 70px;
+      width: 100%;
+      padding: 4px 8px;
+      border-radius: 7px;
+      border: 1.5px solid #0284c7;
+      background: #ffffff;
+      color: #020617;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 14.5px;
+      font-weight: 800;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2);
+    }
+
     .player-cell-flex {
       display: flex;
       align-items: center;
@@ -579,15 +593,16 @@
       min-width: 0;
     }
     .name-player {
-      font-family: 'Outfit', sans-serif;
-      font-size: 14px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 15px;
       font-weight: 800;
-      color: #0f172a;
+      letter-spacing: 0.1px;
+      color: #020617;
       overflow: hidden;
       text-overflow: ellipsis;
     }
     .name-empty {
-      color: #94a3b8 !important;
+      color: #64748b !important;
       font-weight: 600 !important;
       font-style: italic;
     }
@@ -628,16 +643,18 @@
       line-height: 1.15;
     }
     .name-display {
-      font-size: 13.5px;
-      font-weight: 700;
-      color: #0369a1;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 14.5px;
+      font-weight: 800;
+      color: #075985;
       overflow: hidden;
       text-overflow: ellipsis;
     }
     .sub-handle {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 9.5px;
-      color: #64748b;
+      font-size: 10.5px;
+      font-weight: 700;
+      color: #475569;
       overflow: hidden;
       text-overflow: ellipsis;
     }
@@ -653,8 +670,9 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      min-width: 24px;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 900;
       padding: 2.5px 7px;
       border-radius: 6px;
@@ -704,8 +722,8 @@
       border: 1.5px solid #cbd5e1;
       color: #0f172a;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 17px;
-      font-weight: 900;
+      font-size: 18px;
+      font-weight: 800;
       text-align: center;
       cursor: pointer;
       user-select: none;
@@ -2158,7 +2176,6 @@
       </div>
 
       <div class="top-right">
-        <button id="btnAnimModeTop" class="btn-px btn-px-anim" onclick="cycleAnimMode()" title="Ubah mode animasi avatar 3D">✨ Animasi: 2.5D Gerak</button>
         <button class="btn-px btn-px-cookie" onclick="bukaModalCookie()" title="Atur Cookie .ROBLOSECURITY">
           🍪 Cookie <span id="topBarCookieDot" class="cookie-dot"></span>
         </button>
@@ -2253,7 +2270,6 @@
         <input type="hidden" id="editSeatIdx" value="-1" />
         <input type="hidden" id="editAvatarHead" value="" />
         <input type="hidden" id="editAvatar3d" value="" />
-        <input type="hidden" id="editCustomGif" value="" />
         <input type="hidden" id="editUserId" value="" />
         <input type="hidden" id="editSelectedColor" value="" />
 
@@ -2267,9 +2283,6 @@
             <div class="stage-headshot-chip" id="stageHeadshotChip">
               <img id="stageHeadshotImg" src="" alt="Headshot" />
             </div>
-            <div class="stage-anim-badge" id="stageAnimBadge">2.5D GERAK</div>
-
-            <div id="stage3dCanvasWrap" class="stage-3d-canvas-wrap" title="Geser mouse untuk memutar model 3D"></div>
             <img id="stageAvatar3dImg" class="stage-avatar-3d" src="" alt="Avatar 3D" style="display:none;" />
             <div id="stageEmptyBox" class="stage-empty-placeholder">
               <svg width="92" height="110" viewBox="0 0 100 130" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity:0.45;">
@@ -2298,32 +2311,8 @@
             </div>
 
             <div class="hud-field">
-              <label class="hud-label">Nama Pemain</label>
-              <input type="text" id="inputNamaPemain" class="hud-input" placeholder="Nama TikTok / panggilan..." oninput="sinkronPreviewNamaStage()" onkeydown="if(event.key==='Enter')simpanDataKursi()" />
-            </div>
-
-            <div class="hud-field">
               <label class="hud-label">Display Name</label>
               <input type="text" id="inputDisplayName" class="hud-input" placeholder="Display Name Roblox..." oninput="sinkronPreviewNamaStage()" onkeydown="if(event.key==='Enter')simpanDataKursi()" />
-            </div>
-
-            <div class="hud-field">
-              <label class="hud-label">✨ Animasi Avatar</label>
-              <div class="anim-pills-row" id="modalAnimPills">
-                <button type="button" class="btn-anim-pill" data-mode="2.5d" onclick="setAnimMode('2.5d')">2.5D Gerak</button>
-                <button type="button" class="btn-anim-pill" data-mode="3d" onclick="setAnimMode('3d')">3D Putar 360°</button>
-                <button type="button" class="btn-anim-pill" data-mode="static" onclick="setAnimMode('static')">Diam</button>
-              </div>
-            </div>
-
-            <div class="hud-field">
-              <label class="hud-label">GIF Animasi (Opsional)</label>
-              <div class="gif-upload-row">
-                <input type="file" id="inputGifFile" accept="image/gif,image/webp" style="display:none;" onchange="unggahGifKursi(event)" />
-                <button type="button" class="btn-gif-pick" onclick="document.getElementById('inputGifFile').click()">🎞️ Upload GIF</button>
-                <input type="text" id="inputGifUrl" class="hud-input" style="padding:6px 9px; font-size:11.5px;" placeholder="atau tempel URL .gif..." onchange="terapkanUrlGif()" />
-                <button type="button" class="btn-gif-clear" onclick="hapusGifKursi()" title="Hapus GIF kustom">×</button>
-              </div>
             </div>
 
             <div class="hud-field">
@@ -2672,206 +2661,9 @@
     let activePodiumAudioObj = null;
     let cookieVisible = false;
 
-    /* =========================================================================
-       1B. ANIMATED 3D AVATAR ENGINE (THREE.JS 360° + 2.5D PARTICLES + GIF)
-       ========================================================================= */
-    const activeThreeSessions = new Map();
-    const avatar3dMetaCache = new Map();
-
-    const ANIM_MODE_LABELS = {
-      '2.5d': '✨ Animasi: 2.5D Gerak',
-      '3d': '✨ Animasi: 3D Putar 360°',
-      'static': '✨ Animasi: Diam'
-    };
-
+    function renderElementalParticles() {}
     function updateAnimModeUI() {
-      const mode = db.animMode || '2.5d';
-      document.body.dataset.animMode = mode;
-      const topBtn = document.getElementById('btnAnimModeTop');
-      if (topBtn) topBtn.textContent = ANIM_MODE_LABELS[mode] || ANIM_MODE_LABELS['2.5d'];
-
-      document.querySelectorAll('#modalAnimPills .btn-anim-pill').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.mode === mode);
-      });
-    }
-
-    function setAnimMode(mode) {
-      db.animMode = mode;
-      simpanDB();
-      updateAnimModeUI();
-      if (document.getElementById('modalEditKursi').classList.contains('show')) {
-        refreshStagePreview();
-      }
-      tambahLog('ANIMASI', `Mode animasi avatar diubah ke: ${mode.toUpperCase()}`);
-    }
-
-    function cycleAnimMode() {
-      const order = ['2.5d', '3d', 'static'];
-      const next = order[(order.indexOf(db.animMode || '2.5d') + 1) % order.length];
-      setAnimMode(next);
-    }
-
-    function renderElementalParticles(containerEl, colorHex, count = 12) {
-      if (!containerEl) return;
-      if ((db.animMode || '2.5d') === 'static') {
-        containerEl.innerHTML = '';
-        return;
-      }
-      let html = '';
-      for (let i = 0; i < count; i++) {
-        const left = Math.round(6 + Math.random() * 88);
-        const size = (4 + Math.random() * 6).toFixed(1);
-        const dur = (2.4 + Math.random() * 2.4).toFixed(2);
-        const delay = (-Math.random() * 3.5).toFixed(2);
-        const drift = Math.round((Math.random() - 0.5) * 34);
-        html += `<span class="el-mote" style="left:${left}%; width:${size}px; height:${size}px; --mote-color:${colorHex}; --mote-dur:${dur}s; --mote-delay:${delay}s; --mote-drift:${drift}px;"></span>`;
-      }
-      containerEl.innerHTML = html;
-    }
-
-    function getRobloxCdnUrl(hash) {
-      let i = 31;
-      for (let t = 0; t < hash.length; t++) {
-        i ^= hash.charCodeAt(t);
-      }
-      return `https://t${i % 8}.rbxcdn.com/${hash}`;
-    }
-
-    function cleanupThreeSession(containerId) {
-      const sess = activeThreeSessions.get(containerId);
-      if (sess) {
-        if (sess.rafId) cancelAnimationFrame(sess.rafId);
-        try {
-          sess.renderer.dispose();
-          if (sess.renderer.domElement && sess.renderer.domElement.parentNode) {
-            sess.renderer.domElement.parentNode.removeChild(sess.renderer.domElement);
-          }
-        } catch (_) {}
-        activeThreeSessions.delete(containerId);
-      }
-      const el = document.getElementById(containerId);
-      if (el) {
-        el.innerHTML = '';
-        el.style.display = 'none';
-      }
-    }
-
-    async function loadRoblox3dMeshInto(containerId, userId, onFallback) {
-      cleanupThreeSession(containerId);
-      const wrap = document.getElementById(containerId);
-      if (!wrap || !userId || typeof THREE === 'undefined' || !THREE.OBJLoader || !THREE.MTLLoader) {
-        if (onFallback) onFallback('3D loader tidak tersedia');
-        return;
-      }
-
-      try {
-        let meta = avatar3dMetaCache.get(String(userId));
-        if (!meta) {
-          const thumbRes = await fetchWithTimeout(
-            `https://thumbnails.roproxy.com/v1/users/avatar-3d?userId=${encodeURIComponent(userId)}`,
-            {},
-            4500
-          );
-          if (!thumbRes.ok) throw new Error('avatar-3d API gagal');
-          const thumbData = await thumbRes.json();
-          const jsonUrl = thumbData?.imageUrl;
-          if (!jsonUrl) throw new Error('imageUrl kosong');
-
-          const metaRes = await fetchWithTimeout(jsonUrl, {}, 4500);
-          if (!metaRes.ok) throw new Error('JSON 3D diblokir CORS');
-          meta = await metaRes.json();
-          avatar3dMetaCache.set(String(userId), meta);
-        }
-
-        if (!meta || !meta.obj || !meta.mtl) throw new Error('Mesh OBJ/MTL tidak lengkap');
-
-        const objUrl = getRobloxCdnUrl(meta.obj);
-        const mtlUrl = getRobloxCdnUrl(meta.mtl);
-
-        // Ambil teks MTL dan arahkan peta tekstur ke CDN Roblox
-        const mtlTextRes = await fetchWithTimeout(mtlUrl, {}, 4500);
-        if (!mtlTextRes.ok) throw new Error('MTL diblokir');
-        let mtlText = await mtlTextRes.text();
-        mtlText = mtlText.replace(/^(map_\w+)\s+(\S+)/gm, (m, key, hash) => {
-          return `${key} ${getRobloxCdnUrl(hash.trim())}`;
-        });
-
-        const objTextRes = await fetchWithTimeout(objUrl, {}, 4500);
-        if (!objTextRes.ok) throw new Error('OBJ diblokir');
-        const objText = await objTextRes.text();
-
-        const mtlLoader = new THREE.MTLLoader();
-        mtlLoader.setCrossOrigin('anonymous');
-        const materials = mtlLoader.parse(mtlText, '');
-        materials.preload();
-
-        const objLoader = new THREE.OBJLoader();
-        objLoader.setMaterials(materials);
-        const avatarMesh = objLoader.parse(objText);
-
-        // Pusatkan dan skalakan avatar agar pas di panggung
-        const box = new THREE.Box3().setFromObject(avatarMesh);
-        const size = box.getSize(new THREE.Vector3());
-        const center = box.getCenter(new THREE.Vector3());
-        const maxDim = Math.max(size.x, size.y, size.z) || 1;
-        const scale = 2.65 / maxDim;
-        avatarMesh.scale.setScalar(scale);
-        avatarMesh.position.set(-center.x * scale, -center.y * scale - 0.1, -center.z * scale);
-
-        const pivot = new THREE.Group();
-        pivot.add(avatarMesh);
-
-        wrap.style.display = 'block';
-        const w = wrap.clientWidth || 240;
-        const h = wrap.clientHeight || 260;
-
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(36, w / h, 0.1, 100);
-        camera.position.set(0, 0.35, 5.4);
-        camera.lookAt(0, 0, 0);
-
-        // Pencahayaan Studio 3 Titik
-        scene.add(new THREE.AmbientLight(0xffffff, 0.85));
-        const keyLight = new THREE.DirectionalLight(0xffffff, 0.95);
-        keyLight.position.set(4, 6, 6);
-        scene.add(keyLight);
-        const rimLight = new THREE.DirectionalLight(0x38bdf8, 0.7);
-        rimLight.position.set(-5, 3, -4);
-        scene.add(rimLight);
-        scene.add(pivot);
-
-        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-        renderer.setSize(w, h);
-        wrap.innerHTML = '';
-        wrap.appendChild(renderer.domElement);
-
-        // Interaksi drag mouse/sentuh untuk memutar model 3D
-        let isDragging = false;
-        let lastX = 0;
-        wrap.onpointerdown = ev => { isDragging = true; lastX = ev.clientX; };
-        wrap.onpointermove = ev => {
-          if (!isDragging) return;
-          pivot.rotation.y += (ev.clientX - lastX) * 0.014;
-          lastX = ev.clientX;
-        };
-        wrap.onpointerup = () => { isDragging = false; };
-        wrap.onpointerleave = () => { isDragging = false; };
-
-        const sess = { renderer, rafId: null };
-        activeThreeSessions.set(containerId, sess);
-
-        const animate = () => {
-          if (!activeThreeSessions.has(containerId)) return;
-          if (!isDragging) pivot.rotation.y += 0.015;
-          renderer.render(scene, camera);
-          sess.rafId = requestAnimationFrame(animate);
-        };
-        animate();
-      } catch (err) {
-        cleanupThreeSession(containerId);
-        if (onFallback) onFallback(err?.message || 'Fallback ke 2.5D');
-      }
+      document.body.dataset.animMode = 'static';
     }
 
     async function sinkronAvatarBuildermanSample() {
@@ -3000,6 +2792,58 @@
       });
     }
 
+    /* =========================================================================
+       3B. EDIT NAMA PEMAIN LANGSUNG DI TABEL (INLINE EDIT)
+       ========================================================================= */
+    let inlineEditingSeatIdx = null;
+    let inlineSavingLock = false;
+
+    function mulaiEditInlineNama(idx, ev) {
+      if (ev) ev.stopPropagation();
+      if (inlineEditingSeatIdx === idx) return;
+      if (inlineEditingSeatIdx !== null) {
+        simpanInlineNama(inlineEditingSeatIdx, true);
+      }
+      tutupSemuaPopupKecil();
+      inlineEditingSeatIdx = idx;
+      renderPokedexTables();
+      setTimeout(() => {
+        const inp = document.getElementById(`inlineNameInput_${idx}`);
+        if (inp) {
+          inp.focus();
+          inp.select();
+        }
+      }, 20);
+    }
+
+    function handleInlineNameKey(idx, ev) {
+      if (ev.key === 'Enter') {
+        ev.preventDefault();
+        simpanInlineNama(idx, false);
+      } else if (ev.key === 'Escape') {
+        ev.preventDefault();
+        inlineEditingSeatIdx = null;
+        renderPokedexTables();
+      }
+    }
+
+    function simpanInlineNama(idx, skipRender = false) {
+      if (inlineSavingLock || inlineEditingSeatIdx !== idx) return;
+      inlineSavingLock = true;
+      const inp = document.getElementById(`inlineNameInput_${idx}`);
+      const p = getSeat(idx);
+      if (inp && p) {
+        const val = inp.value.trim();
+        p.user = val;
+        if (val && !p.nick) p.nick = val;
+        simpanDB();
+        tambahLog('NAMA', `Kursi ${idx + 1} diubah langsung menjadi: ${val || '(Kosong)'}`);
+      }
+      inlineEditingSeatIdx = null;
+      inlineSavingLock = false;
+      if (!skipRender) renderPokedexTables();
+    }
+
     function renderPokedexTables() {
       const tbL = document.getElementById('bodyLeft');
       const tbR = document.getElementById('bodyRight');
@@ -3067,19 +2911,19 @@
         const statusBtnHtml = isHost
           ? `<span class="pay-status-tag host-pill">HOST</span>`
           : (filled
-              ? `<span class="pay-status-tag ${p.isPaid ? 'done' : 'ready'}" onclick="toggleStatusPaid(${i}, event)" title="Klik ganti status">${p.isPaid ? '✔' : '— READY'}</span>`
+              ? `<span class="pay-status-tag ${p.isPaid ? 'done' : 'ready'}" onclick="toggleStatusPaid(${i}, event)" title="Klik ganti status">${p.isPaid ? '✔' : '-'}</span>`
               : '');
-
-        const paletteHtml = (filled || isHost)
-          ? `<span class="btn-color-palette" onclick="bukaMiniColorPicker(${i}, event)" title="Ganti warna elemental">🎨</span>`
-          : '';
 
         tr.innerHTML = `
           <td class="td-no"><span class="rank-num-pill">${rankLabel}</span></td>
-          <td class="cell-click" onclick="bukaModalEditKursi(${i})" title="Klik untuk edit Kursi ${i + 1}">
+          <td class="cell-click" onclick="mulaiEditInlineNama(${i}, event)" title="Klik untuk edit nama pemain langsung">
             <div class="player-cell-flex">
-              <span class="name-player ${!filled && !isHost ? 'name-empty' : ''}">${namaPemainText}</span>
-              <div class="inline-actions">${statusBtnHtml}${paletteHtml}</div>
+              ${
+                inlineEditingSeatIdx === i
+                  ? `<input type="text" class="inline-name-input" id="inlineNameInput_${i}" value="${(isHost ? (p.user || 'HOST') : (p.user || '')).replace(/"/g, '&quot;')}" placeholder="Ketik nama pemain..." onclick="event.stopPropagation()" onkeydown="handleInlineNameKey(${i}, event)" onblur="simpanInlineNama(${i})" />`
+                  : `<span class="name-player ${!filled && !isHost ? 'name-empty' : ''}">${namaPemainText}</span>`
+              }
+              <div class="inline-actions">${statusBtnHtml}</div>
             </div>
           </td>
           <td class="cell-click" onclick="bukaModalEditKursi(${i})" title="Klik untuk cari akun Roblox">
@@ -3262,42 +3106,16 @@
     function refreshStagePreview() {
       const headUrl = document.getElementById('editAvatarHead').value.trim();
       const body3dUrl = document.getElementById('editAvatar3d').value.trim();
-      const customGif = document.getElementById('editCustomGif').value.trim();
-      const userId = document.getElementById('editUserId').value.trim();
       const colorKey = document.getElementById('editSelectedColor').value.trim();
       updateStageAura(colorKey);
-      updateStageAvatars(headUrl, body3dUrl, customGif, userId);
+      updateStageAvatars(headUrl, body3dUrl);
     }
 
-    function updateStageAvatars(headUrl, body3dUrl, customGif = '', userId = '') {
+    function updateStageAvatars(headUrl, body3dUrl) {
       const img3d = document.getElementById('stageAvatar3dImg');
       const emptyBox = document.getElementById('stageEmptyBox');
       const chip = document.getElementById('stageHeadshotChip');
       const chipImg = document.getElementById('stageHeadshotImg');
-      const badge = document.getElementById('stageAnimBadge');
-
-      cleanupThreeSession('stage3dCanvasWrap');
-
-      const showImageFallback = (badgeText) => {
-        const mainSrc = customGif || body3dUrl || headUrl;
-        if (badge) badge.textContent = badgeText;
-        if (mainSrc) {
-          img3d.src = mainSrc;
-          img3d.style.display = 'block';
-          emptyBox.style.display = 'none';
-          img3d.onerror = () => {
-            if (headUrl && img3d.src !== headUrl) {
-              img3d.src = headUrl;
-            } else {
-              img3d.style.display = 'none';
-              emptyBox.style.display = 'flex';
-            }
-          };
-        } else {
-          img3d.style.display = 'none';
-          emptyBox.style.display = 'flex';
-        }
-      };
 
       if (headUrl) {
         chipImg.src = headUrl;
@@ -3306,71 +3124,31 @@
         chip.style.display = 'none';
       }
 
-      // Prioritas 1: Custom GIF Animasi
-      if (customGif) {
-        showImageFallback('GIF ANIMASI');
-        return;
-      }
-
-      // Prioritas 2: Mode Three.js 360° jika aktif dan punya userId
-      if ((db.animMode || '2.5d') === '3d' && userId) {
-        img3d.style.display = 'none';
+      const mainSrc = body3dUrl || headUrl;
+      if (mainSrc) {
+        img3d.src = mainSrc;
+        img3d.style.display = 'block';
         emptyBox.style.display = 'none';
-        if (badge) badge.textContent = '3D PUTAR 360°';
-        loadRoblox3dMeshInto('stage3dCanvasWrap', userId, () => {
-          showImageFallback('2.5D GERAK');
-        });
-        return;
+        img3d.onerror = () => {
+          if (headUrl && img3d.src !== headUrl) {
+            img3d.src = headUrl;
+          } else {
+            img3d.style.display = 'none';
+            emptyBox.style.display = 'flex';
+          }
+        };
+      } else {
+        img3d.style.display = 'none';
+        emptyBox.style.display = 'flex';
       }
-
-      // Prioritas 3: 2.5D Gerak atau Diam
-      showImageFallback((db.animMode || '2.5d') === 'static' ? 'DIAM' : '2.5D GERAK');
-    }
-
-    function unggahGifKursi(ev) {
-      const file = ev.target.files[0];
-      const statusEl = document.getElementById('modalSearchStatus');
-      if (!file) return;
-      if (file.size > 3 * 1024 * 1024) {
-        statusEl.style.color = '#f87171';
-        statusEl.textContent = 'Ukuran GIF terlalu besar! Maksimal 3MB.';
-        ev.target.value = '';
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = e => {
-        document.getElementById('editCustomGif').value = e.target.result;
-        document.getElementById('inputGifUrl').value = `[GIF Unggahan: ${file.name}]`;
-        statusEl.style.color = '#c084fc';
-        statusEl.textContent = `🎞️ GIF "${file.name}" siap dipasang! Klik Simpan.`;
-        refreshStagePreview();
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function terapkanUrlGif() {
-      const val = document.getElementById('inputGifUrl').value.trim();
-      if (val && !val.startsWith('[GIF Unggahan:')) {
-        document.getElementById('editCustomGif').value = val;
-        refreshStagePreview();
-      } else if (!val) {
-        document.getElementById('editCustomGif').value = '';
-        refreshStagePreview();
-      }
-    }
-
-    function hapusGifKursi() {
-      document.getElementById('editCustomGif').value = '';
-      document.getElementById('inputGifUrl').value = '';
-      document.getElementById('inputGifFile').value = '';
-      refreshStagePreview();
     }
 
     function sinkronPreviewNamaStage() {
+      const idx = parseInt(document.getElementById('editSeatIdx').value, 10);
+      const seat = !isNaN(idx) ? getSeat(idx) : null;
       const nick = document.getElementById('inputDisplayName').value.trim();
-      const user = document.getElementById('inputNamaPemain').value.trim();
       const rbx = document.getElementById('inputRobloxUser').value.trim().replace(/^@+/, '');
-      document.getElementById('stagePlateNick').textContent = nick || user || '-';
+      document.getElementById('stagePlateNick').textContent = nick || seat?.user || '-';
       document.getElementById('stagePlateUser').textContent = rbx ? `@${rbx}` : '@username_roblox';
     }
 
@@ -3384,15 +3162,9 @@
       document.getElementById('stageSeatBadgeText').textContent = idx === 19 ? '#20 HOST SEAT' : `#${idx + 1} BATTLE SEAT`;
 
       document.getElementById('inputRobloxUser').value = p.robloxUser || '';
-      document.getElementById('inputNamaPemain').value = p.user || '';
       document.getElementById('inputDisplayName').value = p.nick || '';
       document.getElementById('editAvatarHead').value = p.avatar || '';
       document.getElementById('editAvatar3d').value = p.avatar3d || '';
-      document.getElementById('editCustomGif').value = p.customGif || '';
-      document.getElementById('inputGifUrl').value = p.customGif
-        ? (p.customGif.startsWith('data:') ? '[GIF Unggahan Tersimpan]' : p.customGif)
-        : '';
-      document.getElementById('inputGifFile').value = '';
       document.getElementById('editUserId').value = p.userId || '';
       document.getElementById('editSelectedColor').value = p.colorTag || '';
       document.getElementById('modalSearchStatus').textContent = '';
@@ -3401,10 +3173,9 @@
       btnAdd.disabled = false;
       btnAdd.textContent = '➕ Add';
 
-      updateAnimModeUI();
       renderModalElementalDots(p.colorTag || '');
       updateStageAura(p.colorTag || '');
-      updateStageAvatars(p.avatar || '', p.avatar3d || '', p.customGif || '', p.userId || '');
+      updateStageAvatars(p.avatar || '', p.avatar3d || '');
       sinkronPreviewNamaStage();
 
       document.getElementById('modalEditKursi').classList.add('show');
@@ -3412,7 +3183,6 @@
     }
 
     function tutupModalEditKursi() {
-      cleanupThreeSession('stage3dCanvasWrap');
       document.getElementById('modalEditKursi').classList.remove('show');
     }
 
@@ -3528,19 +3298,11 @@
       if (found) {
         document.getElementById('inputRobloxUser').value = found.userName;
         document.getElementById('inputDisplayName').value = found.displayName;
-        if (!document.getElementById('inputNamaPemain').value.trim()) {
-          document.getElementById('inputNamaPemain').value = found.displayName;
-        }
         document.getElementById('editAvatarHead').value = found.avatarUrl;
         document.getElementById('editAvatar3d').value = found.avatar3dUrl;
         document.getElementById('editUserId').value = found.userId;
 
-        updateStageAvatars(
-          found.avatarUrl,
-          found.avatar3dUrl,
-          document.getElementById('editCustomGif').value.trim(),
-          found.userId
-        );
+        updateStageAvatars(found.avatarUrl, found.avatar3dUrl);
         sinkronPreviewNamaStage();
         statusEl.style.color = '#4ade80';
         statusEl.textContent = 'Akun Roblox & Avatar 3D ditemukan! ✔';
@@ -3608,11 +3370,10 @@
       if (!p) return;
 
       const rbx = document.getElementById('inputRobloxUser').value.trim().replace(/^@+/, '');
-      let user = document.getElementById('inputNamaPemain').value.trim();
+      let user = (p.user || '').trim();
       let nick = document.getElementById('inputDisplayName').value.trim();
       const head = document.getElementById('editAvatarHead').value.trim();
       const body3d = document.getElementById('editAvatar3d').value.trim();
-      const customGif = document.getElementById('editCustomGif').value.trim();
       const uid = document.getElementById('editUserId').value.trim();
       const col = document.getElementById('editSelectedColor').value.trim();
 
@@ -3624,7 +3385,6 @@
       p.nick = nick;
       p.avatar = head;
       p.avatar3d = body3d;
-      p.customGif = customGif;
       p.userId = uid;
       p.colorTag = col;
 
@@ -3673,7 +3433,6 @@
       const backdrop = document.getElementById('tcgNotifBackdrop');
       if (!popup || !backdrop) return;
       if (tcgToastTimer) clearTimeout(tcgToastTimer);
-      cleanupThreeSession('tcg3dCanvasWrap');
 
       const p = getSeat(seatIdx);
       if (!p) return;
@@ -3752,7 +3511,6 @@
           <div class="tcg-art-frame">
             <div class="tcg-art-window ${showDuoAvatars ? 'is-duo' : ''}">
               <div class="el-particles-layer" id="tcgParticles"></div>
-              <div class="tcg-art-3d-wrap" id="tcg3dCanvasWrap"></div>
               ${artHtml}
             </div>
           </div>
@@ -3774,15 +3532,6 @@
       // Partikel elemental melayang di jendela kartu TCG
       renderElementalParticles(document.getElementById('tcgParticles'), tcg.accent, 14);
 
-      // Jika mode 3D Putar 360° aktif (dan bukan Duo/GIF kustom), muat mesh Three.js 360°
-      if ((db.animMode || '2.5d') === '3d' && !showDuoAvatars && !p.customGif && p.userId) {
-        const imgEl = popup.querySelector('.tcg-avatar-3d');
-        if (imgEl) imgEl.style.opacity = '0.15';
-        loadRoblox3dMeshInto('tcg3dCanvasWrap', p.userId, () => {
-          if (imgEl) imgEl.style.opacity = '1';
-        });
-      }
-
       backdrop.classList.add('show');
       popup.classList.remove('show');
       void popup.offsetWidth;
@@ -3793,8 +3542,7 @@
       tcgToastTimer = setTimeout(() => {
         popup.classList.remove('show');
         backdrop.classList.remove('show');
-        cleanupThreeSession('tcg3dCanvasWrap');
-        tcgToastTimer = null;
+          tcgToastTimer = null;
       }, 2800);
     }
 
@@ -3817,7 +3565,7 @@
       p.isPaid = !p.isPaid;
       simpanDB();
       renderPokedexTables();
-      tambahLog(p.nick || p.user || `Kursi ${idx + 1}`, `Status: ${p.isPaid ? '✔ DONE' : '— READY'}`);
+      tambahLog(p.nick || p.user || `Kursi ${idx + 1}`, `Status: ${p.isPaid ? '✔ DONE' : '-'}`);
     }
 
     function bukaQuickPoint(idx, ev) {
@@ -4369,11 +4117,8 @@
       sinkronAvatarBuildermanSample();
       tambahLog('SISTEM', `Pokédex Light Combo siap — ${db.activeSession}`);
 
-      // Tampilkan pratinjau singkat Toast Kartu TCG 3D saat halaman dimuat
-      setTimeout(() => {
-        tampilkanToastTcg(0, 3, 'TAMBAH POIN');
-      }, 650);
     });
+
   </script>
 </body>
 </html>
