@@ -26,13 +26,11 @@ end
 -- ============================================================
 -- KONFIGURASI TARGET LOKAL 0MS (POKÉDEX SCOREBOARD DESKTOP .EXE)
 -- ============================================================
-local LOCAL_CATCH_URL       = "http://127.0.0.1:18420/api/local-catch"
-local ENABLE_ANTI_LAG_BOOST = true
+local LOCAL_CATCH_URL = "http://127.0.0.1:18420/api/local-catch"
 
 print("============================================================")
 print("  ⚡ POKÉDEX AUTO SKOR — PURE LOCAL 0MS BRIDGE (v3 AUTO-SYNC)")
-print("  💻 Target    : " .. LOCAL_CATCH_URL)
-print("  🚀 Anti-Lag  : " .. (ENABLE_ANTI_LAG_BOOST and "ON" or "OFF"))
+print("  💻 Target : " .. LOCAL_CATCH_URL)
 print("============================================================")
 
 pcall(function()
@@ -44,29 +42,8 @@ pcall(function()
 end)
 
 -- ============================================================
--- 0. ANTI-LAG & CLEANUP PROTEKSI DOUBLE-EXECUTE
+-- 0. CLEANUP PROTEKSI DOUBLE-EXECUTE
 -- ============================================================
-if ENABLE_ANTI_LAG_BOOST then
-    task.spawn(function()
-        pcall(function()
-            local Lighting = cloneref(game:GetService("Lighting"))
-            Lighting.GlobalShadows = false
-            Lighting.FogEnd = 9e9
-            for _, v in ipairs(Lighting:GetChildren()) do
-                if v:IsA("BlurEffect") or v:IsA("SunRaysEffect") or v:IsA("DepthOfFieldEffect") or v:IsA("BloomEffect") then
-                    v.Enabled = false
-                end
-            end
-            local terrain = workspace:FindFirstChildOfClass("Terrain")
-            if terrain then
-                terrain.WaterWaveSize = 0
-                terrain.WaterWaveSpeed = 0
-                terrain.WaterReflectance = 0
-            end
-        end)
-    end)
-end
-
 local processedCatchHash = {}
 local activeConnections = {}
 local isBridgeActive = true
