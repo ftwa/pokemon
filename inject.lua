@@ -97,9 +97,7 @@ end)
 -- 1. DAFTAR VARIAN / MUTASI + AUTO-SYNC LANGSUNG DARI GAME
 -- ============================================================
 local KNOWN_VARIANTS = {
-    "shiny", "big", "giant", "tiny",
-    "mutasi", "mutation", "mutated",
-    "translucent", "dark", "electric", "sparkling", "rainbow",
+    "shiny", "big",
     "aurora", "galaxy", "sandy", "albino", "ghost", "haunted",
     "midnight", "corrupt", "radioactive", "holographic", "gemstone",
     "binary", "gold", "golden", "frozen", "glitch", "equinox",
