@@ -5403,12 +5403,6 @@
       const fishTierCls = hasFishArt
         ? `tier-${String(fishMeta.kategori || fishMeta.tier || 'secret').toLowerCase()}`
         : '';
-      const fishIslandClean = (fishMeta && fishMeta.location && String(fishMeta.location).trim().toLowerCase() !== 'new island')
-        ? String(fishMeta.location).trim().replace(/^Sub\s+/i, '')
-        : '';
-      const fishIslandBadgeHtml = fishIslandClean
-        ? `<div class="tcg-fish-island-badge" title="${fishIslandClean.replace(/"/g, '&quot;')}">🏝️ ${fishIslandClean}</div>`
-        : '';
       const safeFishName = hasFishArt ? String(fishMeta.name || 'Fish').replace(/"/g, '&quot;') : '';
       const fishPanelStageHtml = hasFishArt
         ? `<div class="tcg-fish-panel-stage"><img class="tcg-fish-img ${fishTierCls}" src="${fishMeta.img}" alt="${safeFishName}" onerror="var p=this.closest('.tcg-score-panel');if(p)p.classList.remove('has-fish');var c=this.closest('.tcg-card-inner');if(c)c.classList.remove('has-fish-card');this.closest('.tcg-fish-panel-stage').remove();" /></div>`
@@ -5447,7 +5441,6 @@
           <div class="tcg-art-frame">
             <div class="tcg-art-window ${showDuoAvatars ? 'is-duo' : ''}">
               <div class="el-particles-layer" id="tcgParticles"></div>
-              ${fishIslandBadgeHtml}
               ${artHtml}
             </div>
           </div>
@@ -7075,7 +7068,6 @@
             <div>
               <b style="color:#0f172a;">${item.player}</b>
               <span style="color:#0284c7; font-weight:700;"> ${item.fish}</span>
-              ${item.location ? `<span class="auto-feed-island">🏝️ ${item.location}</span>` : ''}
               <span style="color:#64748b;"> (${item.rincian})</span>
             </div>
           </div>
