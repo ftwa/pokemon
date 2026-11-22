@@ -729,6 +729,90 @@
       grid-template-columns: repeat(4, 1fr);
       gap: 6px;
     }
+    .auto-bonus-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+    .auto-tier-card {
+      background: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 9px;
+      padding: 6px 7px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: all 0.16s ease;
+    }
+    .auto-tier-card.is-off {
+      background: #f1f5f9;
+      border-color: #e2e8f0;
+      opacity: 0.62;
+    }
+    .auto-tier-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+      cursor: pointer;
+    }
+    .auto-tier-name {
+      font-size: 10px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .auto-tier-card input[type="number"] {
+      width: 100%;
+      padding: 4px 6px;
+      border-radius: 6px;
+      border: 1.5px solid #cbd5e1;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 900;
+      color: #0f172a;
+      background: #f8fafc;
+      text-align: center;
+    }
+    .auto-tier-card.is-off input[type="number"] {
+      color: #94a3b8;
+      background: #e2e8f0;
+    }
+    .auto-rules-preview {
+      font-size: 11px;
+      font-weight: 700;
+      color: #334155;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 6px 9px;
+      line-height: 1.4;
+    }
+    .auto-preset-strip {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      margin-bottom: 4px;
+    }
+    .auto-preset-chip {
+      padding: 3px 8px;
+      border-radius: 99px;
+      border: 1px solid #cbd5e1;
+      background: #f8fafc;
+      color: #334155;
+      font-size: 10.5px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.14s ease;
+    }
+    .auto-preset-chip:hover {
+      background: #e0f2fe;
+      border-color: #0284c7;
+      color: #0369a1;
+    }
     .auto-rule-cell {
       background: #f8fafc;
       border: 1px solid #e2e8f0;
@@ -755,6 +839,7 @@
       font-weight: 800;
       color: #0f172a;
       background: #ffffff;
+      text-align: center;
     }
     .auto-feed-box {
       max-height: 112px;
@@ -3538,25 +3623,63 @@
         <label><input type="checkbox" id="chkAutoSortRank" onchange="simpanPengaturanAuto()" /> Auto-Urutkan Peringkat</label>
       </div>
 
-      <!-- MATRIX POIN OTOMATIS -->
+      <!-- MATRIX POIN OTOMATIS (LEBIH MUDAH & AKURAT) -->
       <div class="hud-field">
-        <label class="px-label">Aturan Poin Tier &amp; Bonus (Otomatis)</label>
-        <div class="auto-rules-grid">
-          <div class="auto-rule-cell"><label>Forgotten</label><input type="number" id="ruleForgotten" min="0" value="4" onchange="simpanPengaturanAuto()" /></div>
-          <div class="auto-rule-cell"><label>Secret</label><input type="number" id="ruleSecret" min="0" value="3" onchange="simpanPengaturanAuto()" /></div>
-          <div class="auto-rule-cell"><label>Mitos</label><input type="number" id="ruleMitos" min="0" value="2" onchange="simpanPengaturanAuto()" /></div>
-          <div class="auto-rule-cell"><label>Legend</label><input type="number" id="ruleLegend" min="0" value="1" onchange="simpanPengaturanAuto()" /></div>
-          <div class="auto-rule-cell"><label>+ Big</label><input type="number" id="ruleBig" min="0" value="1" onchange="simpanPengaturanAuto()" /></div>
-          <div class="auto-rule-cell"><label>+ Shiny</label><input type="number" id="ruleShiny" min="0" value="1" onchange="simpanPengaturanAuto()" /></div>
-          <div class="auto-rule-cell"><label>+ Mutasi</label><input type="number" id="ruleMutasi" min="0" value="1" onchange="simpanPengaturanAuto()" /></div>
-          <div class="auto-rule-cell"><label>Khusus</label><input type="number" id="ruleKhususBase" min="0" value="5" onchange="simpanPengaturanAuto()" /></div>
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px;">
+          <label class="px-label">Tier yang Dihitung (Centang / Isi 0 = Diabaikan)</label>
         </div>
+        <div class="auto-preset-strip">
+          <button type="button" class="auto-preset-chip" onclick="terapkanPresetAturanAuto('all')">⚡ Semua Tier</button>
+          <button type="button" class="auto-preset-chip" onclick="terapkanPresetAturanAuto('no_legend')">🔥 Tanpa Legend (Mitos+)</button>
+          <button type="button" class="auto-preset-chip" onclick="terapkanPresetAturanAuto('secret_only')">💎 Secret+ Saja</button>
+        </div>
+        <div class="auto-rules-grid">
+          <div class="auto-tier-card" id="cardTierForgotten">
+            <label class="auto-tier-head">
+              <span class="auto-tier-name" style="color:#7e22ce;">Forgotten</span>
+              <input type="checkbox" id="chkTierForgotten" checked onchange="toggleTierAktif('forgotten')" />
+            </label>
+            <input type="number" id="ruleForgotten" min="0" value="4" oninput="simpanPengaturanAuto()" />
+          </div>
+          <div class="auto-tier-card" id="cardTierSecret">
+            <label class="auto-tier-head">
+              <span class="auto-tier-name" style="color:#0284c7;">Secret</span>
+              <input type="checkbox" id="chkTierSecret" checked onchange="toggleTierAktif('secret')" />
+            </label>
+            <input type="number" id="ruleSecret" min="0" value="3" oninput="simpanPengaturanAuto()" />
+          </div>
+          <div class="auto-tier-card" id="cardTierMitos">
+            <label class="auto-tier-head">
+              <span class="auto-tier-name" style="color:#dc2626;">Mitos</span>
+              <input type="checkbox" id="chkTierMitos" checked onchange="toggleTierAktif('mitos')" />
+            </label>
+            <input type="number" id="ruleMitos" min="0" value="2" oninput="simpanPengaturanAuto()" />
+          </div>
+          <div class="auto-tier-card" id="cardTierLegend">
+            <label class="auto-tier-head">
+              <span class="auto-tier-name" style="color:#d97706;">Legend</span>
+              <input type="checkbox" id="chkTierLegend" checked onchange="toggleTierAktif('legend')" />
+            </label>
+            <input type="number" id="ruleLegend" min="0" value="1" oninput="simpanPengaturanAuto()" />
+          </div>
+        </div>
+      </div>
+
+      <div class="hud-field">
+        <label class="px-label">Bonus Tambahan (Hanya untuk Tier Aktif) &amp; Poin Khusus</label>
+        <div class="auto-bonus-grid">
+          <div class="auto-rule-cell"><label>+ Big</label><input type="number" id="ruleBig" min="0" value="1" oninput="simpanPengaturanAuto()" /></div>
+          <div class="auto-rule-cell"><label>+ Shiny</label><input type="number" id="ruleShiny" min="0" value="1" oninput="simpanPengaturanAuto()" /></div>
+          <div class="auto-rule-cell"><label>+ Mutasi</label><input type="number" id="ruleMutasi" min="0" value="1" oninput="simpanPengaturanAuto()" /></div>
+          <div class="auto-rule-cell"><label>Ikan Khusus</label><input type="number" id="ruleKhususBase" min="0" value="5" oninput="simpanPengaturanAuto()" /></div>
+        </div>
+        <div class="auto-rules-preview" id="autoRulesPreview"></div>
       </div>
 
       <!-- IKAN KHUSUS -->
       <div class="hud-field">
         <label class="px-label">Target Ikan Khusus (Pisahkan dengan koma)</label>
-        <input type="text" id="inputIkanKhusus" class="px-input" placeholder="Contoh: Megalodon, Kraken, Ancient Whale" onchange="simpanPengaturanAuto()" />
+        <input type="text" id="inputIkanKhusus" class="px-input" placeholder="Contoh: Megalodon, Kraken, Ancient Whale" oninput="simpanPengaturanAuto()" />
       </div>
 
       <!-- SCRIPT EXECUTOR ROBLOX -->
@@ -5520,22 +5643,96 @@
       }
     }
 
+    function parseRuleNum(val, fallback = 0) {
+      if (val === '' || val === null || val === undefined) return fallback;
+      const n = Number(val);
+      return Number.isFinite(n) && n >= 0 ? Math.floor(n) : fallback;
+    }
+
+    function renderAutoRulesVisual() {
+      const r = autoConfig.rules;
+      const tiers = [
+        { key: 'forgotten', label: 'Forgotten', card: 'cardTierForgotten', chk: 'chkTierForgotten', inp: 'ruleForgotten' },
+        { key: 'secret',    label: 'Secret',    card: 'cardTierSecret',    chk: 'chkTierSecret',    inp: 'ruleSecret' },
+        { key: 'mitos',     label: 'Mitos',     card: 'cardTierMitos',     chk: 'chkTierMitos',     inp: 'ruleMitos' },
+        { key: 'legend',    label: 'Legend',    card: 'cardTierLegend',    chk: 'chkTierLegend',    inp: 'ruleLegend' }
+      ];
+
+      const aktif = [];
+      const off = [];
+      tiers.forEach(t => {
+        const val = parseRuleNum(r[t.key], 0);
+        const isOn = val > 0;
+        const cardEl = document.getElementById(t.card);
+        const chkEl = document.getElementById(t.chk);
+        if (cardEl) cardEl.classList.toggle('is-off', !isOn);
+        if (chkEl) chkEl.checked = isOn;
+        if (isOn) aktif.push(`${t.label} (+${val})`);
+        else off.push(t.label);
+      });
+
+      const prev = document.getElementById('autoRulesPreview');
+      if (prev) {
+        const bBig = parseRuleNum(r.big, 0);
+        const bShiny = parseRuleNum(r.shiny, 0);
+        const bMut = parseRuleNum(r.mutasi, 0);
+        const bonusTxt = [
+          bBig > 0 ? `Big +${bBig}` : '',
+          bShiny > 0 ? `Shiny +${bShiny}` : '',
+          bMut > 0 ? `Mutasi +${bMut}` : ''
+        ].filter(Boolean).join(', ') || 'Tanpa bonus';
+        const aktifTxt = aktif.length ? aktif.join(' • ') : 'Tidak ada';
+        const offTxt = off.length ? ` | ⛔ Diabaikan: ${off.join(', ')}` : '';
+        prev.textContent = `✅ Dihitung: ${aktifTxt}${offTxt} | Bonus: ${bonusTxt}`;
+      }
+    }
+
+    function toggleTierAktif(tierKey) {
+      const defaultMap = { forgotten: 4, secret: 3, mitos: 2, legend: 1 };
+      const inpMap = { forgotten: 'ruleForgotten', secret: 'ruleSecret', mitos: 'ruleMitos', legend: 'ruleLegend' };
+      const chkMap = { forgotten: 'chkTierForgotten', secret: 'chkTierSecret', mitos: 'chkTierMitos', legend: 'chkTierLegend' };
+      const chk = document.getElementById(chkMap[tierKey]);
+      const inp = document.getElementById(inpMap[tierKey]);
+      if (!chk || !inp) return;
+      if (!chk.checked) {
+        inp.value = 0;
+      } else if (parseRuleNum(inp.value, 0) === 0) {
+        inp.value = defaultMap[tierKey] || 1;
+      }
+      simpanPengaturanAuto();
+    }
+
+    function terapkanPresetAturanAuto(preset) {
+      const vals = preset === 'no_legend'
+        ? { forgotten: 4, secret: 3, mitos: 2, legend: 0 }
+        : preset === 'secret_only'
+          ? { forgotten: 4, secret: 3, mitos: 0, legend: 0 }
+          : { forgotten: 4, secret: 3, mitos: 2, legend: 1 };
+
+      document.getElementById('ruleForgotten').value = vals.forgotten;
+      document.getElementById('ruleSecret').value = vals.secret;
+      document.getElementById('ruleMitos').value = vals.mitos;
+      document.getElementById('ruleLegend').value = vals.legend;
+      simpanPengaturanAuto(true);
+    }
+
     function bukaModalAuto() {
       tutupSemuaPopupKecil();
       const chkTimer = document.getElementById('chkAutoRequireTimer');
       if (chkTimer) chkTimer.checked = Boolean(autoConfig.requireTimerRunning);
       document.getElementById('chkAutoFillSeat').checked = Boolean(autoConfig.autoFillSeat);
       document.getElementById('chkAutoSortRank').checked = Boolean(autoConfig.autoSort);
-      document.getElementById('ruleForgotten').value = autoConfig.rules.forgotten;
-      document.getElementById('ruleSecret').value = autoConfig.rules.secret;
-      document.getElementById('ruleMitos').value = autoConfig.rules.mitos;
-      document.getElementById('ruleLegend').value = autoConfig.rules.legend;
-      document.getElementById('ruleBig').value = autoConfig.rules.big;
-      document.getElementById('ruleShiny').value = autoConfig.rules.shiny;
-      document.getElementById('ruleMutasi').value = autoConfig.rules.mutasi;
-      document.getElementById('ruleKhususBase').value = autoConfig.rules.khususBase;
+      document.getElementById('ruleForgotten').value = parseRuleNum(autoConfig.rules.forgotten, 4);
+      document.getElementById('ruleSecret').value = parseRuleNum(autoConfig.rules.secret, 3);
+      document.getElementById('ruleMitos').value = parseRuleNum(autoConfig.rules.mitos, 2);
+      document.getElementById('ruleLegend').value = parseRuleNum(autoConfig.rules.legend, 1);
+      document.getElementById('ruleBig').value = parseRuleNum(autoConfig.rules.big, 1);
+      document.getElementById('ruleShiny').value = parseRuleNum(autoConfig.rules.shiny, 1);
+      document.getElementById('ruleMutasi').value = parseRuleNum(autoConfig.rules.mutasi, 1);
+      document.getElementById('ruleKhususBase').value = parseRuleNum(autoConfig.rules.khususBase, 5);
       document.getElementById('inputIkanKhusus').value = autoConfig.rules.khususNama || '';
       document.getElementById('autoActionStatus').textContent = '';
+      renderAutoRulesVisual();
       renderAutoFeedList();
       updateAutoModeUI();
       document.getElementById('modalAutoSkor').classList.add('show');
@@ -5552,19 +5749,20 @@
       autoConfig.autoFillSeat = Boolean(document.getElementById('chkAutoFillSeat').checked);
       autoConfig.autoSort = Boolean(document.getElementById('chkAutoSortRank').checked);
 
-      autoConfig.rules.forgotten = Math.max(0, parseInt(document.getElementById('ruleForgotten').value, 10) || 0);
-      autoConfig.rules.secret = Math.max(0, parseInt(document.getElementById('ruleSecret').value, 10) || 0);
-      autoConfig.rules.mitos = Math.max(0, parseInt(document.getElementById('ruleMitos').value, 10) || 0);
-      autoConfig.rules.legend = Math.max(0, parseInt(document.getElementById('ruleLegend').value, 10) || 0);
-      autoConfig.rules.big = Math.max(0, parseInt(document.getElementById('ruleBig').value, 10) || 0);
-      autoConfig.rules.shiny = Math.max(0, parseInt(document.getElementById('ruleShiny').value, 10) || 0);
-      autoConfig.rules.mutasi = Math.max(0, parseInt(document.getElementById('ruleMutasi').value, 10) || 0);
-      autoConfig.rules.khususBase = Math.max(0, parseInt(document.getElementById('ruleKhususBase').value, 10) || 0);
+      autoConfig.rules.forgotten = parseRuleNum(document.getElementById('ruleForgotten').value, 0);
+      autoConfig.rules.secret = parseRuleNum(document.getElementById('ruleSecret').value, 0);
+      autoConfig.rules.mitos = parseRuleNum(document.getElementById('ruleMitos').value, 0);
+      autoConfig.rules.legend = parseRuleNum(document.getElementById('ruleLegend').value, 0);
+      autoConfig.rules.big = parseRuleNum(document.getElementById('ruleBig').value, 0);
+      autoConfig.rules.shiny = parseRuleNum(document.getElementById('ruleShiny').value, 0);
+      autoConfig.rules.mutasi = parseRuleNum(document.getElementById('ruleMutasi').value, 0);
+      autoConfig.rules.khususBase = parseRuleNum(document.getElementById('ruleKhususBase').value, 0);
       autoConfig.rules.khususNama = String(document.getElementById('inputIkanKhusus').value || '').trim();
 
       simpanConfigAutoStorage();
+      renderAutoRulesVisual();
       if (showSavedMsg) {
-        document.getElementById('autoActionStatus').textContent = '✅ Pengaturan Mode Auto tersimpan.';
+        document.getElementById('autoActionStatus').textContent = '✅ Aturan poin berhasil diterapkan!';
       }
       updateAutoModeUI();
     }
@@ -5745,53 +5943,63 @@
       const varianTokens = varianClean.split(',').map(v => v.trim()).filter(v => v && !bukanMutasi.includes(v));
 
       if (isKhusus || tierClean.includes('khusus') || tierClean.includes('special')) {
-        const base = Number(rules.khususBase) || 5;
+        const base = parseRuleNum(rules.khususBase, 0);
+        if (base <= 0) {
+          return { poin: 0, rincian: 'Ikan khusus nonaktif (0)', kategori: 'KHUSUS', valid: false };
+        }
         let total = base;
         const rincian = [`khusus +${base}`];
         if (/\bBIG\b/.test(teksCek)) {
-          const b = Number(rules.khususBig) || 0;
+          const b = parseRuleNum(rules.big, 0);
           if (b > 0) { total += b; rincian.push(`big +${b}`); }
         }
         if (/\bSHINY\b/.test(teksCek)) {
-          const s = Number(rules.khususShiny) || 0;
+          const s = parseRuleNum(rules.shiny, 0);
           if (s > 0) { total += s; rincian.push(`shiny +${s}`); }
         }
         if (varianTokens.length > 0) {
-          const m = Number(rules.khususMutasi) || 0;
+          const m = parseRuleNum(rules.mutasi, 0);
           if (m > 0) { total += m; rincian.push(`mutasi +${m}`); }
         }
         return { poin: total, rincian: rincian.join(', '), kategori: 'KHUSUS', valid: true };
       }
 
-      let kategori = 'LEGEND';
+      let kategori = 'NORMAL';
       if (tierClean.includes('forgotten')) kategori = 'FORGOTTEN';
       else if (tierClean.includes('secret')) kategori = 'SECRET';
       else if (tierClean.includes('mythic') || tierClean.includes('mitos')) kategori = 'MITOS';
       else if (tierClean.includes('legend')) kategori = 'LEGEND';
-      else if (['normal', 'rare', 'common', 'uncommon'].includes(tierClean)) {
+
+      if (kategori === 'NORMAL') {
         return { poin: 0, rincian: 'Bukan tier turnamen', kategori: 'NORMAL', valid: false };
       }
 
       const mapDasar = {
-        FORGOTTEN: Number(rules.forgotten) || 4,
-        SECRET: Number(rules.secret) || 3,
-        MITOS: Number(rules.mitos) || 2,
-        LEGEND: Number(rules.legend) || 1
+        FORGOTTEN: parseRuleNum(rules.forgotten, 0),
+        SECRET: parseRuleNum(rules.secret, 0),
+        MITOS: parseRuleNum(rules.mitos, 0),
+        LEGEND: parseRuleNum(rules.legend, 0)
       };
-      const basePoint = mapDasar[kategori] || 1;
+      const basePoint = mapDasar[kategori];
+
+      // Jika tier diset 0 / dinonaktifkan, abaikan total (termasuk bonus Big/Shiny/Mutasi!)
+      if (basePoint <= 0) {
+        return { poin: 0, rincian: `Tier ${kategori} dinonaktifkan (0)`, kategori, valid: false };
+      }
+
       let total = basePoint;
       const rincian = [`${kategori.toLowerCase()} +${basePoint}`];
 
       if (/\bBIG\b/.test(teksCek)) {
-        const b = Number(rules.big) || 0;
+        const b = parseRuleNum(rules.big, 0);
         if (b > 0) { total += b; rincian.push(`big +${b}`); }
       }
       if (/\bSHINY\b/.test(teksCek)) {
-        const s = Number(rules.shiny) || 0;
+        const s = parseRuleNum(rules.shiny, 0);
         if (s > 0) { total += s; rincian.push(`shiny +${s}`); }
       }
       if (varianTokens.length > 0) {
-        const m = Number(rules.mutasi) || 0;
+        const m = parseRuleNum(rules.mutasi, 0);
         if (m > 0) { total += m; rincian.push(`mutasi +${m}`); }
       }
       return { poin: total, rincian: rincian.join(', '), kategori, valid: true };
