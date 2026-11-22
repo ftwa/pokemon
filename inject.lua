@@ -1,6 +1,6 @@
 -- ============================================================
--- POKÉDEX AUTO SKOR BRIDGE — PURE NTFY.SH EDITION (ZERO LAG)
--- Kirim tangkapan Roblox Fish It langsung ke ntfy.sh Live Bus
+-- POKÉDEX AUTO SKOR BRIDGE — PURE LOCAL 0MS EDITION (STABIL)
+-- Kirim tangkapan Roblox Fish It langsung ke PokedexScoreboard.exe
 -- ============================================================
 local cloneref = cloneref or function(o) return o end
 local cclosure = newcclosure or function(f) return f end
@@ -9,6 +9,7 @@ local Players = cloneref(game:GetService("Players"))
 local HttpService = cloneref(game:GetService("HttpService"))
 local TextChatService = cloneref(game:GetService("TextChatService"))
 local ReplicatedStorage = cloneref(game:GetService("ReplicatedStorage"))
+local StarterGui = cloneref(game:GetService("StarterGui"))
 
 local httpRequest = (syn and syn.request)
     or (http and http.request)
@@ -28,10 +29,18 @@ local LOCAL_CATCH_URL       = "http://127.0.0.1:18420/api/local-catch"
 local ENABLE_ANTI_LAG_BOOST = true
 
 print("============================================================")
-print("  ⚡ POKÉDEX AUTO SKOR — PURE LOCAL 0MS BRIDGE (STABIL)")
+print("  ⚡ POKÉDEX AUTO SKOR — PURE LOCAL 0MS BRIDGE (v2)")
 print("  💻 Target    : " .. LOCAL_CATCH_URL)
 print("  🚀 Anti-Lag  : " .. (ENABLE_ANTI_LAG_BOOST and "ON" or "OFF"))
 print("============================================================")
+
+pcall(function()
+    StarterGui:SetCore("SendNotification", {
+        Title = "⚡ Pokédex Auto Skor",
+        Text = "Aktif! Tangkapan langsung masuk ke PokedexScoreboard.exe (0ms).",
+        Duration = 4
+    })
+end)
 
 -- ============================================================
 -- 0. ANTI-LAG & CLEANUP PROTEKSI DOUBLE-EXECUTE
@@ -84,7 +93,7 @@ task.spawn(function()
 end)
 
 -- ============================================================
--- 1. DAFTAR VARIAN / MUTASI & NAMA IKAN DILINDUNGI
+-- 1. DAFTAR VARIAN / MUTASI & NAMA IKAN DILINDUNGI (408-FISH SYNC)
 -- ============================================================
 local KNOWN_VARIANTS = {
     "shiny", "big", "giant", "tiny",
@@ -98,42 +107,57 @@ local KNOWN_VARIANTS = {
 }
 table.sort(KNOWN_VARIANTS, function(a, b) return #a > #b end)
 
-local PROTECTED_FISH_NAMES = {
-    ["aurora manatee"] = true,
-    ["aurora butterfly fish"] = true,
-    ["aurora narwhal"] = true,
-    ["aurora jellyfish"] = true,
-    ["aurora seahorse"] = true,
-    ["aurora starfish"] = true,
-    ["aurora anglerfish"] = true,
-    ["golden dorado"] = true,
-    ["golden koi"] = true,
-    ["ghost shark"] = true,
-    ["ghost jellyfish"] = true,
-    ["dark megalodon"] = true,
-    ["electric eel"] = true,
-    ["electric ray"] = true,
-    ["rainbow trout"] = true,
-    ["giant squid"] = true,
-    ["solar koi"] = true,
-    ["solarflare koi"] = true,
-    ["fairy wrasse"] = true,
-    ["stone fish"] = true,
-    ["stonefish"] = true,
-    ["crystal crab"] = true,
-    ["crystal octopus"] = true,
-    ["crystal goliath"] = true,
-    ["crystal lancer"] = true,
-    ["crystal salamander"] = true,
-    ["crystalline behemoth"] = true,
-    ["pyroclast stonefish"] = true,
-    ["brimstone catfish"] = true,
-    ["evolved enchant stone"] = true,
-    ["runic enchant stone"] = true
+-- Nama ikan yang mengandung kata mutasi/varian agar TIDAK terpotong saat parsing
+local PROTECTED_FISH_LIST = {
+    "aurora butterfly fish",
+    "aurora manatee",
+    "aurora narwhal",
+    "aurora jellyfish",
+    "aurora seahorse",
+    "aurora starfish",
+    "aurora anglerfish",
+    "bloodmoon whale",
+    "brimstone catfish",
+    "crystal crab",
+    "crystal goliath",
+    "crystal lancer",
+    "crystal octopus",
+    "crystal salamander",
+    "crystalline behemoth",
+    "dark megalodon",
+    "dark megalofriend",
+    "dark pumpkin appafish",
+    "dark seahorse",
+    "disco frogalloon",
+    "electric eel",
+    "electric ray",
+    "elemental hydra",
+    "elemental tempestray",
+    "evolved enchant stone",
+    "fairy wrasse",
+    "festive dolphin",
+    "frozen tundra",
+    "ghost jellyfish",
+    "ghost shark",
+    "ghost worm fish",
+    "giant squid",
+    "golden dorado",
+    "golden koi",
+    "midnight blue wildes shark",
+    "midnight stars squid",
+    "pyroclast stonefish",
+    "rainbow comet shark",
+    "rainbow trout",
+    "runic enchant stone",
+    "solar koi",
+    "solarflare koi",
+    "stone fish",
+    "stonefish"
 }
+table.sort(PROTECTED_FISH_LIST, function(a, b) return #a > #b end)
 
 -- ============================================================
--- 2. DETEKSI TIER & PEMISAH VARIAN
+-- 2. DETEKSI TIER & PEMISAH VARIAN (SUFFIX-PROTECTED)
 -- ============================================================
 local function determineTier(rawText, cleanText)
     local hex = rawText:match('color=["\']#?(%x%x%x%x%x%x)["\']')
@@ -176,23 +200,13 @@ local function determineTier(rawText, cleanText)
     return "NORMAL"
 end
 
-local function splitFishAndVariant(fullFishName)
-    local detectedVariants = {}
-    local cleanFish = fullFishName
-
-    if PROTECTED_FISH_NAMES[string.lower(string.gsub(cleanFish, "^%s*(.-)%s*$", "%1"))] then
-        return cleanFish, "None"
-    end
-
+local function extractVariantsFromText(textChunk, detectedVariants)
+    local cleanChunk = textChunk
     for _, v in ipairs(KNOWN_VARIANTS) do
-        local trimmedCurrent = string.lower(string.match(cleanFish, "^%s*(.-)%s*$") or "")
-        if PROTECTED_FISH_NAMES[trimmedCurrent] then
-            break
-        end
         local target = string.lower(v)
         local escapedTarget = string.gsub(target, "([%^%$%(%)%%%.%[%]%*%+%-%?])", "%%%1")
         while true do
-            local lowerClean = string.lower(cleanFish)
+            local lowerClean = string.lower(cleanChunk)
             local s, e = string.find(lowerClean, "%f[%w]" .. escapedTarget .. "%f[%W]")
             if not s then
                 s, e = string.find(lowerClean, target, 1, true)
@@ -206,17 +220,44 @@ local function splitFishAndVariant(fullFishName)
             end
 
             if s and e then
-                local originalText = string.sub(cleanFish, s, e)
+                local originalText = string.sub(cleanChunk, s, e)
                 table.insert(detectedVariants, originalText)
-                cleanFish = string.sub(cleanFish, 1, s - 1) .. " " .. string.sub(cleanFish, e + 1)
+                cleanChunk = string.sub(cleanChunk, 1, s - 1) .. " " .. string.sub(cleanChunk, e + 1)
             else
                 break
             end
         end
     end
+    cleanChunk = string.gsub(cleanChunk, "%s+", " ")
+    return string.match(cleanChunk, "^%s*(.-)%s*$") or ""
+end
 
-    cleanFish = string.gsub(cleanFish, "%s+", " ")
-    cleanFish = string.match(cleanFish, "^%s*(.-)%s*$") or fullFishName
+local function splitFishAndVariant(fullFishName)
+    local detectedVariants = {}
+    local trimmed = string.match(tostring(fullFishName or ""), "^%s*(.-)%s*$") or ""
+    local lowerTrimmed = string.lower(trimmed)
+
+    -- 1. Cek apakah diakhiri nama ikan dilindungi (contoh: "Shiny Big Midnight Stars Squid")
+    for _, prot in ipairs(PROTECTED_FISH_LIST) do
+        local pLen = #prot
+        if #lowerTrimmed >= pLen and string.sub(lowerTrimmed, -pLen) == prot then
+            local beforeIdx = #lowerTrimmed - pLen
+            local charBefore = beforeIdx > 0 and string.sub(lowerTrimmed, beforeIdx, beforeIdx) or " "
+            if not string.find(charBefore, "%w") then
+                local lockedFish = string.sub(trimmed, #trimmed - pLen + 1)
+                local prefixPart = beforeIdx > 0 and string.sub(trimmed, 1, beforeIdx) or ""
+                if prefixPart ~= "" then
+                    extractVariantsFromText(prefixPart, detectedVariants)
+                end
+                local variantResult = #detectedVariants > 0 and table.concat(detectedVariants, ", ") or "None"
+                return lockedFish, variantResult
+            end
+        end
+    end
+
+    -- 2. Parsing normal untuk ikan lainnya
+    local cleanFish = extractVariantsFromText(trimmed, detectedVariants)
+    if cleanFish == "" then cleanFish = trimmed end
     local variantResult = #detectedVariants > 0 and table.concat(detectedVariants, ", ") or "None"
     return cleanFish, variantResult
 end
