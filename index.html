@@ -6545,8 +6545,30 @@
        ========================================================================= */
     window.POKEDEX_CUSTOM_FISH_DB = window.POKEDEX_CUSTOM_FISH_DB || {};
 
+    function mergeFishEntry(baseEntry, customEntry) {
+      if (!baseEntry) return customEntry;
+      if (!customEntry) return baseEntry;
+      const cleanVal = (v) => {
+        const s = String(v || '').trim();
+        return (!s || s === '-' || s.toLowerCase() === 'new island') ? '' : s;
+      };
+      return {
+        n: customEntry.n || baseEntry.n || '',
+        t: customEntry.t || baseEntry.t || '',
+        r: customEntry.r || baseEntry.r || '',
+        o: cleanVal(customEntry.o) || cleanVal(baseEntry.o) || '',
+        l: cleanVal(customEntry.l) || cleanVal(baseEntry.l) || '',
+        i: customEntry.i || baseEntry.i || ''
+      };
+    }
+
     function getGabunganFishDb() {
-      return Object.assign({}, window.POKEDEX_FISH_DB || {}, window.POKEDEX_CUSTOM_FISH_DB || {});
+      const baseDb = window.POKEDEX_FISH_DB || {};
+      const customDb = window.POKEDEX_CUSTOM_FISH_DB || {};
+      const out = {};
+      for (const [k, v] of Object.entries(baseDb)) out[k] = v;
+      for (const [k, v] of Object.entries(customDb)) out[k] = mergeFishEntry(out[k], v);
+      return out;
     }
 
     function perbaruiDatalistIkan() {
@@ -6558,7 +6580,12 @@
       if (!dl) return;
       entries.sort((a, b) => String(a.n || '').localeCompare(String(b.n || '')));
       dl.innerHTML = entries
-        .map(f => `<option value="${String(f.n || '').replace(/"/g, '&quot;')}">${String(f.r || f.t || '').toUpperCase()}${f.o && f.o !== '-' ? ' • ' + f.o : ''}</option>`)
+        .map(f => {
+          const metaParts = [String(f.r || f.t || '').toUpperCase()];
+          if (f.l && f.l.toLowerCase() !== 'new island') metaParts.push(f.l);
+          if (f.o && f.o !== '-') metaParts.push(f.o);
+          return `<option value="${String(f.n || '').replace(/"/g, '&quot;')}">${metaParts.filter(Boolean).join(' • ')}</option>`;
+        })
         .join('');
     }
 
@@ -6584,7 +6611,7 @@
       const baseDb = window.POKEDEX_FISH_DB || {};
       const customDb = window.POKEDEX_CUSTOM_FISH_DB || {};
       const aliases = window.POKEDEX_FISH_ALIASES || {};
-      const merged = Object.assign({}, baseDb, customDb);
+      const merged = getGabunganFishDb();
       if (!Object.keys(merged).length) return null;
 
       const cleanKey = (s) => String(s || '')
@@ -6600,12 +6627,14 @@
         if (imgPath && !isLocalOrigin && customDb[key] && !baseDb[key] && !/^https?:\/\//i.test(imgPath)) {
           imgPath = 'http://127.0.0.1:18420/' + imgPath.replace(/^\/+/, '');
         }
+        const cleanLoc = (entry.l && String(entry.l).trim().toLowerCase() !== 'new island') ? String(entry.l).trim() : '';
+        const cleanOdds = (entry.o && String(entry.o).trim() !== '-') ? String(entry.o).trim() : '';
         return {
           name: entry.n || raw,
           tier: entry.t || '',
           rarity: entry.r || entry.t || '',
-          odds: entry.o || '',
-          location: entry.l || '',
+          odds: cleanOdds,
+          location: cleanLoc,
           img: imgPath
         };
       };
