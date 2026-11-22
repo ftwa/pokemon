@@ -2780,6 +2780,27 @@
       0%, 100% { transform: translateY(0) scale(1); }
       50% { transform: translateY(-6px) scale(1.04); }
     }
+    .tcg-fish-island-badge {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      z-index: 4;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 9.5px;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      color: #ecfeff;
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.82), rgba(14, 116, 144, 0.84));
+      border: 1px solid rgba(103, 232, 249, 0.55);
+      backdrop-filter: blur(4px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28);
+      max-width: 48%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
     .tcg-fish-odds-badge {
       position: absolute;
       top: 6px;
@@ -2792,11 +2813,11 @@
       font-weight: 800;
       letter-spacing: 0.3px;
       color: #ffffff;
-      background: rgba(15, 23, 42, 0.72);
+      background: rgba(15, 23, 42, 0.78);
       border: 1px solid rgba(255, 255, 255, 0.45);
       backdrop-filter: blur(4px);
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28);
-      max-width: 72%;
+      max-width: 48%;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -2817,6 +2838,52 @@
       padding: 2px;
       flex-shrink: 0;
     }
+    .auto-feed-island {
+      display: inline-block;
+      margin-left: 4px;
+      padding: 0px 6px;
+      border-radius: 999px;
+      font-size: 9.5px;
+      font-weight: 800;
+      color: #0e7490;
+      background: #ecfeff;
+      border: 1px solid #a5f3fc;
+      vertical-align: middle;
+    }
+    .fish-catalog-drawer {
+      display: none;
+      margin-top: 6px;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 8px;
+    }
+    .fish-catalog-drawer.open { display: block; }
+    .fish-catalog-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+      max-height: 190px;
+      overflow-y: auto;
+      margin-top: 6px;
+      padding-right: 2px;
+    }
+    .fish-cat-card {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 5px 7px;
+      cursor: pointer;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+    .fish-cat-card:hover { border-color: #38bdf8; background: #f0f9ff; }
+    .fish-cat-card img { width: 30px; height: 30px; object-fit: contain; flex-shrink: 0; }
+    .fish-cat-info { min-width: 0; flex: 1; line-height: 1.2; }
+    .fish-cat-name { font-size: 11px; font-weight: 800; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .fish-cat-sub { font-size: 9.5px; color: #0e7490; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .tcg-art-3d-wrap {
       position: absolute;
       inset: 0;
@@ -4066,10 +4133,17 @@
       <div class="hud-field">
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <label class="px-label">Target Ikan Khusus (Pisahkan dengan koma)</label>
-          <span id="fishDbCountBadge" style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:800; color:#0284c7; background:#e0f2fe; border:1px solid #bae6fd; padding:1px 7px; border-radius:999px;">🐟 0 ikan</span>
+          <button type="button" id="fishDbCountBadge" onclick="toggleKatalogIkanPulau()" title="Klik untuk melihat daftar ikan per pulau" style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:800; color:#0284c7; background:#e0f2fe; border:1px solid #7dd3fc; padding:2px 8px; border-radius:999px; cursor:pointer;">🐟 0 ikan • 🏝️ Pulau</button>
         </div>
         <input type="text" id="inputIkanKhusus" list="fishDbDatalist" class="px-input" placeholder="Contoh: Megalodon, Kraken, Ancient Whale" oninput="simpanPengaturanAuto()" />
         <datalist id="fishDbDatalist"></datalist>
+        <div class="fish-catalog-drawer" id="fishCatalogDrawer">
+          <div style="display:flex; gap:6px; align-items:center;">
+            <select id="fishCatalogIslandFilter" class="px-input" style="font-size:11px; padding:4px 8px; flex:1;" onchange="renderKatalogIkanPulau()"></select>
+            <input type="text" id="fishCatalogSearch" class="px-input" style="font-size:11px; padding:4px 8px; width:140px;" placeholder="Cari ikan..." oninput="renderKatalogIkanPulau()" />
+          </div>
+          <div class="fish-catalog-grid" id="fishCatalogGrid"></div>
+        </div>
       </div>
 
       <!-- SCRIPT EXECUTOR ROBLOX -->
@@ -5342,19 +5416,24 @@
       const fishTierCls = hasFishArt
         ? `tier-${String(fishMeta.kategori || fishMeta.tier || 'secret').toLowerCase()}`
         : '';
+      const fishIslandClean = (fishMeta && fishMeta.location && String(fishMeta.location).trim().toLowerCase() !== 'new island')
+        ? String(fishMeta.location).trim().replace(/^Sub\s+/i, '')
+        : '';
+      const fishIslandBadgeHtml = fishIslandClean
+        ? `<div class="tcg-fish-island-badge" title="${fishIslandClean.replace(/"/g, '&quot;')}">🏝️ ${fishIslandClean}</div>`
+        : '';
       const fishBadgeParts = [];
-      if (hasFishArt) {
+      if (fishMeta) {
         const badgeTier = String(fishMeta.kategori || fishMeta.rarity || fishMeta.tier || '').toUpperCase();
         if (badgeTier) fishBadgeParts.push(badgeTier);
         if (fishMeta.odds && fishMeta.odds !== '-') fishBadgeParts.push(fishMeta.odds);
-        else if (fishMeta.location) fishBadgeParts.push(fishMeta.location);
       }
-      const fishBadgeHtml = hasFishArt && fishBadgeParts.length
+      const fishBadgeHtml = fishBadgeParts.length
         ? `<div class="tcg-fish-odds-badge">${fishBadgeParts.join(' • ')}</div>`
         : '';
       const safeFishName = hasFishArt ? String(fishMeta.name || 'Fish').replace(/"/g, '&quot;') : '';
       const fishShowcaseHtml = hasFishArt
-        ? `<div class="tcg-fish-showcase"><img class="tcg-fish-img ${fishTierCls}" src="${fishMeta.img}" alt="${safeFishName}" onerror="var w=this.closest('.tcg-art-window');if(w)w.classList.remove('has-fish');var b=w&&w.querySelector('.tcg-fish-odds-badge');if(b)b.remove();this.closest('.tcg-fish-showcase').remove();" /></div>`
+        ? `<div class="tcg-fish-showcase"><img class="tcg-fish-img ${fishTierCls}" src="${fishMeta.img}" alt="${safeFishName}" onerror="var w=this.closest('.tcg-art-window');if(w)w.classList.remove('has-fish');this.closest('.tcg-fish-showcase').remove();" /></div>`
         : '';
       const artHtml = (showDuoAvatars
         ? makeAvatar3d(p, nama) + makeAvatar3d(partner, 'P2')
@@ -5390,6 +5469,7 @@
           <div class="tcg-art-frame">
             <div class="tcg-art-window ${showDuoAvatars ? 'is-duo' : ''} ${hasFishArt ? 'has-fish' : ''}">
               <div class="el-particles-layer" id="tcgParticles"></div>
+              ${fishIslandBadgeHtml}
               ${fishBadgeHtml}
               ${artHtml}
             </div>
@@ -6574,19 +6654,88 @@
     function perbaruiDatalistIkan() {
       const merged = getGabunganFishDb();
       const entries = Object.values(merged);
+      const islandCounts = {};
+      for (const f of entries) {
+        const loc = (f.l && f.l.toLowerCase() !== 'new island') ? String(f.l).replace(/^Sub\s+/i, '').trim() : 'Lainnya';
+        islandCounts[loc] = (islandCounts[loc] || 0) + 1;
+      }
+      const totalPulau = Object.keys(islandCounts).length;
       const badge = document.getElementById('fishDbCountBadge');
-      if (badge) badge.textContent = `🐟 ${entries.length} ikan`;
+      if (badge) badge.textContent = `🐟 ${entries.length} ikan • 🏝️ ${totalPulau} Pulau`;
+
+      const sel = document.getElementById('fishCatalogIslandFilter');
+      if (sel) {
+        const prev = sel.value || 'ALL';
+        const sortedIslands = Object.keys(islandCounts).sort((a, b) => a.localeCompare(b));
+        sel.innerHTML = `<option value="ALL">🏝️ Semua Pulau (${entries.length} ikan)</option>` +
+          sortedIslands.map(isl => `<option value="${isl.replace(/"/g, '&quot;')}">${isl} (${islandCounts[isl]})</option>`).join('');
+        if (prev && (prev === 'ALL' || islandCounts[prev])) sel.value = prev;
+      }
+      const drawer = document.getElementById('fishCatalogDrawer');
+      if (drawer && drawer.classList.contains('open')) renderKatalogIkanPulau();
+
       const dl = document.getElementById('fishDbDatalist');
       if (!dl) return;
       entries.sort((a, b) => String(a.n || '').localeCompare(String(b.n || '')));
       dl.innerHTML = entries
         .map(f => {
           const metaParts = [String(f.r || f.t || '').toUpperCase()];
-          if (f.l && f.l.toLowerCase() !== 'new island') metaParts.push(f.l);
+          if (f.l && f.l.toLowerCase() !== 'new island') metaParts.push(String(f.l).replace(/^Sub\s+/i, ''));
           if (f.o && f.o !== '-') metaParts.push(f.o);
           return `<option value="${String(f.n || '').replace(/"/g, '&quot;')}">${metaParts.filter(Boolean).join(' • ')}</option>`;
         })
         .join('');
+    }
+
+    function toggleKatalogIkanPulau() {
+      const drawer = document.getElementById('fishCatalogDrawer');
+      if (!drawer) return;
+      drawer.classList.toggle('open');
+      if (drawer.classList.contains('open')) renderKatalogIkanPulau();
+    }
+
+    function tambahIkanKeKhusus(namaIkan) {
+      const inp = document.getElementById('inputIkanKhusus');
+      if (!inp) return;
+      const parts = inp.value.split(',').map(s => s.trim()).filter(Boolean);
+      if (!parts.some(p => p.toLowerCase() === namaIkan.toLowerCase())) {
+        parts.push(namaIkan);
+        inp.value = parts.join(', ');
+        simpanPengaturanAuto();
+      }
+    }
+
+    function renderKatalogIkanPulau() {
+      const grid = document.getElementById('fishCatalogGrid');
+      const sel = document.getElementById('fishCatalogIslandFilter');
+      const qInp = document.getElementById('fishCatalogSearch');
+      if (!grid) return;
+      const filterIsl = sel ? sel.value : 'ALL';
+      const q = (qInp ? qInp.value : '').toLowerCase().trim();
+      const merged = getGabunganFishDb();
+      let list = Object.values(merged).map(f => ({
+        ...f,
+        locClean: (f.l && f.l.toLowerCase() !== 'new island') ? String(f.l).replace(/^Sub\s+/i, '').trim() : 'Lainnya'
+      }));
+      if (filterIsl !== 'ALL') list = list.filter(f => f.locClean === filterIsl);
+      if (q) list = list.filter(f => String(f.n || '').toLowerCase().includes(q) || f.locClean.toLowerCase().includes(q));
+      list.sort((a, b) => String(a.n || '').localeCompare(String(b.n || '')));
+      if (!list.length) {
+        grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:#94a3b8; font-size:11px; padding:10px;">Ikan tidak ditemukan.</div>`;
+        return;
+      }
+      grid.innerHTML = list.slice(0, 120).map(f => {
+        const safeName = String(f.n || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        const sub = `🏝️ ${f.locClean}${f.o && f.o !== '-' ? ' • ' + f.o : ''}`;
+        return `
+          <div class="fish-cat-card" onclick="tambahIkanKeKhusus('${safeName}')" title="Klik untuk menambah ke Target Ikan Khusus">
+            ${f.i ? `<img src="${f.i}" alt="" loading="lazy" onerror="this.style.display='none'" />` : ''}
+            <div class="fish-cat-info">
+              <div class="fish-cat-name">${f.n}</div>
+              <div class="fish-cat-sub">${sub}</div>
+            </div>
+          </div>`;
+      }).join('');
     }
 
     async function muatCustomFishDb() {
@@ -6921,6 +7070,7 @@
         player: p.nick || p.user || rawUser,
         fish: fullFish,
         fishImg: fishInfoDb ? fishInfoDb.img : '',
+        location: fishInfoDb && fishInfoDb.location ? String(fishInfoDb.location).replace(/^Sub\s+/i, '') : '',
         tier: kalkulasi.kategori,
         poin: finalPoin,
         rincian: finalRincian
@@ -6947,6 +7097,7 @@
             <div>
               <b style="color:#0f172a;">${item.player}</b>
               <span style="color:#0284c7; font-weight:700;"> ${item.fish}</span>
+              ${item.location ? `<span class="auto-feed-island">🏝️ ${item.location}</span>` : ''}
               <span style="color:#64748b;"> (${item.rincian})</span>
             </div>
           </div>
