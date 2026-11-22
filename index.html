@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@700;800;900&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet" />
+  <script src="fish_database.js"></script>
   <style>
     /* ==========================================================================
        1. DESIGN TOKENS & BRIGHT POKÉDEX / ROTOM UI BACKGROUND
@@ -2721,6 +2722,101 @@
       will-change: transform, filter;
     }
     .tcg-art-window.is-duo .tcg-avatar-3d { max-width: 47%; max-height: 148px; }
+    .tcg-art-window.has-fish {
+      justify-content: space-between;
+      padding: 0 10px 0 8px;
+      gap: 4px;
+    }
+    .tcg-art-window.has-fish .tcg-avatar-3d {
+      max-width: 47%;
+      max-height: 148px;
+    }
+    .tcg-art-window.is-duo.has-fish .tcg-avatar-3d {
+      max-width: 30%;
+      max-height: 132px;
+    }
+    .tcg-art-window.has-fish .tcg-avatar-fallback {
+      width: 72px;
+      height: 72px;
+      font-size: 28px;
+      margin-bottom: 34px;
+      margin-left: 10px;
+    }
+    .tcg-fish-showcase {
+      position: relative;
+      z-index: 3;
+      flex: 1;
+      max-width: 52%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 2px 6px;
+    }
+    .tcg-fish-img {
+      max-width: 100%;
+      max-height: 132px;
+      object-fit: contain;
+      filter: drop-shadow(0 6px 14px rgba(15, 23, 42, 0.55));
+      animation: tcgFishFloat 2.4s ease-in-out infinite;
+      will-change: transform;
+    }
+    .tcg-fish-img.tier-forgotten {
+      filter: drop-shadow(0 0 14px rgba(192, 132, 252, 0.95)) drop-shadow(0 6px 12px rgba(15, 23, 42, 0.6));
+    }
+    .tcg-fish-img.tier-secret {
+      filter: drop-shadow(0 0 14px rgba(56, 189, 248, 0.95)) drop-shadow(0 6px 12px rgba(15, 23, 42, 0.6));
+    }
+    .tcg-fish-img.tier-mitos {
+      filter: drop-shadow(0 0 13px rgba(248, 113, 113, 0.92)) drop-shadow(0 6px 12px rgba(15, 23, 42, 0.6));
+    }
+    .tcg-fish-img.tier-legend {
+      filter: drop-shadow(0 0 13px rgba(251, 191, 36, 0.92)) drop-shadow(0 6px 12px rgba(15, 23, 42, 0.6));
+    }
+    .tcg-fish-img.tier-khusus {
+      filter: drop-shadow(0 0 16px rgba(250, 204, 21, 0.98)) drop-shadow(0 6px 12px rgba(15, 23, 42, 0.6));
+    }
+    @keyframes tcgFishFloat {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-6px) scale(1.04); }
+    }
+    .tcg-fish-odds-badge {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      z-index: 4;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      color: #ffffff;
+      background: rgba(15, 23, 42, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      backdrop-filter: blur(4px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28);
+      max-width: 72%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .auto-feed-left {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      min-width: 0;
+    }
+    .auto-feed-thumb {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      object-fit: contain;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      padding: 2px;
+      flex-shrink: 0;
+    }
     .tcg-art-3d-wrap {
       position: absolute;
       inset: 0;
@@ -3968,20 +4064,25 @@
 
       <!-- IKAN KHUSUS -->
       <div class="hud-field">
-        <label class="px-label">Target Ikan Khusus (Pisahkan dengan koma)</label>
-        <input type="text" id="inputIkanKhusus" class="px-input" placeholder="Contoh: Megalodon, Kraken, Ancient Whale" oninput="simpanPengaturanAuto()" />
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <label class="px-label">Target Ikan Khusus (Pisahkan dengan koma)</label>
+          <span id="fishDbCountBadge" style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:800; color:#0284c7; background:#e0f2fe; border:1px solid #bae6fd; padding:1px 7px; border-radius:999px;">🐟 0 ikan</span>
+        </div>
+        <input type="text" id="inputIkanKhusus" list="fishDbDatalist" class="px-input" placeholder="Contoh: Megalodon, Kraken, Ancient Whale" oninput="simpanPengaturanAuto()" />
+        <datalist id="fishDbDatalist"></datalist>
       </div>
 
       <!-- SCRIPT EXECUTOR ROBLOX -->
       <div class="hud-field" style="background:#f0f9ff; border:1px solid #bae6fd; border-radius:10px; padding:10px;">
         <div style="font-size:11.5px; font-weight:800; color:#0369a1; margin-bottom:6px;">
-          🎮 Script Roblox Executor (<code style="font-family:'JetBrains Mono',monospace;">inject.lua</code>)
+          🎮 Script Roblox Executor (<code style="font-family:'JetBrains Mono',monospace;">inject.lua</code> &amp; <code style="font-family:'JetBrains Mono',monospace;">dump_fish.lua</code>)
         </div>
         <div style="font-size:11px; color:#334155; line-height:1.4; margin-bottom:8px;">
-          Kirim tangkapan <b>langsung ke PC lokal (127.0.0.1:18420)</b> — 0ms, bebas blokir internet &amp; anti-timeout. Pastikan <b>PokedexScoreboard.exe</b> sedang terbuka.
+          Kirim tangkapan <b>langsung ke PC lokal (127.0.0.1:18420)</b> — 0ms, bebas blokir internet &amp; anti-timeout. Ada pulau baru? Klik <b>Dump Ikan Baru</b> untuk mengunduh gambar ikan terbaru otomatis!
         </div>
         <div style="display:flex; gap:6px; flex-wrap:wrap;">
           <button type="button" class="btn-px-primary" style="font-size:11.5px; padding:6px 10px;" onclick="salinLoadstringAuto()">📋 Copy Loadstring</button>
+          <button type="button" class="btn-px" style="font-size:11.5px; padding:6px 10px; border-color:#0284c7; color:#0369a1;" onclick="salinDumpFishAuto()">🐟 Copy Dump Ikan Baru</button>
           <button type="button" class="btn-px" style="font-size:11.5px; padding:6px 10px;" onclick="unduhInjectLuaAuto()">⬇️ Download inject.lua</button>
           <button type="button" class="btn-px" style="font-size:11.5px; padding:6px 10px; border-color:#10b981; color:#047857;" onclick="tesSimulasiCatchAuto()">🧪 Tes Simulasi Catch</button>
         </div>
@@ -5140,7 +5241,7 @@
     let isTcgToastPlaying = false;
     let tcgQueueGapTimer = null;
 
-    function tampilkanToastTcg(seatIdx, deltaPoin, labelAtas = 'TAMBAH POIN', extraDetail = '') {
+    function tampilkanToastTcg(seatIdx, deltaPoin, labelAtas = 'TAMBAH POIN', extraDetail = '', fishMeta = null) {
       const p = getSeat(seatIdx);
       if (!p) return;
 
@@ -5167,6 +5268,7 @@
         deltaPoin,
         labelAtas,
         extraDetail,
+        fishMeta: fishMeta ? { ...fishMeta } : null,
         sessionName: db.activeSession,
         isDouble: Boolean(typeof isDoublePointActive !== 'undefined' && isDoublePointActive && deltaPoin > 0)
       });
@@ -5198,7 +5300,7 @@
 
       isTcgToastPlaying = true;
       const item = tcgToastQueue.shift();
-      const { seatIdx, isDuo, player: p, partner, teamInfo, deltaPoin, labelAtas, extraDetail, sessionName, isDouble } = item;
+      const { seatIdx, isDuo, player: p, partner, teamInfo, deltaPoin, labelAtas, extraDetail, fishMeta, sessionName, isDouble } = item;
 
       let tcg = { bg1: '#e0f2fe', bg2: '#38bdf8', accent: '#0284c7', ink: '#0f172a', sub: '#1e293b', panel: 'rgba(255,255,255,0.56)', glow: 'rgba(56,189,248,0.68)' };
       if (deltaPoin < 0) {
@@ -5236,9 +5338,27 @@
       };
 
       const showDuoAvatars = Boolean(isDuo && partner && hasPlayerContent(partner));
-      const artHtml = showDuoAvatars
+      const hasFishArt = Boolean(fishMeta && fishMeta.img);
+      const fishTierCls = hasFishArt
+        ? `tier-${String(fishMeta.kategori || fishMeta.tier || 'secret').toLowerCase()}`
+        : '';
+      const fishBadgeParts = [];
+      if (hasFishArt) {
+        const badgeTier = String(fishMeta.kategori || fishMeta.rarity || fishMeta.tier || '').toUpperCase();
+        if (badgeTier) fishBadgeParts.push(badgeTier);
+        if (fishMeta.odds && fishMeta.odds !== '-') fishBadgeParts.push(fishMeta.odds);
+        else if (fishMeta.location) fishBadgeParts.push(fishMeta.location);
+      }
+      const fishBadgeHtml = hasFishArt && fishBadgeParts.length
+        ? `<div class="tcg-fish-odds-badge">${fishBadgeParts.join(' • ')}</div>`
+        : '';
+      const safeFishName = hasFishArt ? String(fishMeta.name || 'Fish').replace(/"/g, '&quot;') : '';
+      const fishShowcaseHtml = hasFishArt
+        ? `<div class="tcg-fish-showcase"><img class="tcg-fish-img ${fishTierCls}" src="${fishMeta.img}" alt="${safeFishName}" onerror="var w=this.closest('.tcg-art-window');if(w)w.classList.remove('has-fish');var b=w&&w.querySelector('.tcg-fish-odds-badge');if(b)b.remove();this.closest('.tcg-fish-showcase').remove();" /></div>`
+        : '';
+      const artHtml = (showDuoAvatars
         ? makeAvatar3d(p, nama) + makeAvatar3d(partner, 'P2')
-        : makeAvatar3d(p, nama);
+        : makeAvatar3d(p, nama)) + fishShowcaseHtml;
 
       const prefix2x = isDouble ? '🔥 2X CLUTCH • ' : '';
       const ribbonText = teamInfo
@@ -5268,8 +5388,9 @@
           </div>
 
           <div class="tcg-art-frame">
-            <div class="tcg-art-window ${showDuoAvatars ? 'is-duo' : ''}">
+            <div class="tcg-art-window ${showDuoAvatars ? 'is-duo' : ''} ${hasFishArt ? 'has-fish' : ''}">
               <div class="el-particles-layer" id="tcgParticles"></div>
+              ${fishBadgeHtml}
               ${artHtml}
             </div>
           </div>
@@ -6319,6 +6440,20 @@
               sinkronStatusKoneksiAuto();
               return;
             }
+            if (payload && payload.type === 'FISH_DB_UPDATED') {
+              muatCustomFishDb();
+              const statusEl = document.getElementById('autoActionStatus');
+              if (statusEl) {
+                const msg = payload.pending > 0
+                  ? `🐟 Database ikan baru diperbarui! (${payload.downloaded || 0} gambar diunduh, sisa ${payload.pending}...)`
+                  : `✅ Database ikan terbaru selesai diunduh! (${payload.total || 0} ikan custom tersimpan)`;
+                statusEl.textContent = msg;
+              }
+              if (!payload.pending) {
+                tambahLog('FISH DB 🐟', `Dump ikan pulau baru selesai (${payload.downloaded || 0} gambar baru).`);
+              }
+              return;
+            }
             if (payload && (payload.type === 'SYNC_CATCH' || ((payload.fish || payload.ikan) && (payload.user || payload.player || payload.displayName || payload.username)))) {
               prosesEventCatchAuto(payload);
             }
@@ -6405,6 +6540,105 @@
       mulaiKoneksiLokalBridge();
     }
 
+    /* =========================================================================
+       13B. DATABASE IKAN RESMI (246+ WEBP) & DUMPER PULAU BARU
+       ========================================================================= */
+    window.POKEDEX_CUSTOM_FISH_DB = window.POKEDEX_CUSTOM_FISH_DB || {};
+
+    function getGabunganFishDb() {
+      return Object.assign({}, window.POKEDEX_FISH_DB || {}, window.POKEDEX_CUSTOM_FISH_DB || {});
+    }
+
+    function perbaruiDatalistIkan() {
+      const merged = getGabunganFishDb();
+      const entries = Object.values(merged);
+      const badge = document.getElementById('fishDbCountBadge');
+      if (badge) badge.textContent = `🐟 ${entries.length} ikan`;
+      const dl = document.getElementById('fishDbDatalist');
+      if (!dl) return;
+      entries.sort((a, b) => String(a.n || '').localeCompare(String(b.n || '')));
+      dl.innerHTML = entries
+        .map(f => `<option value="${String(f.n || '').replace(/"/g, '&quot;')}">${String(f.r || f.t || '').toUpperCase()}${f.o && f.o !== '-' ? ' • ' + f.o : ''}</option>`)
+        .join('');
+    }
+
+    async function muatCustomFishDb() {
+      const isLocalOrigin = location.hostname === '127.0.0.1' || location.hostname === 'localhost';
+      const url = isLocalOrigin ? '/api/custom-fish-db' : 'http://127.0.0.1:18420/api/custom-fish-db';
+      try {
+        const res = await fetchWithTimeout(url, {}, 2500);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && typeof data === 'object') {
+            window.POKEDEX_CUSTOM_FISH_DB = data;
+          }
+        }
+      } catch (_) {}
+      perbaruiDatalistIkan();
+    }
+
+    function cariInfoIkanDb(rawFishName) {
+      const raw = String(rawFishName || '').trim();
+      if (!raw) return null;
+
+      const baseDb = window.POKEDEX_FISH_DB || {};
+      const customDb = window.POKEDEX_CUSTOM_FISH_DB || {};
+      const aliases = window.POKEDEX_FISH_ALIASES || {};
+      const merged = Object.assign({}, baseDb, customDb);
+      if (!Object.keys(merged).length) return null;
+
+      const cleanKey = (s) => String(s || '')
+        .toLowerCase()
+        .replace(/[\[\]()]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      const buildMeta = (key, entry) => {
+        if (!entry) return null;
+        let imgPath = entry.i || '';
+        const isLocalOrigin = location.hostname === '127.0.0.1' || location.hostname === 'localhost';
+        if (imgPath && !isLocalOrigin && customDb[key] && !baseDb[key] && !/^https?:\/\//i.test(imgPath)) {
+          imgPath = 'http://127.0.0.1:18420/' + imgPath.replace(/^\/+/, '');
+        }
+        return {
+          name: entry.n || raw,
+          tier: entry.t || '',
+          rarity: entry.r || entry.t || '',
+          odds: entry.o || '',
+          location: entry.l || '',
+          img: imgPath
+        };
+      };
+
+      const k0 = cleanKey(raw);
+      if (merged[k0]) return buildMeta(k0, merged[k0]);
+      if (aliases[k0] && merged[aliases[k0]]) return buildMeta(aliases[k0], merged[aliases[k0]]);
+
+      // Strip prefix mutasi / shiny / big satu per satu dari depan
+      const words = k0.split(' ').filter(Boolean);
+      for (let start = 1; start < words.length; start++) {
+        const sub = words.slice(start).join(' ');
+        if (merged[sub]) return buildMeta(sub, merged[sub]);
+        if (aliases[sub] && merged[aliases[sub]]) return buildMeta(aliases[sub], merged[aliases[sub]]);
+      }
+
+      // Longest substring match agar "Shiny Big Megalodon" tetap cocok ke "megalodon"
+      let bestKey = '';
+      for (const k of Object.keys(merged)) {
+        if (k.length >= 4 && k0.includes(k) && k.length > bestKey.length) {
+          bestKey = k;
+        }
+      }
+      if (bestKey) return buildMeta(bestKey, merged[bestKey]);
+
+      for (const [ak, target] of Object.entries(aliases)) {
+        if (ak.length >= 4 && k0.includes(ak) && merged[target]) {
+          return buildMeta(target, merged[target]);
+        }
+      }
+      return null;
+    }
+
     function hitungPoinAutoClient(tierStr, namaIkan, varianStr) {
       const tierClean = String(tierStr || '').toLowerCase().trim();
       const namaClean = String(namaIkan || '').toLowerCase().trim();
@@ -6449,6 +6683,17 @@
       else if (tierClean.includes('secret')) kategori = 'SECRET';
       else if (tierClean.includes('mythic') || tierClean.includes('mitos')) kategori = 'MITOS';
       else if (tierClean.includes('legend')) kategori = 'LEGEND';
+
+      if (kategori === 'NORMAL') {
+        const dbFish = cariInfoIkanDb(namaIkan);
+        if (dbFish && dbFish.tier) {
+          const dt = String(dbFish.tier).toLowerCase();
+          if (dt.includes('forgotten')) kategori = 'FORGOTTEN';
+          else if (dt.includes('secret')) kategori = 'SECRET';
+          else if (dt.includes('mythic') || dt.includes('mitos')) kategori = 'MITOS';
+          else if (dt.includes('legend')) kategori = 'LEGEND';
+        }
+      }
 
       if (kategori === 'NORMAL') {
         return { poin: 0, rincian: 'Bukan tier turnamen', kategori: 'NORMAL', valid: false };
@@ -6627,8 +6872,13 @@
       p.poin = awal + finalPoin;
       simpanDB();
 
+      const fishInfoDb = cariInfoIkanDb(rawFish) || cariInfoIkanDb(fullFish);
+      const tcgFishMeta = fishInfoDb
+        ? { ...fishInfoDb, kategori: kalkulasi.kategori }
+        : null;
+
       const labelAtas = `🎣 ${kalkulasi.kategori} • ${fullFish}`;
-      tampilkanToastTcg(seatIdx, finalPoin, labelAtas, finalRincian);
+      tampilkanToastTcg(seatIdx, finalPoin, labelAtas, finalRincian, tcgFishMeta);
 
       if (autoConfig.autoSort) {
         urutkanOtomatis(p.id, finalPoin);
@@ -6641,6 +6891,7 @@
         time: jam,
         player: p.nick || p.user || rawUser,
         fish: fullFish,
+        fishImg: fishInfoDb ? fishInfoDb.img : '',
         tier: kalkulasi.kategori,
         poin: finalPoin,
         rincian: finalRincian
@@ -6662,10 +6913,13 @@
       }
       box.innerHTML = autoCatchHistory.slice(0, 8).map(item => `
         <div class="auto-feed-item">
-          <div>
-            <b style="color:#0f172a;">${item.player}</b>
-            <span style="color:#0284c7; font-weight:700;"> ${item.fish}</span>
-            <span style="color:#64748b;"> (${item.rincian})</span>
+          <div class="auto-feed-left">
+            ${item.fishImg ? `<img class="auto-feed-thumb" src="${item.fishImg}" alt="" onerror="this.remove();" />` : ''}
+            <div>
+              <b style="color:#0f172a;">${item.player}</b>
+              <span style="color:#0284c7; font-weight:700;"> ${item.fish}</span>
+              <span style="color:#64748b;"> (${item.rincian})</span>
+            </div>
           </div>
           <div style="white-space:nowrap; font-family:'JetBrains Mono',monospace; font-weight:900; color:#059669;">
             +${item.poin} <span style="color:#94a3b8; font-weight:600; font-size:10px;">${item.time}</span>
@@ -6685,6 +6939,20 @@
         });
       } else {
         prompt('Salin Loadstring Roblox Executor ini:', code);
+      }
+    }
+
+    function salinDumpFishAuto() {
+      const code = `loadstring(game:HttpGet("https://raw.githubusercontent.com/ftwa/pokemon/main/dump_fish.lua"))()`;
+      const status = document.getElementById('autoActionStatus');
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code).then(() => {
+          status.textContent = '✅ Script Dump Ikan Baru disalin! Jalankan 1x di Roblox saat PokedexScoreboard.exe terbuka.';
+        }).catch(() => {
+          prompt('Salin Script Dump Ikan Baru ini:', code);
+        });
+      } else {
+        prompt('Salin Script Dump Ikan Baru ini:', code);
       }
     }
 
@@ -6756,6 +7024,8 @@
 
     function inisialisasiModeAuto() {
       muatPengaturanAuto();
+      perbaruiDatalistIkan();
+      muatCustomFishDb();
       try {
         autoBroadcastChannel = new BroadcastChannel('pokedex_auto_skor_bc_v1');
         autoBroadcastChannel.onmessage = (ev) => {
