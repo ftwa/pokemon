@@ -1,5 +1,6 @@
 -- ============================================================
--- POKÉDEX AUTO SKOR BRIDGE — PURE LOCAL 0MS EDITION (STABIL)
+-- POKÉDEX AUTO SKOR BRIDGE — PURE LOCAL 0MS EDITION (v3)
+-- Auto-Sync Semua Mutasi & Nama Ikan Langsung dari Game!
 -- Kirim tangkapan Roblox Fish It langsung ke PokedexScoreboard.exe
 -- ============================================================
 local cloneref = cloneref or function(o) return o end
@@ -29,15 +30,15 @@ local LOCAL_CATCH_URL       = "http://127.0.0.1:18420/api/local-catch"
 local ENABLE_ANTI_LAG_BOOST = true
 
 print("============================================================")
-print("  ⚡ POKÉDEX AUTO SKOR — PURE LOCAL 0MS BRIDGE (v2)")
+print("  ⚡ POKÉDEX AUTO SKOR — PURE LOCAL 0MS BRIDGE (v3 AUTO-SYNC)")
 print("  💻 Target    : " .. LOCAL_CATCH_URL)
 print("  🚀 Anti-Lag  : " .. (ENABLE_ANTI_LAG_BOOST and "ON" or "OFF"))
 print("============================================================")
 
 pcall(function()
     StarterGui:SetCore("SendNotification", {
-        Title = "⚡ Pokédex Auto Skor",
-        Text = "Aktif! Tangkapan langsung masuk ke PokedexScoreboard.exe (0ms).",
+        Title = "⚡ Pokédex Auto Skor v3",
+        Text = "Aktif! Mutasi & ikan otomatis sinkron dari game (Lokal 0ms).",
         Duration = 4
     })
 end)
@@ -93,7 +94,7 @@ task.spawn(function()
 end)
 
 -- ============================================================
--- 1. DAFTAR VARIAN / MUTASI & NAMA IKAN DILINDUNGI (408-FISH SYNC)
+-- 1. DAFTAR VARIAN / MUTASI + AUTO-SYNC LANGSUNG DARI GAME
 -- ============================================================
 local KNOWN_VARIANTS = {
     "shiny", "big", "giant", "tiny",
@@ -103,61 +104,184 @@ local KNOWN_VARIANTS = {
     "midnight", "corrupt", "radioactive", "holographic", "gemstone",
     "binary", "gold", "golden", "frozen", "glitch", "equinox",
     "disco", "elemental", "solar", "bloodmoon", "festive", "lightning",
-    "fairy dust", "color burn", "crystalized", "moon fragment", "8-bit", "stone", "duskbreaker"
+    "fairy dust", "color burn", "crystalized", "moon fragment", "8-bit",
+    "stone", "duskbreaker"
 }
+local KNOWN_VARIANTS_SET = {}
+for _, v in ipairs(KNOWN_VARIANTS) do
+    KNOWN_VARIANTS_SET[string.lower(v)] = true
+end
 table.sort(KNOWN_VARIANTS, function(a, b) return #a > #b end)
 
--- Nama ikan yang mengandung kata mutasi/varian agar TIDAK terpotong saat parsing
-local PROTECTED_FISH_LIST = {
-    "aurora butterfly fish",
-    "aurora manatee",
-    "aurora narwhal",
-    "aurora jellyfish",
-    "aurora seahorse",
-    "aurora starfish",
-    "aurora anglerfish",
-    "bloodmoon whale",
-    "brimstone catfish",
-    "crystal crab",
-    "crystal goliath",
-    "crystal lancer",
-    "crystal octopus",
-    "crystal salamander",
-    "crystalline behemoth",
-    "dark megalodon",
-    "dark megalofriend",
-    "dark pumpkin appafish",
-    "dark seahorse",
-    "disco frogalloon",
-    "electric eel",
-    "electric ray",
-    "elemental hydra",
-    "elemental tempestray",
-    "evolved enchant stone",
-    "fairy wrasse",
-    "festive dolphin",
-    "frozen tundra",
-    "ghost jellyfish",
-    "ghost shark",
-    "ghost worm fish",
-    "giant squid",
-    "golden dorado",
-    "golden koi",
-    "midnight blue wildes shark",
-    "midnight stars squid",
-    "pyroclast stonefish",
-    "rainbow comet shark",
-    "rainbow trout",
-    "runic enchant stone",
-    "solar koi",
-    "solarflare koi",
-    "stone fish",
-    "stonefish"
+-- Nama ikan yang dilindungi agar tidak terpotong kata mutasi (otomatis ditambah semua ikan dari game!)
+local GAME_FISH_SET = {}
+local GAME_FISH_LIST = {
+    "aurora butterfly fish", "aurora manatee", "aurora narwhal", "aurora jellyfish",
+    "aurora seahorse", "aurora starfish", "aurora anglerfish", "bloodmoon whale",
+    "brimstone catfish", "crystal crab", "crystal goliath", "crystal lancer",
+    "crystal octopus", "crystal salamander", "crystalline behemoth", "dark megalodon",
+    "dark megalofriend", "dark pumpkin appafish", "dark seahorse", "disco frogalloon",
+    "electric eel", "electric ray", "elemental hydra", "elemental tempestray",
+    "evolved enchant stone", "fairy wrasse", "festive dolphin", "frozen tundra",
+    "ghost jellyfish", "ghost shark", "ghost worm fish", "giant squid",
+    "golden dorado", "golden koi", "midnight blue wildes shark", "midnight stars squid",
+    "pyroclast stonefish", "rainbow comet shark", "rainbow trout", "runic enchant stone",
+    "solar koi", "solarflare koi", "stone fish", "stonefish"
 }
-table.sort(PROTECTED_FISH_LIST, function(a, b) return #a > #b end)
+for _, fn in ipairs(GAME_FISH_LIST) do
+    GAME_FISH_SET[string.lower(fn)] = true
+end
+table.sort(GAME_FISH_LIST, function(a, b) return #a > #b end)
+
+local function registerVariantName(rawName)
+    if type(rawName) ~= "string" then return end
+    local clean = string.lower(string.match(rawName, "^%s*(.-)%s*$") or "")
+    if #clean < 2 or #clean > 32 then return end
+    if clean == "none" or clean == "normal" or clean == "default" or clean == "variants" or clean == "mutations" then return end
+    if not KNOWN_VARIANTS_SET[clean] then
+        KNOWN_VARIANTS_SET[clean] = true
+        table.insert(KNOWN_VARIANTS, clean)
+    end
+end
+
+local function registerGameFishName(rawName)
+    if type(rawName) ~= "string" then return end
+    local clean = string.lower(string.match(rawName, "^%s*(.-)%s*$") or "")
+    if #clean < 3 or #clean > 60 then return end
+    if not GAME_FISH_SET[clean] then
+        GAME_FISH_SET[clean] = true
+        table.insert(GAME_FISH_LIST, clean)
+    end
+end
+
+local function isExcludedNonFishType(rawType)
+    local t = string.lower(tostring(rawType or ""))
+    if t == "" then return false end
+    local bad = {
+        "rod", "bait", "boat", "skin", "bobber", "charm", "lantern",
+        "totem", "crate", "potion", "boost", "title", "emote", "pet",
+        "cosmetic", "gear", "tool", "weapon", "sword", "katana", "guitar",
+        "quest", "currency", "pass", "gamepass", "bundle", "egg", "chest"
+    }
+    for _, b in ipairs(bad) do
+        if t:find(b, 1, true) then return true end
+    end
+    return false
+end
+
+-- Auto-Sync semua Mutasi (Variants) & Nama Ikan (Items) langsung dari ReplicatedStorage + Memori Game
+task.spawn(function()
+    local startVarCount = #KNOWN_VARIANTS
+    local startFishCount = #GAME_FISH_LIST
+    local newlyFoundVars = {}
+
+    local function trackVariant(rawName)
+        if type(rawName) ~= "string" then return end
+        local clean = string.lower(string.match(rawName, "^%s*(.-)%s*$") or "")
+        if #clean < 2 or #clean > 32 then return end
+        if clean == "none" or clean == "normal" or clean == "default" or clean == "variants" or clean == "mutations" or clean == "shiny" or clean == "big" then return end
+        if clean:find("table:") or clean:find("rbxassetid") or clean:find("^%d+$") then return end
+        if not KNOWN_VARIANTS_SET[clean] then
+            KNOWN_VARIANTS_SET[clean] = true
+            table.insert(KNOWN_VARIANTS, clean)
+            table.insert(newlyFoundVars, rawName)
+        end
+    end
+
+    local function scanVariantTable(tbl, depth)
+        if type(tbl) ~= "table" or depth > 3 then return end
+        local d = (type(tbl.Data) == "table") and tbl.Data or tbl
+        local vName = d.Name or d.DisplayName or d.Title
+        local vType = string.lower(tostring(d.Type or tbl.Type or ""))
+        if type(vName) == "string" and (vType:find("variant") or vType:find("mutat") or tbl.PriceMultiplier or tbl.SellMultiplier or tbl.Multiplier or tbl.Chance or d.Icon or d.Color) then
+            trackVariant(vName)
+        end
+        for k, v in pairs(tbl) do
+            if type(v) == "table" and k ~= "Data" then
+                local sub = (type(v.Data) == "table") and v.Data or v
+                if type(sub.Name) == "string" then
+                    trackVariant(sub.Name)
+                elseif type(k) == "string" and #k >= 2 and #k <= 28 then
+                    if v.PriceMultiplier or v.SellMultiplier or v.Multiplier or v.Color or v.Chance or v.Data then
+                        trackVariant(k)
+                    end
+                end
+                scanVariantTable(v, depth + 1)
+            end
+        end
+    end
+
+    pcall(function()
+        for _, inst in ipairs(ReplicatedStorage:GetDescendants()) do
+            if inst:IsA("ModuleScript") then
+                local nLower = string.lower(inst.Name)
+                local pLower = inst.Parent and string.lower(inst.Parent.Name) or ""
+
+                -- 1) Scan Mutasi / Variants resmi game
+                if nLower:find("variant") or nLower:find("mutat") or pLower:find("variant") or pLower:find("mutat") then
+                    pcall(function()
+                        local mod = require(inst)
+                        if type(mod) == "table" then
+                            scanVariantTable(mod, 0)
+                        end
+                    end)
+                end
+
+                -- 2) Scan Nama Ikan resmi game agar tidak pernah terpotong mutasi baru
+                if nLower:find("fish") or nLower:find("item") or pLower == "items" or pLower:find("fish") then
+                    pcall(function()
+                        local mod = require(inst)
+                        if type(mod) == "table" then
+                            local d = (type(mod.Data) == "table") and mod.Data or mod
+                            local rawType = d.Type or mod.Type or ""
+                            if type(d.Name) == "string" and (d.Icon or mod.Icon) and not isExcludedNonFishType(rawType) then
+                                registerGameFishName(d.Name)
+                            end
+                            for _, v in pairs(mod) do
+                                if type(v) == "table" then
+                                    local sub = (type(v.Data) == "table") and v.Data or v
+                                    local sType = sub.Type or v.Type or ""
+                                    if type(sub.Name) == "string" and (sub.Icon or v.Icon) and not isExcludedNonFishType(sType) then
+                                        registerGameFishName(sub.Name)
+                                    end
+                                end
+                            end
+                        end
+                    end)
+                end
+            end
+        end
+    end)
+
+    -- 3) Scan memori GC untuk tabel Variant / Mutation yang dimuat di runtime
+    local getgcFunc = getgc or (debug and debug.getgc)
+    if getgcFunc then
+        pcall(function()
+            for _, obj in ipairs(getgcFunc(true)) do
+                if type(obj) == "table" then
+                    local d = (type(obj.Data) == "table") and obj.Data or obj
+                    local oType = string.lower(tostring(d.Type or obj.Type or ""))
+                    if (oType == "variant" or oType == "mutation") and type(d.Name) == "string" then
+                        trackVariant(d.Name)
+                    end
+                end
+            end
+        end)
+    end
+
+    table.sort(KNOWN_VARIANTS, function(a, b) return #a > #b end)
+    table.sort(GAME_FISH_LIST, function(a, b) return #a > #b end)
+    local addedVariants = #KNOWN_VARIANTS - startVarCount
+    local addedFish = #GAME_FISH_LIST - startFishCount
+    print(string.format("✅ [AUTO-SYNC] Total %d mutasi (+%d baru dari game) & %d ikan (+%d dari game) siap!", #KNOWN_VARIANTS, addedVariants, #GAME_FISH_LIST, addedFish))
+    if #newlyFoundVars > 0 then
+        table.sort(newlyFoundVars)
+        print("🧬 [MUTASI BARU TERDETEKSI] " .. table.concat(newlyFoundVars, ", "))
+    end
+end)
 
 -- ============================================================
--- 2. DETEKSI TIER & PEMISAH VARIAN (SUFFIX-PROTECTED)
+-- 2. DETEKSI TIER & PEMISAH VARIAN (EXACT FISH + AUTO MUTATION)
 -- ============================================================
 local function determineTier(rawText, cleanText)
     local hex = rawText:match('color=["\']#?(%x%x%x%x%x%x)["\']')
@@ -237,17 +361,21 @@ local function splitFishAndVariant(fullFishName)
     local trimmed = string.match(tostring(fullFishName or ""), "^%s*(.-)%s*$") or ""
     local lowerTrimmed = string.lower(trimmed)
 
-    -- 1. Cek apakah diakhiri nama ikan dilindungi (contoh: "Shiny Big Midnight Stars Squid")
-    for _, prot in ipairs(PROTECTED_FISH_LIST) do
-        local pLen = #prot
-        if #lowerTrimmed >= pLen and string.sub(lowerTrimmed, -pLen) == prot then
+    -- 1. Cocokkan nama ikan resmi dari belakang (terpanjang dulu) -> 100% kebal mutasi baru!
+    for _, fishLower in ipairs(GAME_FISH_LIST) do
+        local pLen = #fishLower
+        if #lowerTrimmed >= pLen and string.sub(lowerTrimmed, -pLen) == fishLower then
             local beforeIdx = #lowerTrimmed - pLen
             local charBefore = beforeIdx > 0 and string.sub(lowerTrimmed, beforeIdx, beforeIdx) or " "
             if not string.find(charBefore, "%w") then
                 local lockedFish = string.sub(trimmed, #trimmed - pLen + 1)
                 local prefixPart = beforeIdx > 0 and string.sub(trimmed, 1, beforeIdx) or ""
                 if prefixPart ~= "" then
-                    extractVariantsFromText(prefixPart, detectedVariants)
+                    local leftover = extractVariantsFromText(prefixPart, detectedVariants)
+                    -- Jika ada mutasi super baru di depan nama ikan yang belum terdaftar, tetap tangkap!
+                    if leftover ~= "" and #leftover >= 2 then
+                        table.insert(detectedVariants, leftover)
+                    end
                 end
                 local variantResult = #detectedVariants > 0 and table.concat(detectedVariants, ", ") or "None"
                 return lockedFish, variantResult
@@ -255,7 +383,7 @@ local function splitFishAndVariant(fullFishName)
         end
     end
 
-    -- 2. Parsing normal untuk ikan lainnya
+    -- 2. Fallback parsing normal jika nama ikan belum ada di daftar
     local cleanFish = extractVariantsFromText(trimmed, detectedVariants)
     if cleanFish == "" then cleanFish = trimmed end
     local variantResult = #detectedVariants > 0 and table.concat(detectedVariants, ", ") or "None"
