@@ -182,6 +182,21 @@ local function recordIslandLink(islandName, fishRef, maybeChance)
     end
 end
 
+local function isExcludedItemType(rawType)
+    local t = string.lower(tostring(rawType or ""))
+    if t == "" then return false end
+    local bad = {
+        "rod", "bait", "boat", "skin", "bobber", "charm", "lantern",
+        "totem", "crate", "potion", "boost", "title", "emote", "pet",
+        "cosmetic", "gear", "tool", "weapon", "sword", "katana", "guitar",
+        "quest", "currency", "pass", "gamepass", "bundle", "egg", "chest"
+    }
+    for _, b in ipairs(bad) do
+        if t:find(b, 1, true) then return true end
+    end
+    return false
+end
+
 local function inspectFishObject(tbl, parentLoc, depth)
     if type(tbl) ~= "table" or depth > 4 then return end
     if visitedTbls[tbl] then return end
@@ -199,8 +214,9 @@ local function inspectFishObject(tbl, parentLoc, depth)
         or parentLoc
 
     if name and icon and tier then
-        local itemType = string.lower(tostring(dataSub.Type or tbl.Type or dataSub.Category or tbl.Category or "fish"))
-        if itemType == "" or itemType:find("fish") or itemType:find("item") or itemType:find("catch") or (not dataSub.Type and not tbl.Type) then
+        local rawType = dataSub.Type or tbl.Type or dataSub.Category or tbl.Category or ""
+        local itemType = string.lower(tostring(rawType))
+        if not isExcludedItemType(rawType) and (itemType == "" or itemType == "fish" or itemType:find("fish") or itemType == "item" or itemType == "catch") then
             registerFish(tostring(name), tier, icon, odds, loc, idVal)
         end
     end
@@ -333,7 +349,8 @@ if getgcFunc then
                 local name = dataSub.Name or dataSub.name or dataSub.FishName
                 local icon = dataSub.Icon or dataSub.icon or dataSub.Image or dataSub.image or obj.Icon
                 local tier = dataSub.Tier or dataSub.tier or dataSub.Rarity or dataSub.rarity or obj.Tier
-                if name and icon and tier then
+                local rawType = dataSub.Type or obj.Type or dataSub.Category or obj.Category or ""
+                if name and icon and tier and not isExcludedItemType(rawType) then
                     local idVal = dataSub.Id or dataSub.ID or obj.Id or obj.ID
                     local odds = obj.Probability or obj.Odds or obj.Chance or dataSub.Probability or dataSub.Odds or dataSub.Chance
                     local loc = obj.Location or obj.Island or obj.Zone or obj.Area or obj.Region or dataSub.Location or dataSub.Island or dataSub.Zone or dataSub.Area
