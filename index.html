@@ -3377,16 +3377,16 @@
     <!-- TOP ACTION BAR -->
     <div class="top-bar">
       <div class="top-left">
-        <button id="btnModeToggle" class="btn-px" onclick="toggleModeDuoSolo()">👤 MODE: SOLO (20)</button>
+        <button id="btnModeToggle" class="btn-px" onclick="toggleModeDuoSolo()">SOLO (20)</button>
         <div class="auto-split-group" id="autoSplitGroup">
           <button id="btnAutoMode" class="btn-px btn-px-auto" onclick="toggleAutoModeActive()" title="Klik 1x untuk langsung ON/OFF Mode Auto ↔ Manual">
-            <span id="autoBtnLabel">⚡ MANUAL</span>
+            <span id="autoBtnLabel">MANUAL</span>
             <span id="autoStatusDot" class="auto-dot"></span>
           </button>
-          <button id="btnAutoSettings" class="btn-px-auto-gear" onclick="bukaModalAuto()" title="Pengaturan Mode Auto (Channel ntfy, Poin, Ikan Khusus &amp; Script)">⚙</button>
+          <button id="btnAutoSettings" class="btn-px-auto-gear" onclick="bukaModalAuto()" title="Pengaturan Mode Auto (Poin, Ikan Khusus &amp; Script)">⚙</button>
         </div>
-        <button class="btn-px" onclick="bukaModalPreset()">Point Preset</button>
-        <button class="btn-px" onclick="bukaModalAudio()">Settings Audio</button>
+        <button class="btn-px" onclick="bukaModalPreset()">Point</button>
+        <button class="btn-px" onclick="bukaModalAudio()">Audio</button>
 
         <!-- Dropdown RESET -->
         <div class="dropdown" id="dropdownReset">
@@ -4288,7 +4288,7 @@
       tbR.innerHTML = '';
 
       const isDuo = db.gameMode === 'duo';
-      document.getElementById('btnModeToggle').textContent = isDuo ? '👥 MODE: TIM DUO' : '👤 MODE: SOLO (20)';
+      document.getElementById('btnModeToggle').textContent = isDuo ? 'TIM DUO' : 'SOLO (20)';
       document.getElementById('labelSesiAktif').textContent = db.activeSession;
 
       const teamScores = isDuo ? hitungSkorTimDuo() : [];
@@ -5828,23 +5828,23 @@
       const timerHold = Boolean(autoConfig.requireTimerRunning && typeof timerRunning !== 'undefined' && !timerRunning);
 
       if (!autoConfig.enabled) {
-        label.textContent = '⚡ MANUAL';
+        label.textContent = 'MANUAL';
         if (connText) connText.textContent = '⚪ Mode Manual (Auto nonaktif)';
       } else if (autoConnState === 'live') {
         if (timerHold) {
           btn.classList.add('is-connecting');
-          label.textContent = '⚡ AUTO: HOLD';
+          label.textContent = 'AUTO: HOLD';
           if (connText) connText.textContent = '🟡 Terhubung Lokal 0ms (127.0.0.1:18420) — tekan ▶ Mulai Timer agar tangkapan masuk';
         } else {
           btn.classList.add('is-live');
           if (grp) grp.classList.add('is-live');
           if (banner) banner.classList.add('is-live');
-          label.textContent = '⚡ AUTO: LIVE';
+          label.textContent = 'AUTO: LIVE';
           if (connText) connText.textContent = '🟢 Terhubung Lokal 0ms (127.0.0.1:18420) — siap menangkap poin!';
         }
       } else {
         btn.classList.add('is-connecting');
-        label.textContent = '⚡ AUTO: ...';
+        label.textContent = 'AUTO: ...';
         if (connText) connText.textContent = '🟡 Menghubungkan ke Lokal 127.0.0.1:18420 (pastikan PokedexScoreboard.exe aktif)...';
       }
     }
