@@ -2792,12 +2792,12 @@
     .tcg-fish-island-badge {
       position: absolute;
       top: 6px;
-      left: 6px;
+      right: 6px;
       z-index: 4;
-      padding: 2px 8px;
+      padding: 2px 9px;
       border-radius: 999px;
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 9.5px;
+      font-size: 10px;
       font-weight: 800;
       letter-spacing: 0.2px;
       color: #ecfeff;
@@ -2805,28 +2805,7 @@
       border: 1px solid rgba(103, 232, 249, 0.55);
       backdrop-filter: blur(4px);
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28);
-      max-width: 48%;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .tcg-fish-odds-badge {
-      position: absolute;
-      top: 6px;
-      right: 6px;
-      z-index: 4;
-      padding: 2px 8px;
-      border-radius: 999px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 9px;
-      font-weight: 800;
-      letter-spacing: 0.3px;
-      color: #ffffff;
-      background: rgba(15, 23, 42, 0.78);
-      border: 1px solid rgba(255, 255, 255, 0.45);
-      backdrop-filter: blur(4px);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28);
-      max-width: 48%;
+      max-width: 82%;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -5431,15 +5410,6 @@
       const fishIslandBadgeHtml = fishIslandClean
         ? `<div class="tcg-fish-island-badge" title="${fishIslandClean.replace(/"/g, '&quot;')}">🏝️ ${fishIslandClean}</div>`
         : '';
-      const fishBadgeParts = [];
-      if (fishMeta) {
-        const badgeTier = String(fishMeta.kategori || fishMeta.rarity || fishMeta.tier || '').toUpperCase();
-        if (badgeTier) fishBadgeParts.push(badgeTier);
-        if (fishMeta.odds && fishMeta.odds !== '-') fishBadgeParts.push(fishMeta.odds);
-      }
-      const fishBadgeHtml = fishBadgeParts.length
-        ? `<div class="tcg-fish-odds-badge">${fishBadgeParts.join(' • ')}</div>`
-        : '';
       const safeFishName = hasFishArt ? String(fishMeta.name || 'Fish').replace(/"/g, '&quot;') : '';
       const fishPanelStageHtml = hasFishArt
         ? `<div class="tcg-fish-panel-stage"><img class="tcg-fish-img ${fishTierCls}" src="${fishMeta.img}" alt="${safeFishName}" onerror="var p=this.closest('.tcg-score-panel');if(p)p.classList.remove('has-fish');var c=this.closest('.tcg-card-inner');if(c)c.classList.remove('has-fish-card');this.closest('.tcg-fish-panel-stage').remove();" /></div>`
@@ -5479,7 +5449,6 @@
             <div class="tcg-art-window ${showDuoAvatars ? 'is-duo' : ''}">
               <div class="el-particles-layer" id="tcgParticles"></div>
               ${fishIslandBadgeHtml}
-              ${fishBadgeHtml}
               ${artHtml}
             </div>
           </div>
