@@ -80,7 +80,7 @@ local KNOWN_VARIANTS = {
     "binary", "gold", "golden", "frozen", "glitch", "equinox",
     "disco", "elemental", "solar", "bloodmoon", "festive", "lightning",
     "fairy dust", "color burn", "crystalized", "moon fragment", "8-bit",
-    "stone", "duskbreaker"
+    "stone", "duskbreaker", "fire"
 }
 local KNOWN_VARIANTS_SET = {}
 for _, v in ipairs(KNOWN_VARIANTS) do
