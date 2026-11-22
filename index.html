@@ -1120,9 +1120,161 @@
       position: relative;
       transition: background 0.14s ease;
     }
+    .grid-tables.is-animating-sort .table-container {
+      overflow: visible !important;
+    }
+
+    /* ==========================================================================
+       TOURNAMENT / ESPORTS BROADCAST RANK-OVERTAKE ANIMATIONS
+       ========================================================================== */
+    tbody tr {
+      position: relative;
+    }
     tbody tr.moving-row {
-      transition: transform 0.52s cubic-bezier(0.2, 1, 0.25, 1) !important;
-      z-index: 10;
+      transition: transform 0.85s cubic-bezier(0.22, 1.18, 0.36, 1) !important;
+      will-change: transform;
+      z-index: 25;
+    }
+
+    /* 1. NAIK PERINGKAT — Vibrant Emerald Tournament Surge */
+    tbody tr.row-rank-up {
+      z-index: 35 !important;
+      filter: drop-shadow(0 8px 18px rgba(16, 185, 129, 0.42));
+    }
+    tbody tr.row-rank-up td {
+      background: linear-gradient(90deg, #a7f3d0 0%, #6ee7b7 42%, #d1fae5 100%) !important;
+      border-bottom-color: #10b981 !important;
+      color: #064e3b !important;
+      animation: rowSurgeUp 1.85s ease-out forwards;
+    }
+    tbody tr.row-rank-up td:first-child {
+      box-shadow: inset 5px 0 0 #059669 !important;
+    }
+    @keyframes rowSurgeUp {
+      0%   { filter: brightness(1.18); }
+      35%  { filter: brightness(1.06); }
+      75%  { filter: brightness(1); }
+      100% { filter: brightness(1); }
+    }
+
+    /* 2. REBUT JUARA #1 — Gold Champion Flare */
+    tbody tr.row-rank-crown {
+      z-index: 45 !important;
+      filter: drop-shadow(0 10px 26px rgba(234, 179, 8, 0.62));
+    }
+    tbody tr.row-rank-crown td {
+      background: linear-gradient(90deg, #fef08a 0%, #facc15 45%, #fef9c3 100%) !important;
+      border-bottom-color: #eab308 !important;
+      color: #422006 !important;
+      animation: rowCrownGlow 2.1s ease-out forwards;
+    }
+    tbody tr.row-rank-crown td:first-child {
+      box-shadow: inset 5px 0 0 #ca8a04 !important;
+    }
+    @keyframes rowCrownGlow {
+      0%   { filter: brightness(1.26) saturate(1.25); }
+      40%  { filter: brightness(1.10) saturate(1.12); }
+      100% { filter: brightness(1); }
+    }
+
+    /* 3. TURUN PERINGKAT — Crisp Rose/Crimson Overtaken Flash */
+    tbody tr.row-rank-down {
+      z-index: 15 !important;
+    }
+    tbody tr.row-rank-down td {
+      background: linear-gradient(90deg, #ffe4e6 0%, #fecdd3 55%, #fff1f2 100%) !important;
+      border-bottom-color: #fb7185 !important;
+      animation: rowDropFlash 1.5s ease-out forwards;
+    }
+    tbody tr.row-rank-down td:first-child {
+      box-shadow: inset 4px 0 0 #e11d48 !important;
+    }
+    @keyframes rowDropFlash {
+      0%   { filter: brightness(0.96); }
+      100% { filter: brightness(1); }
+    }
+
+    /* 4. POIN BERTAMBAH (PERINGKAT TETAP) — Rotom Electric Cyan Pop */
+    tbody tr.row-score-pop {
+      z-index: 28 !important;
+      filter: drop-shadow(0 5px 14px rgba(2, 132, 199, 0.30));
+    }
+    tbody tr.row-score-pop td {
+      background: linear-gradient(90deg, #bae6fd 0%, #7dd3fc 48%, #e0f2fe 100%) !important;
+      border-bottom-color: #38bdf8 !important;
+    }
+    tbody tr.row-score-pop td:first-child {
+      box-shadow: inset 5px 0 0 #0284c7 !important;
+    }
+
+    /* Score number bounce pop */
+    tbody tr.row-rank-up .score-val,
+    tbody tr.row-rank-crown .score-val,
+    tbody tr.row-score-pop .score-val {
+      animation: scorePopBounce 0.65s cubic-bezier(0.22, 1.4, 0.36, 1);
+    }
+    @keyframes scorePopBounce {
+      0%   { transform: scale(1); }
+      35%  { transform: scale(1.28); background: #059669; color: #ffffff; border-color: #047857; }
+      100% { transform: scale(1); }
+    }
+    tbody tr.row-rank-crown .score-val {
+      animation: scoreCrownBounce 0.75s cubic-bezier(0.22, 1.4, 0.36, 1);
+    }
+    @keyframes scoreCrownBounce {
+      0%   { transform: scale(1); }
+      35%  { transform: scale(1.32); background: #ca8a04; color: #ffffff; border-color: #a16207; }
+      100% { transform: scale(1); }
+    }
+
+    /* Floating Rank-Change Badge (▲ +2 / ▼ -1 / 👑 #1) */
+    td.td-no {
+      position: relative;
+      overflow: visible !important;
+    }
+    .rank-delta-badge {
+      position: absolute;
+      left: 50%;
+      top: -9px;
+      transform: translateX(-50%);
+      padding: 1px 6px;
+      border-radius: 99px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9.5px;
+      font-weight: 900;
+      letter-spacing: 0.2px;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 60;
+      box-shadow: 0 3px 8px rgba(15, 23, 42, 0.28);
+      animation: rankBadgeFloat 1.9s cubic-bezier(0.2, 1.2, 0.35, 1) forwards;
+    }
+    .rank-delta-badge.up {
+      background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+      color: #ffffff;
+      border: 1px solid #a7f3d0;
+    }
+    .rank-delta-badge.crown {
+      background: linear-gradient(180deg, #facc15 0%, #ca8a04 100%);
+      color: #422006;
+      border: 1px solid #fef08a;
+    }
+    .rank-delta-badge.down {
+      background: linear-gradient(180deg, #f43f5e 0%, #be123c 100%);
+      color: #ffffff;
+      border: 1px solid #fecdd3;
+    }
+    @keyframes rankBadgeFloat {
+      0%   { opacity: 0; transform: translate(-50%, 6px) scale(0.75); }
+      16%  { opacity: 1; transform: translate(-50%, -2px) scale(1.1); }
+      28%  { opacity: 1; transform: translate(-50%, 0) scale(1); }
+      82%  { opacity: 1; transform: translate(-50%, -2px) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, -8px) scale(0.9); }
+    }
+
+    /* Smooth fade back to normal cell color */
+    tbody tr td {
+      transition: background 0.55s ease, border-color 0.45s ease, box-shadow 0.45s ease;
     }
 
     td {
@@ -4278,17 +4430,23 @@
     }
 
     /* =========================================================================
-       5. AUTO-SORT WITH SMOOTH FLIP ROW ANIMATION
+       5. AUTO-SORT WITH TOURNAMENT BROADCAST 2D FLIP & COLOR SURGE ANIMATION
        ========================================================================= */
-    function urutkanOtomatis() {
+    let sortAnimCleanupTimer = null;
+
+    function urutkanOtomatis(scoredPlayerId = null, scoredDelta = 0) {
       const data = getActiveData();
       const isDuo = db.gameMode === 'duo';
 
-      const oldTop = {};
+      // Rekam posisi 2D (top + left), indeks lama, dan poin lama tiap pemain
+      const oldState = {};
       for (let i = 0; i < 20; i++) {
         const p = getSeat(i);
         const el = document.getElementById(`row-kursi-${i}`);
-        if (p && p.id && el) oldTop[p.id] = el.getBoundingClientRect().top;
+        if (p && p.id && el) {
+          const rect = el.getBoundingClientRect();
+          oldState[p.id] = { top: rect.top, left: rect.left, idx: i };
+        }
       }
 
       if (isDuo) {
@@ -4323,24 +4481,72 @@
       simpanDB();
       renderPokedexTables();
 
+      const gridWrap = document.querySelector('.grid-tables');
+      if (gridWrap) gridWrap.classList.add('is-animating-sort');
+      if (sortAnimCleanupTimer) clearTimeout(sortAnimCleanupTimer);
+
+      const attachRankBadge = (rowEl, cls, text) => {
+        const tdNo = rowEl.querySelector('td.td-no');
+        if (!tdNo) return;
+        const badge = document.createElement('span');
+        badge.className = `rank-delta-badge ${cls}`;
+        badge.textContent = text;
+        tdNo.appendChild(badge);
+        setTimeout(() => badge.remove(), 1950);
+      };
+
       requestAnimationFrame(() => {
         for (let i = 0; i < 20; i++) {
           const p = getSeat(i);
           const el = document.getElementById(`row-kursi-${i}`);
-          if (p && p.id && el && oldTop[p.id] !== undefined) {
-            const deltaY = oldTop[p.id] - el.getBoundingClientRect().top;
-            if (Math.abs(deltaY) > 2) {
-              el.style.transform = `translateY(${deltaY}px)`;
-              void el.offsetHeight;
-              el.classList.add('moving-row');
-              el.style.transform = 'translateY(0)';
-              setTimeout(() => {
-                el.classList.remove('moving-row');
-                el.style.transform = '';
-              }, 550);
+          if (!p || !p.id || !el || !oldState[p.id]) continue;
+
+          const prev = oldState[p.id];
+          const newRect = el.getBoundingClientRect();
+          const deltaX = prev.left - newRect.left;
+          const deltaY = prev.top - newRect.top;
+          const rankGain = prev.idx - i; // > 0 = NAIK, < 0 = TURUN
+          const moved = Math.abs(deltaY) > 2 || Math.abs(deltaX) > 2;
+
+          let flashClass = '';
+          if (rankGain > 0) {
+            if (i === 0 && !isDuo) {
+              flashClass = 'row-rank-crown';
+              attachRankBadge(el, 'crown', `👑 #1 (+${rankGain})`);
+            } else {
+              flashClass = 'row-rank-up';
+              attachRankBadge(el, 'up', `▲ +${rankGain}`);
             }
+          } else if (rankGain < 0) {
+            flashClass = 'row-rank-down';
+            attachRankBadge(el, 'down', `▼ ${rankGain}`);
+          } else if (scoredPlayerId && p.id === scoredPlayerId && scoredDelta > 0) {
+            flashClass = 'row-score-pop';
+            attachRankBadge(el, 'up', `+${scoredDelta}`);
+          }
+
+          if (flashClass) {
+            el.classList.add(flashClass);
+            const holdMs = flashClass === 'row-rank-crown' ? 2100 : (flashClass === 'row-rank-down' ? 1500 : 1850);
+            setTimeout(() => el.classList.remove(flashClass), holdMs);
+          }
+
+          if (moved) {
+            const liftScale = rankGain > 0 ? 1.025 : 0.99;
+            el.style.transform = `translate3d(${deltaX}px, ${deltaY}px, 0) scale(${liftScale})`;
+            void el.offsetHeight;
+            el.classList.add('moving-row');
+            el.style.transform = 'translate3d(0, 0, 0) scale(1)';
+            setTimeout(() => {
+              el.classList.remove('moving-row');
+              el.style.transform = '';
+            }, 900);
           }
         }
+
+        sortAnimCleanupTimer = setTimeout(() => {
+          if (gridWrap) gridWrap.classList.remove('is-animating-sort');
+        }, 950);
       });
     }
 
@@ -4926,7 +5132,7 @@
 
       if (selisih !== 0) tampilkanToastTcg(idx, selisih, selisih > 0 ? 'TAMBAH POIN' : 'KURANG POIN');
       simpanDB();
-      urutkanOtomatis();
+      urutkanOtomatis(p.id, selisih);
       tambahLog(p.nick || p.user || `Kursi ${idx + 1}`, `Poin ${awal} ➔ ${p.poin} (${delta >= 0 ? '+' : ''}${delta})`);
     }
 
@@ -4943,7 +5149,7 @@
       if (selisih !== 0) tampilkanToastTcg(idx, selisih, 'SET TOTAL');
       simpanDB();
       if (idx === 19) renderPokedexTables();
-      else urutkanOtomatis();
+      else urutkanOtomatis(p.id, selisih);
       tambahLog(p.nick || p.user || `Kursi ${idx + 1}`, `Total poin disetel ke ${val}`);
     }
 
@@ -6147,7 +6353,7 @@
       tampilkanToastTcg(seatIdx, kalkulasi.poin, labelAtas, kalkulasi.rincian);
 
       if (autoConfig.autoSort) {
-        urutkanOtomatis();
+        urutkanOtomatis(p.id, kalkulasi.poin);
       } else {
         renderPokedexTables();
       }
