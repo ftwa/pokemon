@@ -22,16 +22,14 @@ if not httpRequest then
 end
 
 -- ============================================================
--- KONFIGURASI CHANNEL NTFY.SH
+-- KONFIGURASI TARGET LOKAL 0MS (POKÉDEX SCOREBOARD DESKTOP .EXE)
 -- ============================================================
-local NTFY_TOPIC            = "pokedex_auto_skor_live_bus_v1"
-local NTFY_URL              = "https://ntfy.sh/" .. NTFY_TOPIC
+local LOCAL_CATCH_URL       = "http://127.0.0.1:18420/api/local-catch"
 local ENABLE_ANTI_LAG_BOOST = true
-local HTTP_TIMEOUT_SEC      = 3.0
 
 print("============================================================")
-print("  ⚡ POKÉDEX AUTO SKOR — PURE NTFY.SH BRIDGE (AKTIF)")
-print("  📡 Target    : " .. NTFY_URL)
+print("  ⚡ POKÉDEX AUTO SKOR — PURE LOCAL 0MS BRIDGE (STABIL)")
+print("  💻 Target    : " .. LOCAL_CATCH_URL)
 print("  🚀 Anti-Lag  : " .. (ENABLE_ANTI_LAG_BOOST and "ON" or "OFF"))
 print("============================================================")
 
@@ -224,9 +222,9 @@ local function splitFishAndVariant(fullFishName)
 end
 
 -- ============================================================
--- 3. KIRIM LANGSUNG KE NTFY.SH LIVE BUS
+-- 3. KIRIM TANGKAPAN MURNI KE LOKAL 0MS (POKÉDEX SCOREBOARD .EXE)
 -- ============================================================
-local function sendCatchToNtfy(player, fish, variant, tier, displayName, userId)
+local function sendCatchToLocal(player, fish, variant, tier, displayName, userId)
     if not httpRequest then return end
     if tier == "NORMAL" or tier == "RARE" then return end
 
@@ -238,40 +236,40 @@ local function sendCatchToNtfy(player, fish, variant, tier, displayName, userId)
     end
     processedCatchHash[catchKey] = now
 
-    local eventId = string.format("ntfy_%d_%d", os.time(), math.random(10000, 99999))
+    local eventId = string.format("loc_%d_%d", os.time(), math.random(10000, 99999))
     local tsMs = os.time() * 1000
+    local jsonBody = HttpService:JSONEncode({
+        id = eventId,
+        type = "SYNC_CATCH",
+        user = mainDisplay,
+        displayName = mainDisplay,
+        username = tostring(player or mainDisplay),
+        userId = userId or 0,
+        fish = fish,
+        variant = variant,
+        tier = tier,
+        kategori = tier,
+        source = "roblox_local",
+        timestamp = tsMs
+    })
 
     task.spawn(function()
-        pcall(function()
+        local ok, err = pcall(function()
             local res = httpRequest({
-                Url = NTFY_URL,
+                Url = LOCAL_CATCH_URL,
                 Method = "POST",
-                Headers = {
-                    ["Content-Type"] = "application/json",
-                    ["Priority"] = "urgent"
-                },
-                Timeout = HTTP_TIMEOUT_SEC,
-                Body = HttpService:JSONEncode({
-                    id = eventId,
-                    type = "SYNC_CATCH",
-                    user = mainDisplay,
-                    displayName = mainDisplay,
-                    username = tostring(player or mainDisplay),
-                    userId = userId or 0,
-                    fish = fish,
-                    variant = variant,
-                    tier = tier,
-                    kategori = tier,
-                    source = "ntfy_direct",
-                    timestamp = tsMs
-                })
+                Headers = { ["Content-Type"] = "application/json" },
+                Body = jsonBody
             })
             if res and (res.StatusCode == 200 or res.StatusCode == 201) then
-                print(string.format("📡 [NTFY AUTO] Terkirim: %s -> %s [%s]", mainDisplay, fish, tier))
+                print(string.format("⚡ [LOKAL 0MS] Masuk: %s -> %s [%s | %s]", mainDisplay, fish, tier, variant))
             else
-                warn("⚠️ [NTFY AUTO] Gagal kirim status: " .. tostring(res and res.StatusCode or "timeout"))
+                warn("⚠️ [LOKAL] PokedexScoreboard.exe belum terbuka! (status: " .. tostring(res and res.StatusCode or "offline") .. ")")
             end
         end)
+        if not ok then
+            warn("⚠️ [LOKAL] HTTP error: " .. tostring(err))
+        end
     end)
 end
 
@@ -328,7 +326,7 @@ local function processChatMessage(rawText)
     local tier = determineTier(rawText, clean)
 
     print(string.format("🐟 [TANGKAPAN] %s (@%s) -> %s [%s | %s]", playerDisplayName, playerName, baseFish, tier, variant))
-    sendCatchToNtfy(playerName, baseFish, variant, tier, playerDisplayName, playerUserId)
+    sendCatchToLocal(playerName, baseFish, variant, tier, playerDisplayName, playerUserId)
 end
 
 -- ============================================================
