@@ -372,9 +372,10 @@ local function splitFishAndVariant(fullFishName)
                 local prefixPart = beforeIdx > 0 and string.sub(trimmed, 1, beforeIdx) or ""
                 if prefixPart ~= "" then
                     local leftover = extractVariantsFromText(prefixPart, detectedVariants)
-                    -- Jika ada mutasi super baru di depan nama ikan yang belum terdaftar, tetap tangkap!
-                    if leftover ~= "" and #leftover >= 2 then
-                        table.insert(detectedVariants, leftover)
+                    -- Hanya mutasi valid dari daftar/game (KNOWN_VARIANTS) yang dihitung;
+                    -- sisa kata non-mutasi tetap menjadi bagian nama ikan agar tidak jadi mutasi palsu!
+                    if leftover ~= "" then
+                        lockedFish = leftover .. " " .. lockedFish
                     end
                 end
                 local variantResult = #detectedVariants > 0 and table.concat(detectedVariants, ", ") or "None"
