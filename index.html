@@ -219,22 +219,77 @@
       justify-content: center;
       gap: 10px;
     }
+    .rotom-timer-capsule.is-double-point {
+      background: linear-gradient(180deg, #fffbeb 0%, #fef08a 100%) !important;
+      border-color: #eab308 !important;
+      box-shadow: 0 6px 20px -2px rgba(234, 179, 8, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+    }
+    .rotom-timer-capsule.is-double-point::before {
+      background: linear-gradient(180deg, #f59e0b 0%, #dc2626 100%) !important;
+    }
+    .rotom-timer-capsule.is-double-point .rotom-timer-readout {
+      background: #ffffff;
+      border-color: #eab308;
+      color: #92400e;
+      box-shadow: 0 0 14px rgba(234, 179, 8, 0.35);
+    }
+    .double-point-pill {
+      display: none;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 9px;
+      border-radius: 99px;
+      background: linear-gradient(135deg, #f59e0b 0%, #dc2626 100%);
+      color: #ffffff;
+      font-family: 'Outfit', sans-serif;
+      font-size: 10.5px;
+      font-weight: 900;
+      letter-spacing: 0.7px;
+      text-transform: uppercase;
+      box-shadow: 0 3px 10px rgba(220, 38, 38, 0.38);
+      animation: clutchPulse 1s infinite;
+      white-space: nowrap;
+    }
+    .rotom-timer-capsule.is-double-point .double-point-pill {
+      display: inline-flex;
+    }
+    @keyframes clutchPulse {
+      0%, 100% { transform: scale(1); filter: brightness(1); }
+      50%      { transform: scale(1.06); filter: brightness(1.12); }
+    }
+    .rotom-tbtn.btn-2x {
+      border-color: #f59e0b;
+      color: #b45309;
+      background: #fffbeb;
+    }
+    .rotom-tbtn.btn-2x:hover {
+      background: #fef3c7;
+      border-color: #d97706;
+      color: #92400e;
+    }
+    .rotom-tbtn.btn-2x.active {
+      background: linear-gradient(180deg, #f59e0b 0%, #dc2626 100%);
+      border-color: #b91c1c;
+      color: #ffffff;
+      box-shadow: 0 2px 10px rgba(220, 38, 38, 0.38);
+    }
     .rotom-timer-readout {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 29px;
+      font-size: 32px;
       font-weight: 900;
       font-variant-numeric: tabular-nums;
-      letter-spacing: 2px;
+      letter-spacing: 2.2px;
       line-height: 1;
-      color: #0f172a;
+      color: #020617;
       cursor: pointer;
       user-select: none;
-      padding: 3px 12px;
-      border-radius: 9px;
-      background: #f1f5f9;
-      border: 1.5px solid #e2e8f0;
+      padding: 4px 16px;
+      border-radius: 10px;
+      background: #ffffff;
+      border: 2px solid #cbd5e1;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08), inset 0 1px 0 #ffffff;
       transition: all 0.18s ease;
-      min-width: 122px;
+      min-width: 136px;
       text-align: center;
     }
     .rotom-timer-readout:hover {
@@ -1070,10 +1125,10 @@
 
     .table-container {
       background: #ffffff;
-      border-radius: 12px;
-      border: 1.5px solid #cbd5e1;
+      border-radius: 14px;
+      border: 2px solid #cbd5e1;
       overflow: hidden;
-      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+      box-shadow: 0 8px 22px -6px rgba(15, 23, 42, 0.10);
     }
 
     table {
@@ -1324,24 +1379,56 @@
 
     tr.is-rank-1 .rank-num-pill {
       background: linear-gradient(180deg, #fef08a 0%, #facc15 100%);
-      color: #713f12;
-      border-color: #eab308;
-      box-shadow: 0 2px 6px rgba(234, 179, 8, 0.35);
+      color: #422006;
+      border-color: #ca8a04;
+      box-shadow: 0 2px 8px rgba(234, 179, 8, 0.45);
     }
     tr.is-rank-2 .rank-num-pill {
       background: linear-gradient(180deg, #f8fafc 0%, #cbd5e1 100%);
-      color: #1e293b;
-      border-color: #94a3b8;
+      color: #0f172a;
+      border-color: #64748b;
+      box-shadow: 0 2px 6px rgba(100, 116, 139, 0.28);
     }
     tr.is-rank-3 .rank-num-pill {
       background: linear-gradient(180deg, #fed7aa 0%, #fb923c 100%);
       color: #7c2d12;
-      border-color: #ea580c;
+      border-color: #c2410c;
+      box-shadow: 0 2px 6px rgba(234, 88, 12, 0.28);
     }
 
-    /* Subtle icy highlight for active Rank #1 when no custom color tag is applied */
+    /* Premium Broadcast Top 3 Row Distinction (When no custom color tag) */
     tr.is-rank-1:not([class*="tag-"]) td {
-      background: #eff6ff !important;
+      background: linear-gradient(90deg, #fefce8 0%, #fef9c3 100%) !important;
+      border-bottom-color: #fde047;
+    }
+    tr.is-rank-1:not([class*="tag-"]) td:first-child {
+      box-shadow: inset 4px 0 0 #eab308;
+    }
+    tr.is-rank-1 .score-val {
+      background: linear-gradient(180deg, #fef08a 0%, #facc15 100%);
+      border-color: #ca8a04;
+      color: #422006;
+      box-shadow: 0 2px 8px rgba(234, 179, 8, 0.35);
+    }
+    tr.is-rank-2:not([class*="tag-"]) td {
+      background: linear-gradient(90deg, #f8fafc 0%, #f1f5f9 100%) !important;
+    }
+    tr.is-rank-2:not([class*="tag-"]) td:first-child {
+      box-shadow: inset 4px 0 0 #64748b;
+    }
+    tr.is-rank-3:not([class*="tag-"]) td {
+      background: linear-gradient(90deg, #fff7ed 0%, #ffedd5 100%) !important;
+    }
+    tr.is-rank-3:not([class*="tag-"]) td:first-child {
+      box-shadow: inset 4px 0 0 #ea580c;
+    }
+
+    /* Soften empty seats so spectators focus immediately on active players */
+    tbody tr.is-empty-row td {
+      opacity: 0.52;
+    }
+    tbody tr.is-empty-row:hover td {
+      opacity: 0.88;
     }
 
     /* Clickable Player & Display Name Cells */
@@ -1373,7 +1460,7 @@
     }
     .name-player {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 15px;
+      font-size: 15.5px;
       font-weight: 800;
       letter-spacing: 0.1px;
       color: #020617;
@@ -1393,12 +1480,13 @@
       min-width: 0;
     }
     .avatar-mini {
-      width: 30px;
-      height: 30px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
       object-fit: cover;
       background: #e2e8f0;
-      border: 1.5px solid #94a3b8;
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 0 1.5px #94a3b8, 0 2px 4px rgba(15, 23, 42, 0.12);
       flex-shrink: 0;
     }
     .avatar-placeholder {
@@ -1494,19 +1582,19 @@
       align-items: center;
     }
     .score-val {
-      min-width: 56px;
-      padding: 4px 10px;
-      border-radius: 8px;
+      min-width: 60px;
+      padding: 4px 11px;
+      border-radius: 9px;
       background: linear-gradient(180deg, #ffffff 0%, #e2e8f0 100%);
-      border: 1.5px solid #cbd5e1;
-      color: #0f172a;
+      border: 1.5px solid #94a3b8;
+      color: #020617;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 18px;
-      font-weight: 800;
+      font-size: 19.5px;
+      font-weight: 900;
       text-align: center;
       cursor: pointer;
       user-select: none;
-      box-shadow: 0 2px 4px rgba(15, 23, 42, 0.08), inset 0 1px 0 #ffffff;
+      box-shadow: 0 2px 5px rgba(15, 23, 42, 0.10), inset 0 1px 0 #ffffff;
       transition: all 0.14s ease;
     }
     .score-val:hover {
@@ -3438,6 +3526,7 @@
           <span class="px-pokeball-mini" aria-hidden="true"></span>
           <span class="rotom-timer-title">MATCH TIMER</span>
           <span class="rotom-timer-tag"><span class="rotom-timer-led" id="rotomTimerLed"></span><span id="rotomTimerTag">READY</span></span>
+          <span class="double-point-pill" id="doublePointBadge">🔥 2X POIN</span>
         </div>
 
         <div class="rotom-timer-center">
@@ -3445,6 +3534,7 @@
         </div>
 
         <div class="rotom-timer-btns">
+          <button type="button" class="rotom-tbtn btn-2x" id="btnDoublePoint" onclick="toggleDoublePointMode()" title="Aktifkan / Matikan Mode 2x Poin (Clutch Time)">🔥 2x</button>
           <button type="button" class="rotom-tbtn play" id="btnTimerPlayPause" onclick="toggleTimerStartPause()" title="Mulai / Jeda Timer">▶ Mulai</button>
           <button type="button" class="rotom-tbtn" onclick="resetTimerMatch()" title="Reset Timer">↺ Reset</button>
           <button type="button" class="rotom-tbtn" onclick="toggleTimerPopover(event)" title="Atur Durasi &amp; Suara">⚙ Durasi</button>
@@ -3479,6 +3569,10 @@
           <button type="button" class="btn-px" style="flex:1; padding:4px 6px; font-size:11px;" onclick="geserWaktuTimer(-60)">-1 Menit</button>
         </div>
         <label style="display:flex; align-items:center; justify-content:space-between; font-size:11.5px; font-weight:700; color:#334155; padding-top:4px; border-top:1px solid #e2e8f0; cursor:pointer;">
+          <span>🔥 Auto 2x Poin (2 Menit Terakhir)</span>
+          <input type="checkbox" id="chkAutoDouble2Min" onchange="simpanPengaturanTimer()" />
+        </label>
+        <label style="display:flex; align-items:center; justify-content:space-between; font-size:11.5px; font-weight:700; color:#334155; cursor:pointer;">
           <span>🔊 Suara Countdown &amp; Bel Habis</span>
           <input type="checkbox" id="chkTimerSound" checked onchange="simpanPengaturanTimer()" />
         </label>
@@ -4322,10 +4416,16 @@
         const isHost = i === 19;
         const p = getSeat(i);
         const filled = hasPlayerContent(p);
-        const rankLabel = isDuo ? `${(i % 2) + 1}` : `#${i + 1}`;
+        let rankLabel = isDuo ? `${(i % 2) + 1}` : `#${i + 1}`;
+        if (!isDuo && filled) {
+          if (i === 0) rankLabel = '🥇';
+          else if (i === 1) rankLabel = '🥈';
+          else if (i === 2) rankLabel = '🥉';
+        }
 
         const tr = document.createElement('tr');
         tr.id = `row-kursi-${i}`;
+        if (!filled && !isHost) tr.classList.add('is-empty-row');
 
         if (!isDuo) {
           if (i === 0 && filled) tr.classList.add('is-rank-1');
@@ -4947,31 +5047,77 @@
     }
 
     /* =========================================================================
-       7. MODE HYBRID: FULL TCG 3D HOLOGRAPHIC CARD TOAST
+       7. MODE HYBRID: SMART TOAST QUEUE — FULL TCG 3D HOLOGRAPHIC CARD
        ========================================================================= */
-    function tampilkanToastTcg(seatIdx, deltaPoin, labelAtas = 'TAMBAH POIN', extraDetail = '') {
-      const popup = document.getElementById('centerNotifPopup');
-      const backdrop = document.getElementById('tcgNotifBackdrop');
-      if (!popup || !backdrop) return;
-      if (tcgToastTimer) clearTimeout(tcgToastTimer);
+    const tcgToastQueue = [];
+    let isTcgToastPlaying = false;
+    let tcgQueueGapTimer = null;
 
+    function tampilkanToastTcg(seatIdx, deltaPoin, labelAtas = 'TAMBAH POIN', extraDetail = '') {
       const p = getSeat(seatIdx);
       if (!p) return;
 
       const isDuo = db.gameMode === 'duo';
-      let partner = null;
+      let partnerSnap = null;
       let teamInfo = null;
       if (isDuo) {
         const tIdx = Math.floor(seatIdx / 2);
         const t = db.duoTeams[tIdx];
         const partnerIdx = seatIdx % 2 === 0 ? seatIdx + 1 : seatIdx - 1;
-        partner = getSeat(partnerIdx);
+        const partner = getSeat(partnerIdx);
+        if (partner) partnerSnap = { ...partner };
         teamInfo = { name: t.name, color: t.color, score: (p.poin || 0) + (partner?.poin || 0) };
       }
+
+      // Simpan snapshot lengkap pemain agar antrean selalu akurat meski tabel bergeser
+      if (tcgToastQueue.length >= 12) tcgToastQueue.shift();
+      tcgToastQueue.push({
+        seatIdx,
+        isDuo,
+        player: { ...p },
+        partner: partnerSnap,
+        teamInfo,
+        deltaPoin,
+        labelAtas,
+        extraDetail,
+        sessionName: db.activeSession,
+        isDouble: Boolean(typeof isDoublePointActive !== 'undefined' && isDoublePointActive && deltaPoin > 0)
+      });
+
+      if (!isTcgToastPlaying) {
+        prosesAntreanToastTcg();
+      } else {
+        // Perbarui badge jumlah antrean secara live jika kartu sedang tampil
+        const qBadge = document.getElementById('tcgQueueCounter');
+        if (qBadge) qBadge.textContent = `⏳ +${tcgToastQueue.length} ANTRE`;
+      }
+    }
+
+    function prosesAntreanToastTcg() {
+      const popup = document.getElementById('centerNotifPopup');
+      const backdrop = document.getElementById('tcgNotifBackdrop');
+      if (!popup || !backdrop) {
+        tcgToastQueue.length = 0;
+        isTcgToastPlaying = false;
+        return;
+      }
+
+      if (tcgToastQueue.length === 0) {
+        isTcgToastPlaying = false;
+        popup.classList.remove('show');
+        backdrop.classList.remove('show');
+        return;
+      }
+
+      isTcgToastPlaying = true;
+      const item = tcgToastQueue.shift();
+      const { seatIdx, isDuo, player: p, partner, teamInfo, deltaPoin, labelAtas, extraDetail, sessionName, isDouble } = item;
 
       let tcg = { bg1: '#e0f2fe', bg2: '#38bdf8', accent: '#0284c7', ink: '#0f172a', sub: '#1e293b', panel: 'rgba(255,255,255,0.56)', glow: 'rgba(56,189,248,0.68)' };
       if (deltaPoin < 0) {
         tcg = { ...ELEMENTAL_COLORS.red.tcg, glow: ELEMENTAL_COLORS.red.glow };
+      } else if (isDouble) {
+        tcg = { bg1: '#fef08a', bg2: '#f59e0b', accent: '#b45309', ink: '#422006', sub: '#78350f', panel: 'rgba(255,255,255,0.64)', glow: 'rgba(245,158,11,0.78)' };
       } else if (p.colorTag && ELEMENTAL_COLORS[p.colorTag]) {
         tcg = { ...ELEMENTAL_COLORS[p.colorTag].tcg, glow: ELEMENTAL_COLORS[p.colorTag].glow };
       } else if (teamInfo && teamInfo.color) {
@@ -5007,15 +5153,18 @@
         ? makeAvatar3d(p, nama) + makeAvatar3d(partner, 'P2')
         : makeAvatar3d(p, nama);
 
+      const prefix2x = isDouble ? '🔥 2X CLUTCH • ' : '';
       const ribbonText = teamInfo
-        ? `${teamInfo.name} • ${labelAtas}`
-        : `${labelAtas}${p.robloxUser ? ' • @' + p.robloxUser : ''}`;
+        ? `${prefix2x}${teamInfo.name} • ${labelAtas}`
+        : `${prefix2x}${labelAtas}${p.robloxUser ? ' • @' + p.robloxUser : ''}`;
 
       const totalText = extraDetail
         ? `${extraDetail} • ${teamInfo ? `Total Tim: ${teamInfo.score} Pts` : `Total: ${p.poin} Poin`}`
         : (teamInfo
           ? `Total Tim: ${teamInfo.score} Pts (Individu: ${p.poin})`
           : `Total: ${p.poin} Poin`);
+
+      const queueText = tcgToastQueue.length > 0 ? `⏳ +${tcgToastQueue.length} ANTRE` : sessionName;
 
       popup.innerHTML = `
         <div class="tcg-card-inner">
@@ -5047,12 +5196,11 @@
 
           <div class="tcg-footer">
             <span>bobo hu</span>
-            <span>${db.activeSession}</span>
+            <span id="tcgQueueCounter">${queueText}</span>
           </div>
         </div>
       `;
 
-      // Partikel elemental melayang di jendela kartu TCG
       renderElementalParticles(document.getElementById('tcgParticles'), tcg.accent, 14);
 
       backdrop.classList.add('show');
@@ -5062,11 +5210,26 @@
 
       if (deltaPoin > 0) putarSuaraNotifPoin();
 
+      // Durasi adaptif cerdas: cepat saat antrean padat, santai saat tunggal
+      const waitQueue = tcgToastQueue.length;
+      const showDuration = waitQueue >= 3 ? 1250 : (waitQueue >= 1 ? 1650 : 2550);
+
+      if (tcgToastTimer) clearTimeout(tcgToastTimer);
+      if (tcgQueueGapTimer) clearTimeout(tcgQueueGapTimer);
+
       tcgToastTimer = setTimeout(() => {
         popup.classList.remove('show');
-        backdrop.classList.remove('show');
-          tcgToastTimer = null;
-      }, 2800);
+        tcgToastTimer = null;
+        if (tcgToastQueue.length > 0) {
+          tcgQueueGapTimer = setTimeout(() => {
+            tcgQueueGapTimer = null;
+            prosesAntreanToastTcg();
+          }, 180);
+        } else {
+          backdrop.classList.remove('show');
+          isTcgToastPlaying = false;
+        }
+      }, showDuration);
     }
 
     function tesNotifTcg() {
@@ -5126,14 +5289,19 @@
       tutupQuickPoint();
       const p = getSeat(idx);
       if (!p) return;
+      const is2x = Boolean(typeof isDoublePointActive !== 'undefined' && isDoublePointActive && delta > 0);
+      const effectiveDelta = is2x ? delta * 2 : delta;
       const awal = p.poin || 0;
-      p.poin = Math.max(0, awal + delta);
+      p.poin = Math.max(0, awal + effectiveDelta);
       const selisih = p.poin - awal;
 
-      if (selisih !== 0) tampilkanToastTcg(idx, selisih, selisih > 0 ? 'TAMBAH POIN' : 'KURANG POIN');
+      if (selisih !== 0) {
+        const lbl = selisih > 0 ? 'TAMBAH POIN' : 'KURANG POIN';
+        tampilkanToastTcg(idx, selisih, lbl, is2x ? `Asli +${delta} (×2)` : '');
+      }
       simpanDB();
       urutkanOtomatis(p.id, selisih);
-      tambahLog(p.nick || p.user || `Kursi ${idx + 1}`, `Poin ${awal} ➔ ${p.poin} (${delta >= 0 ? '+' : ''}${delta})`);
+      tambahLog(p.nick || p.user || `Kursi ${idx + 1}`, `Poin ${awal} ➔ ${p.poin} (${effectiveDelta >= 0 ? '+' : ''}${effectiveDelta}${is2x ? ' • 2X' : ''})`);
     }
 
     function simpanSetTotalLangsung() {
@@ -6345,15 +6513,18 @@
       }
 
       const p = getSeat(seatIdx);
+      const is2x = Boolean(typeof isDoublePointActive !== 'undefined' && isDoublePointActive);
+      const finalPoin = is2x ? kalkulasi.poin * 2 : kalkulasi.poin;
+      const finalRincian = is2x ? `${kalkulasi.rincian} ×2` : kalkulasi.rincian;
       const awal = p.poin || 0;
-      p.poin = awal + kalkulasi.poin;
+      p.poin = awal + finalPoin;
       simpanDB();
 
       const labelAtas = `🎣 ${kalkulasi.kategori} • ${fullFish}`;
-      tampilkanToastTcg(seatIdx, kalkulasi.poin, labelAtas, kalkulasi.rincian);
+      tampilkanToastTcg(seatIdx, finalPoin, labelAtas, finalRincian);
 
       if (autoConfig.autoSort) {
-        urutkanOtomatis(p.id, kalkulasi.poin);
+        urutkanOtomatis(p.id, finalPoin);
       } else {
         renderPokedexTables();
       }
@@ -6364,13 +6535,13 @@
         player: p.nick || p.user || rawUser,
         fish: fullFish,
         tier: kalkulasi.kategori,
-        poin: kalkulasi.poin,
-        rincian: kalkulasi.rincian
+        poin: finalPoin,
+        rincian: finalRincian
       });
       if (autoCatchHistory.length > 20) autoCatchHistory.pop();
       renderAutoFeedList();
 
-      tambahLog('AUTO 🎣', `${p.nick || p.user} dapat ${fullFish} [${kalkulasi.rincian}] (${awal} ➔ ${p.poin})`);
+      tambahLog('AUTO 🎣', `${p.nick || p.user} dapat ${fullFish} [${finalRincian}] (${awal} ➔ ${p.poin})`);
     }
 
     function renderAutoFeedList() {
@@ -6498,7 +6669,8 @@
     const TIMER_CONFIG_KEY = 'pokedex_timer_config_v1';
     let timerConfig = {
       durationSec: 15 * 60, // default 15:00
-      soundEnabled: true
+      soundEnabled: true,
+      autoDoubleLast2Min: false
     };
     let timerRemainingSec = 15 * 60;
     let timerRunning = false;
@@ -6506,6 +6678,8 @@
     let timerIntervalId = null;
     let timerLastBeepSec = -1;
     let timerWarnPlayed = false;
+    let isDoublePointActive = false;
+    let timerAutoDoubleTriggered = false;
 
     function muatPengaturanTimer() {
       try {
@@ -6518,6 +6692,9 @@
           if (typeof parsed.soundEnabled === 'boolean') {
             timerConfig.soundEnabled = parsed.soundEnabled;
           }
+          if (typeof parsed.autoDoubleLast2Min === 'boolean') {
+            timerConfig.autoDoubleLast2Min = parsed.autoDoubleLast2Min;
+          }
         }
       } catch (_) {}
       timerRemainingSec = timerConfig.durationSec;
@@ -6526,7 +6703,30 @@
     function simpanPengaturanTimer() {
       const chk = document.getElementById('chkTimerSound');
       if (chk) timerConfig.soundEnabled = Boolean(chk.checked);
+      const chk2x = document.getElementById('chkAutoDouble2Min');
+      if (chk2x) timerConfig.autoDoubleLast2Min = Boolean(chk2x.checked);
       try { localStorage.setItem(TIMER_CONFIG_KEY, JSON.stringify(timerConfig)); } catch (_) {}
+    }
+
+    function putarSuaraDoublePoint() {
+      if (!timerConfig.soundEnabled) return;
+      playSynthTone(523.25, 0, 0.11, 'triangle', 0.24);
+      playSynthTone(659.25, 0.09, 0.11, 'triangle', 0.24);
+      playSynthTone(783.99, 0.18, 0.12, 'triangle', 0.26);
+      playSynthTone(1046.5, 0.28, 0.28, 'sawtooth', 0.20);
+    }
+
+    function toggleDoublePointMode(forceState = null) {
+      const next = forceState === null ? !isDoublePointActive : Boolean(forceState);
+      if (next === isDoublePointActive) return;
+      isDoublePointActive = next;
+      if (isDoublePointActive) {
+        putarSuaraDoublePoint();
+        tambahLog('CLUTCH 🔥', 'MODE 2x POIN DIAKTIFKAN! Semua poin & tangkapan dikali 2!');
+      } else {
+        tambahLog('CLUTCH', 'Mode 2x Poin dimatikan (kembali normal 1x).');
+      }
+      renderTimerUI();
     }
 
     function formatWaktuTimer(totalSec) {
@@ -6577,10 +6777,19 @@
         : 0;
       bar.style.width = `${pct.toFixed(1)}%`;
 
-      capsule.classList.remove('is-running', 'is-warn', 'is-critical', 'is-timeup');
+      capsule.classList.remove('is-running', 'is-warn', 'is-critical', 'is-timeup', 'is-double-point');
       btn.classList.toggle('paused-active', timerRunning);
       btn.textContent = timerRunning ? '⏸ Jeda' : '▶ Mulai';
       btn.title = timerRunning ? 'Jeda Timer' : 'Mulai Timer';
+
+      const btn2x = document.getElementById('btnDoublePoint');
+      if (btn2x) {
+        btn2x.classList.toggle('active', isDoublePointActive);
+        btn2x.textContent = isDoublePointActive ? '🔥 2x ON' : '🔥 2x';
+      }
+      if (isDoublePointActive && sec > 0) {
+        capsule.classList.add('is-double-point');
+      }
 
       if (sec === 0) {
         capsule.classList.add('is-timeup');
@@ -6608,6 +6817,12 @@
       const remMs = timerEndTimestamp - now;
       timerRemainingSec = Math.max(0, remMs / 1000);
       const secCeil = Math.ceil(timerRemainingSec);
+
+      // Auto 2x Poin di 2 menit terakhir (jika diaktifkan di pengaturan timer)
+      if (!timerAutoDoubleTriggered && timerConfig.autoDoubleLast2Min && timerConfig.durationSec > 125 && secCeil <= 120 && secCeil > 0) {
+        timerAutoDoubleTriggered = true;
+        if (!isDoublePointActive) toggleDoublePointMode(true);
+      }
 
       // Peringatan 1 menit terakhir (sekali saat menyentuh 60s)
       if (!timerWarnPlayed && timerConfig.durationSec > 65 && secCeil <= 60 && secCeil > 10) {
@@ -6675,6 +6890,8 @@
       timerRemainingSec = timerConfig.durationSec;
       timerLastBeepSec = -1;
       timerWarnPlayed = false;
+      timerAutoDoubleTriggered = false;
+      isDoublePointActive = false;
       renderTimerUI();
     }
 
@@ -6691,6 +6908,8 @@
         document.getElementById('inputTimerMin').value = m;
         document.getElementById('inputTimerSec').value = s;
         document.getElementById('chkTimerSound').checked = Boolean(timerConfig.soundEnabled);
+        const chk2x = document.getElementById('chkAutoDouble2Min');
+        if (chk2x) chk2x.checked = Boolean(timerConfig.autoDoubleLast2Min);
         pop.classList.add('show');
         if (wrap) wrap.classList.add('popover-open');
       }
