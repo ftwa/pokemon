@@ -94,7 +94,10 @@
       position: relative;
       width: 100%;
       margin: 0 0 10px;
-      z-index: 40;
+      z-index: 20;
+    }
+    .rotom-timer-wrap.popover-open {
+      z-index: 95;
     }
     .rotom-timer-capsule {
       position: relative;
@@ -532,7 +535,7 @@
       margin-bottom: 12px;
       border-bottom: 1.5px solid #e2e8f0;
       position: relative;
-      z-index: 40;
+      z-index: 80;
     }
 
     .top-left, .top-right {
@@ -589,6 +592,45 @@
     }
 
     /* MODE AUTO-SKOR BUTTON & MODAL */
+    .auto-split-group {
+      display: inline-flex;
+      align-items: stretch;
+      border-radius: 9px;
+      overflow: hidden;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+    }
+    .auto-split-group .btn-px-auto {
+      border-radius: 9px 0 0 9px;
+      border-right-width: 1px;
+    }
+    .btn-px-auto-gear {
+      border-radius: 0 9px 9px 0;
+      border-left: none !important;
+      padding: 0 9px !important;
+      background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+      color: #475569;
+      border: 1.5px solid #cbd5e1;
+      font-size: 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+    .btn-px-auto-gear:hover {
+      background: #e0f2fe;
+      color: #0369a1;
+      border-color: #0284c7;
+    }
+    .auto-split-group.is-live .btn-px-auto-gear {
+      background: linear-gradient(180deg, #059669 0%, #047857 100%);
+      color: #ecfdf5;
+      border-color: #047857;
+    }
+    .auto-split-group.is-live .btn-px-auto-gear:hover {
+      background: #047857;
+      color: #ffffff;
+    }
     .btn-px-auto {
       background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
       color: #334155;
@@ -3099,10 +3141,13 @@
     <div class="top-bar">
       <div class="top-left">
         <button id="btnModeToggle" class="btn-px" onclick="toggleModeDuoSolo()">👤 MODE: SOLO (20)</button>
-        <button id="btnAutoMode" class="btn-px btn-px-auto" onclick="bukaModalAuto()" title="Mode Auto-Skor dari Roblox (inject.lua)">
-          <span id="autoBtnLabel">⚡ AUTO: OFF</span>
-          <span id="autoStatusDot" class="auto-dot"></span>
-        </button>
+        <div class="auto-split-group" id="autoSplitGroup">
+          <button id="btnAutoMode" class="btn-px btn-px-auto" onclick="toggleAutoModeActive()" title="Klik 1x untuk langsung ON/OFF Mode Auto ↔ Manual">
+            <span id="autoBtnLabel">⚡ MANUAL</span>
+            <span id="autoStatusDot" class="auto-dot"></span>
+          </button>
+          <button id="btnAutoSettings" class="btn-px-auto-gear" onclick="bukaModalAuto()" title="Pengaturan Mode Auto (Channel ntfy, Poin, Ikan Khusus &amp; Script)">⚙</button>
+        </div>
         <button class="btn-px" onclick="bukaModalPreset()">Point Preset</button>
         <button class="btn-px" onclick="bukaModalAudio()">Settings Audio</button>
 
@@ -3486,6 +3531,9 @@
 
       <!-- OPSI PERILAKU & CHANNEL -->
       <div class="auto-check-row">
+        <label title="Tangkapan hanya masuk saat Match Timer sedang berjalan (tidak masuk saat Ready/Pause/Habis)">
+          <input type="checkbox" id="chkAutoRequireTimer" onchange="simpanPengaturanAuto()" /> 🔒 Hanya Hitung Saat Timer Jalan
+        </label>
         <label><input type="checkbox" id="chkAutoFillSeat" onchange="simpanPengaturanAuto()" /> Auto-Isi Kursi Kosong</label>
         <label><input type="checkbox" id="chkAutoSortRank" onchange="simpanPengaturanAuto()" /> Auto-Urutkan Peringkat</label>
       </div>
@@ -5389,6 +5437,7 @@
     const DEFAULT_AUTO_CONFIG = {
       enabled: false,
       topic: 'pokedex_auto_skor_live_bus_v1',
+      requireTimerRunning: true,
       autoFillSeat: true,
       autoSort: true,
       rules: {
@@ -5444,6 +5493,7 @@
 
     function updateAutoModeUI() {
       const btn = document.getElementById('btnAutoMode');
+      const grp = document.getElementById('autoSplitGroup');
       const label = document.getElementById('autoBtnLabel');
       const sw = document.getElementById('btnAutoToggleSwitch');
       const banner = document.getElementById('autoSwitchBanner');
@@ -5451,17 +5501,27 @@
       if (!btn || !label) return;
 
       btn.classList.remove('is-live', 'is-connecting');
+      if (grp) grp.classList.remove('is-live');
       if (banner) banner.classList.remove('is-live');
       if (sw) sw.classList.toggle('active', Boolean(autoConfig.enabled));
 
+      const timerHold = Boolean(autoConfig.requireTimerRunning && typeof timerRunning !== 'undefined' && !timerRunning);
+
       if (!autoConfig.enabled) {
-        label.textContent = '⚡ AUTO: OFF';
-        if (connText) connText.textContent = '⚪ Mode Auto nonaktif (Manual)';
+        label.textContent = '⚡ MANUAL';
+        if (connText) connText.textContent = '⚪ Mode Manual (Auto nonaktif)';
       } else if (autoConnState === 'live') {
-        btn.classList.add('is-live');
-        if (banner) banner.classList.add('is-live');
-        label.textContent = '⚡ AUTO: LIVE';
-        if (connText) connText.textContent = `🟢 Terhubung ke Live Bus (${autoConfig.topic}) — menunggu tangkapan...`;
+        if (timerHold) {
+          btn.classList.add('is-connecting');
+          label.textContent = '⚡ AUTO: HOLD';
+          if (connText) connText.textContent = `🟡 Terhubung (${autoConfig.topic}) — tekan ▶ Mulai Timer agar tangkapan masuk`;
+        } else {
+          btn.classList.add('is-live');
+          if (grp) grp.classList.add('is-live');
+          if (banner) banner.classList.add('is-live');
+          label.textContent = '⚡ AUTO: LIVE';
+          if (connText) connText.textContent = `🟢 Terhubung ke Live Bus (${autoConfig.topic}) — menangkap poin...`;
+        }
       } else {
         btn.classList.add('is-connecting');
         label.textContent = '⚡ AUTO: ...';
@@ -5471,6 +5531,8 @@
 
     function bukaModalAuto() {
       tutupSemuaPopupKecil();
+      const chkTimer = document.getElementById('chkAutoRequireTimer');
+      if (chkTimer) chkTimer.checked = Boolean(autoConfig.requireTimerRunning);
       document.getElementById('chkAutoFillSeat').checked = Boolean(autoConfig.autoFillSeat);
       document.getElementById('chkAutoSortRank').checked = Boolean(autoConfig.autoSort);
       document.getElementById('inputAutoTopic').value = autoConfig.topic;
@@ -5496,6 +5558,8 @@
 
     function simpanPengaturanAuto(reconnectIfChanged = false) {
       const prevTopic = autoConfig.topic;
+      const chkTimer = document.getElementById('chkAutoRequireTimer');
+      if (chkTimer) autoConfig.requireTimerRunning = Boolean(chkTimer.checked);
       autoConfig.autoFillSeat = Boolean(document.getElementById('chkAutoFillSeat').checked);
       autoConfig.autoSort = Boolean(document.getElementById('chkAutoSortRank').checked);
       autoConfig.topic = sanitizeAutoTopic(document.getElementById('inputAutoTopic').value);
@@ -5760,7 +5824,7 @@
       return -1;
     }
 
-    function prosesEventCatchAuto(evt) {
+    function prosesEventCatchAuto(evt, isManualSim = false) {
       if (!evt) return;
 
       // Deduplikasi ketat agar tidak pernah double-poin
@@ -5772,6 +5836,14 @@
       const rawVariant = String(evt.variant || '').trim();
       const rawTier = String(evt.tier || evt.kategori || '').trim();
       if (!rawUser || !rawFish) return;
+
+      // Pengaman Timer: jika wajib timer berjalan dan timer masih mati/pause/habis, tahan tangkapan!
+      const isTestEvt = Boolean(isManualSim || evt.isSimTest || evt.source === 'ntfy_test');
+      if (!isTestEvt && autoConfig.requireTimerRunning && typeof timerRunning !== 'undefined' && !timerRunning) {
+        if (evtId) processedAutoIds.add(evtId);
+        tambahLog('AUTO-HOLD ⏸', `Timer belum jalan — tangkapan ${rawUser} (${rawFish}) ditahan.`);
+        return;
+      }
 
       const dedupKey = `${rawUser.toLowerCase()}|${rawFish.toLowerCase()}|${rawVariant.toLowerCase()}|${rawTier.toLowerCase()}`;
       const now = Date.now();
@@ -5919,6 +5991,7 @@
         variant: 'Shiny',
         tier: 'SECRET',
         source: 'ntfy_test',
+        isSimTest: true,
         timestamp: Date.now()
       };
 
@@ -5932,13 +6005,13 @@
         if (res.ok) {
           status.textContent = `✅ Terkirim ke ntfy.sh/${autoConfig.topic}!`;
           if (autoConnState !== 'live') {
-            prosesEventCatchAuto(samplePayload);
+            prosesEventCatchAuto(samplePayload, true);
           }
           return;
         }
       } catch (_) {}
 
-      prosesEventCatchAuto(samplePayload);
+      prosesEventCatchAuto(samplePayload, true);
       status.textContent = '✅ Simulasi diproses lokal (gagal menghubungi ntfy.sh).';
     }
 
@@ -6065,6 +6138,7 @@
       } else {
         tag.textContent = 'READY';
       }
+      if (typeof updateAutoModeUI === 'function') updateAutoModeUI();
     }
 
     function tickTimerMatch() {
@@ -6146,6 +6220,7 @@
     function toggleTimerPopover(ev) {
       if (ev) ev.stopPropagation();
       const pop = document.getElementById('rotomTimerPopover');
+      const wrap = pop ? pop.closest('.rotom-timer-wrap') : null;
       if (!pop) return;
       const wasOpen = pop.classList.contains('show');
       tutupSemuaPopupKecil();
@@ -6156,12 +6231,17 @@
         document.getElementById('inputTimerSec').value = s;
         document.getElementById('chkTimerSound').checked = Boolean(timerConfig.soundEnabled);
         pop.classList.add('show');
+        if (wrap) wrap.classList.add('popover-open');
       }
     }
 
     function tutupTimerPopover() {
       const pop = document.getElementById('rotomTimerPopover');
-      if (pop) pop.classList.remove('show');
+      if (pop) {
+        pop.classList.remove('show');
+        const wrap = pop.closest('.rotom-timer-wrap');
+        if (wrap) wrap.classList.remove('popover-open');
+      }
     }
 
     function setTimerPresetMenit(menit) {
