@@ -365,9 +365,44 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 5px;
+      gap: 6px;
       transition: all 0.15s ease;
       white-space: nowrap;
+    }
+    .special-fish-pill {
+      display: none;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 9px;
+      border-radius: 99px;
+      background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+      color: #1d4ed8;
+      border: 1px solid #93c5fd;
+      font-family: 'Outfit', sans-serif;
+      font-size: 10.5px;
+      font-weight: 900;
+      letter-spacing: 0.4px;
+      white-space: nowrap;
+      max-width: 210px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .special-fish-pill.show {
+      display: inline-flex;
+    }
+    .btn-px-undo {
+      background: #ffffff;
+      color: #475569;
+      border: 1.5px solid #cbd5e1;
+    }
+    .btn-px-undo:disabled {
+      opacity: 0.42;
+      cursor: not-allowed;
+    }
+    .btn-px-undo:not(:disabled):hover {
+      background: #fef3c7;
+      border-color: #f59e0b;
+      color: #92400e;
     }
     .rotom-tbtn:hover {
       background: #f1f5f9;
@@ -1337,7 +1372,7 @@
       font-size: 13.5px;
       height: 48px;
       border-bottom: 1px solid var(--silver-border);
-      border-right: 1px solid var(--silver-border);
+      border-right: 1px solid rgba(148, 163, 184, 0.30);
       background: #ffffff;
       color: var(--navy-ink);
       overflow: hidden;
@@ -1378,37 +1413,40 @@
     }
 
     tr.is-rank-1 .rank-num-pill {
-      background: linear-gradient(180deg, #fef08a 0%, #facc15 100%);
+      background: linear-gradient(180deg, #fef08a 0%, #eab308 100%);
       color: #422006;
       border-color: #ca8a04;
-      box-shadow: 0 2px 8px rgba(234, 179, 8, 0.45);
+      box-shadow: 0 2px 8px rgba(234, 179, 8, 0.5);
+      gap: 2px;
+      padding: 0 5px;
     }
     tr.is-rank-2 .rank-num-pill {
       background: linear-gradient(180deg, #f8fafc 0%, #cbd5e1 100%);
       color: #0f172a;
       border-color: #64748b;
-      box-shadow: 0 2px 6px rgba(100, 116, 139, 0.28);
+      box-shadow: 0 2px 6px rgba(100, 116, 139, 0.3);
     }
     tr.is-rank-3 .rank-num-pill {
       background: linear-gradient(180deg, #fed7aa 0%, #fb923c 100%);
       color: #7c2d12;
       border-color: #c2410c;
-      box-shadow: 0 2px 6px rgba(234, 88, 12, 0.28);
+      box-shadow: 0 2px 6px rgba(234, 88, 12, 0.3);
     }
 
-    /* Premium Broadcast Top 3 Row Distinction (When no custom color tag) */
+    /* Premium Broadcast Top 3 Row Distinction */
     tr.is-rank-1:not([class*="tag-"]) td {
       background: linear-gradient(90deg, #fefce8 0%, #fef9c3 100%) !important;
       border-bottom-color: #fde047;
     }
-    tr.is-rank-1:not([class*="tag-"]) td:first-child {
-      box-shadow: inset 4px 0 0 #eab308;
+    tr.is-rank-1 td:first-child {
+      box-shadow: inset 4px 0 0 #eab308 !important;
     }
+    /* Juara #1 selalu mempertahankan kotak skor emas agar langsung jadi pusat perhatian */
     tr.is-rank-1 .score-val {
-      background: linear-gradient(180deg, #fef08a 0%, #facc15 100%);
-      border-color: #ca8a04;
-      color: #422006;
-      box-shadow: 0 2px 8px rgba(234, 179, 8, 0.35);
+      background: linear-gradient(180deg, #fef08a 0%, #facc15 100%) !important;
+      border-color: #ca8a04 !important;
+      color: #422006 !important;
+      box-shadow: 0 2px 10px rgba(234, 179, 8, 0.45) !important;
     }
     tr.is-rank-2:not([class*="tag-"]) td {
       background: linear-gradient(90deg, #f8fafc 0%, #f1f5f9 100%) !important;
@@ -1537,11 +1575,11 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-width: 24px;
+      min-width: 20px;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 900;
-      padding: 2.5px 7px;
+      padding: 2px 5.5px;
       border-radius: 6px;
       cursor: pointer;
       user-select: none;
@@ -1549,10 +1587,10 @@
     }
     .pay-status-tag:hover { transform: scale(1.07); }
     .pay-status-tag.done {
-      background: #16a34a;
-      color: #ffffff;
-      border: 1px solid #15803d;
-      box-shadow: 0 2px 6px rgba(22, 163, 74, 0.3);
+      background: #dcfce7;
+      color: #15803d;
+      border: 1px solid #86efac;
+      box-shadow: none;
     }
     .pay-status-tag.ready {
       background: #f1f5f9;
@@ -1683,11 +1721,11 @@
     tr.tag-red .sub-handle { color: #fecaca !important; }
     tr.tag-red .score-val { background: #ffffff !important; border-color: #fecaca !important; color: #991b1b !important; }
 
-    tr.tag-yellow td { background: #fef08a !important; border-color: #facc15 !important; color: #422006 !important; }
-    tr.tag-yellow .td-no { background: #facc15 !important; }
+    tr.tag-yellow td { background: #fefce8 !important; border-color: #fde68a !important; color: #422006 !important; }
+    tr.tag-yellow .td-no { background: #fef08a !important; }
     tr.tag-yellow .name-player { color: #422006 !important; }
-    tr.tag-yellow .name-display { color: #854d0e !important; }
-    tr.tag-yellow .score-val { background: #ffffff !important; border-color: #eab308 !important; color: #713f12 !important; }
+    tr.tag-yellow .name-display { color: #92400e !important; }
+    tr.tag-yellow .score-val { background: #ffffff !important; border-color: #f59e0b !important; color: #78350f !important; }
 
     tr.tag-green td  { background: #bbf7d0 !important; border-color: #4ade80 !important; color: #052e16 !important; }
     tr.tag-green .td-no { background: #22c55e !important; }
@@ -3451,7 +3489,7 @@
         </div>
         <div class="pokedex-brand-title">
           <span>POKÉDEX SCOREBOARD</span>
-          <span class="pokedex-brand-tag">ROTOM UI • TCG 3D</span>
+          <span class="pokedex-brand-tag">ROTOM UI • LIVE</span>
         </div>
       </div>
 
@@ -3510,6 +3548,7 @@
       </div>
 
       <div class="top-right">
+        <button id="btnUndoAction" class="btn-px btn-px-undo" onclick="jalankanUndoTerakhir()" disabled title="Batalkan perubahan skor terakhir (Ctrl+Z)">↩ Undo</button>
         <button class="btn-px btn-px-cookie" onclick="bukaModalCookie()" title="Atur Cookie .ROBLOSECURITY">
           🍪 Cookie <span id="topBarCookieDot" class="cookie-dot"></span>
         </button>
@@ -3527,6 +3566,7 @@
           <span class="rotom-timer-title">MATCH TIMER</span>
           <span class="rotom-timer-tag"><span class="rotom-timer-led" id="rotomTimerLed"></span><span id="rotomTimerTag">READY</span></span>
           <span class="double-point-pill" id="doublePointBadge">🔥 2X POIN</span>
+          <span class="special-fish-pill" id="specialFishBadge"></span>
         </div>
 
         <div class="rotom-timer-center">
@@ -3534,10 +3574,10 @@
         </div>
 
         <div class="rotom-timer-btns">
-          <button type="button" class="rotom-tbtn btn-2x" id="btnDoublePoint" onclick="toggleDoublePointMode()" title="Aktifkan / Matikan Mode 2x Poin (Clutch Time)">🔥 2x</button>
-          <button type="button" class="rotom-tbtn play" id="btnTimerPlayPause" onclick="toggleTimerStartPause()" title="Mulai / Jeda Timer">▶ Mulai</button>
-          <button type="button" class="rotom-tbtn" onclick="resetTimerMatch()" title="Reset Timer">↺ Reset</button>
-          <button type="button" class="rotom-tbtn" onclick="toggleTimerPopover(event)" title="Atur Durasi &amp; Suara">⚙ Durasi</button>
+          <button type="button" class="rotom-tbtn btn-2x" id="btnDoublePoint" onclick="toggleDoublePointMode()" title="Aktifkan / Matikan Mode 2x Poin (Clutch Time)"><span>🔥</span><span>2x</span></button>
+          <button type="button" class="rotom-tbtn play" id="btnTimerPlayPause" onclick="toggleTimerStartPause()" title="Mulai / Jeda Timer"><span>▶</span><span>Mulai</span></button>
+          <button type="button" class="rotom-tbtn" onclick="resetTimerMatch()" title="Reset Timer"><span>↺</span><span>Reset</span></button>
+          <button type="button" class="rotom-tbtn" onclick="toggleTimerPopover(event)" title="Atur Durasi &amp; Suara"><span>⚙</span><span>Durasi</span></button>
         </div>
 
         <div class="rotom-timer-bar-track">
@@ -3571,6 +3611,10 @@
         <label style="display:flex; align-items:center; justify-content:space-between; font-size:11.5px; font-weight:700; color:#334155; padding-top:4px; border-top:1px solid #e2e8f0; cursor:pointer;">
           <span>🔥 Auto 2x Poin (2 Menit Terakhir)</span>
           <input type="checkbox" id="chkAutoDouble2Min" onchange="simpanPengaturanTimer()" />
+        </label>
+        <label style="display:flex; align-items:center; justify-content:space-between; font-size:11.5px; font-weight:700; color:#334155; cursor:pointer;">
+          <span>🏆 Auto-Podium saat 00:00</span>
+          <input type="checkbox" id="chkAutoPodiumEnd" onchange="simpanPengaturanTimer()" />
         </label>
         <label style="display:flex; align-items:center; justify-content:space-between; font-size:11.5px; font-weight:700; color:#334155; cursor:pointer;">
           <span>🔊 Suara Countdown &amp; Bel Habis</span>
@@ -4182,17 +4226,62 @@
     let customAudioPoin = null;
     let customAudioPodium = null;
     let cookieRoblox = '';
-    let isLogFolded = false;
+    let isLogFolded = true;
     let savedColWidths = { no: '44px', nama: '215px', display: '185px', point: '92px' };
 
     try {
       customAudioPoin = localStorage.getItem(AUDIO_POIN_KEY) || null;
       customAudioPodium = localStorage.getItem(AUDIO_PODIUM_KEY) || null;
       cookieRoblox = localStorage.getItem(COOKIE_KEY) || '';
-      isLogFolded = JSON.parse(localStorage.getItem(LOG_FOLD_KEY)) || false;
+      const rawLogFold = localStorage.getItem(LOG_FOLD_KEY);
+      isLogFolded = rawLogFold === null ? true : Boolean(JSON.parse(rawLogFold));
       const cw = localStorage.getItem(COL_WIDTHS_KEY);
       if (cw) savedColWidths = JSON.parse(cw);
     } catch (_) {}
+
+    /* UNDO STACK (INSTANT CTRL+Z UNTUK HOST) */
+    const undoHistory = [];
+    const MAX_UNDO_STEPS = 20;
+
+    function updateUndoButtonUI() {
+      const btn = document.getElementById('btnUndoAction');
+      if (!btn) return;
+      btn.disabled = undoHistory.length === 0;
+      btn.title = undoHistory.length > 0
+        ? `Undo: ${undoHistory[undoHistory.length - 1].label} (Ctrl+Z)`
+        : 'Batalkan perubahan skor terakhir (Ctrl+Z)';
+    }
+
+    function simpanSnapshotUndo(label = 'Perubahan skor') {
+      try {
+        undoHistory.push({
+          label,
+          activeSession: db.activeSession,
+          gameMode: db.gameMode,
+          snapshot: JSON.stringify(db.sessions[db.activeSession]),
+          duoTeams: JSON.stringify(db.duoTeams)
+        });
+        if (undoHistory.length > MAX_UNDO_STEPS) undoHistory.shift();
+        updateUndoButtonUI();
+      } catch (_) {}
+    }
+
+    function jalankanUndoTerakhir() {
+      if (undoHistory.length === 0) return;
+      const last = undoHistory.pop();
+      try {
+        if (db.sessions[last.activeSession]) {
+          db.sessions[last.activeSession] = JSON.parse(last.snapshot);
+        }
+        if (last.duoTeams) {
+          db.duoTeams = JSON.parse(last.duoTeams);
+        }
+        simpanDB();
+        renderPokedexTables();
+        tambahLog('UNDO ↩', `Mengembalikan: ${last.label}`);
+      } catch (_) {}
+      updateUndoButtonUI();
+    }
 
     let activeQuickIdx = null;
     let activeColorIdx = null;
@@ -4417,15 +4506,13 @@
         const p = getSeat(i);
         const filled = hasPlayerContent(p);
         let rankLabel = isDuo ? `${(i % 2) + 1}` : `#${i + 1}`;
-        if (!isDuo && filled) {
-          if (i === 0) rankLabel = '🥇';
-          else if (i === 1) rankLabel = '🥈';
-          else if (i === 2) rankLabel = '🥉';
+        if (!isDuo && filled && i === 0) {
+          rankLabel = `<svg width="11" height="11" viewBox="0 0 24 24" fill="#92400e" aria-hidden="true"><path d="M3 18h18v2H3v-2zm0-2L5 7l5 4 2-6 2 6 5-4 2 9H3z"/></svg>1`;
         }
 
         const tr = document.createElement('tr');
         tr.id = `row-kursi-${i}`;
-        if (!filled && !isHost) tr.classList.add('is-empty-row');
+        if (!filled) tr.classList.add('is-empty-row');
 
         if (!isDuo) {
           if (i === 0 && filled) tr.classList.add('is-rank-1');
@@ -5289,6 +5376,7 @@
       tutupQuickPoint();
       const p = getSeat(idx);
       if (!p) return;
+      simpanSnapshotUndo(`Poin ${p.nick || p.user || `Kursi ${idx + 1}`}`);
       const is2x = Boolean(typeof isDoublePointActive !== 'undefined' && isDoublePointActive && delta > 0);
       const effectiveDelta = is2x ? delta * 2 : delta;
       const awal = p.poin || 0;
@@ -5311,6 +5399,7 @@
       tutupQuickPoint();
       const p = getSeat(idx);
       if (!p) return;
+      simpanSnapshotUndo(`Set total ${p.nick || p.user || `Kursi ${idx + 1}`}`);
       const awal = p.poin || 0;
       p.poin = val;
       const selisih = val - awal;
@@ -6059,6 +6148,23 @@
         const offTxt = off.length ? ` | ⛔ Diabaikan: ${off.join(', ')}` : '';
         prev.textContent = `✅ Dihitung: ${aktifTxt}${offTxt} | Bonus: ${bonusTxt}`;
       }
+      updateSpecialFishBadge();
+    }
+
+    function updateSpecialFishBadge() {
+      const el = document.getElementById('specialFishBadge');
+      if (!el) return;
+      const nama = String(autoConfig.rules.khususNama || '').trim();
+      const pts = parseRuleNum(autoConfig.rules.khususBase, 0);
+      if (nama && pts > 0) {
+        const cleanList = nama.split(',').map(s => s.trim()).filter(Boolean).join(', ');
+        el.textContent = `⭐ KHUSUS: ${cleanList} (+${pts})`;
+        el.title = `Target Ikan Khusus: ${cleanList} (+${pts} Poin)`;
+        el.classList.add('show');
+      } else {
+        el.textContent = '';
+        el.classList.remove('show');
+      }
     }
 
     function toggleTierAktif(tierKey) {
@@ -6513,6 +6619,7 @@
       }
 
       const p = getSeat(seatIdx);
+      simpanSnapshotUndo(`Auto ${p.nick || p.user || rawUser} (${fullFish})`);
       const is2x = Boolean(typeof isDoublePointActive !== 'undefined' && isDoublePointActive);
       const finalPoin = is2x ? kalkulasi.poin * 2 : kalkulasi.poin;
       const finalRincian = is2x ? `${kalkulasi.rincian} ×2` : kalkulasi.rincian;
@@ -6658,6 +6765,7 @@
         };
       } catch (_) {}
       updateAutoModeUI();
+      updateSpecialFishBadge();
       if (autoConfig.enabled) {
         mulaiKoneksiAuto();
       }
@@ -6670,7 +6778,8 @@
     let timerConfig = {
       durationSec: 15 * 60, // default 15:00
       soundEnabled: true,
-      autoDoubleLast2Min: false
+      autoDoubleLast2Min: false,
+      autoPodiumOnEnd: false
     };
     let timerRemainingSec = 15 * 60;
     let timerRunning = false;
@@ -6695,6 +6804,9 @@
           if (typeof parsed.autoDoubleLast2Min === 'boolean') {
             timerConfig.autoDoubleLast2Min = parsed.autoDoubleLast2Min;
           }
+          if (typeof parsed.autoPodiumOnEnd === 'boolean') {
+            timerConfig.autoPodiumOnEnd = parsed.autoPodiumOnEnd;
+          }
         }
       } catch (_) {}
       timerRemainingSec = timerConfig.durationSec;
@@ -6705,6 +6817,8 @@
       if (chk) timerConfig.soundEnabled = Boolean(chk.checked);
       const chk2x = document.getElementById('chkAutoDouble2Min');
       if (chk2x) timerConfig.autoDoubleLast2Min = Boolean(chk2x.checked);
+      const chkPod = document.getElementById('chkAutoPodiumEnd');
+      if (chkPod) timerConfig.autoPodiumOnEnd = Boolean(chkPod.checked);
       try { localStorage.setItem(TIMER_CONFIG_KEY, JSON.stringify(timerConfig)); } catch (_) {}
     }
 
@@ -6779,13 +6893,13 @@
 
       capsule.classList.remove('is-running', 'is-warn', 'is-critical', 'is-timeup', 'is-double-point');
       btn.classList.toggle('paused-active', timerRunning);
-      btn.textContent = timerRunning ? '⏸ Jeda' : '▶ Mulai';
+      btn.innerHTML = timerRunning ? '<span>⏸</span><span>Jeda</span>' : '<span>▶</span><span>Mulai</span>';
       btn.title = timerRunning ? 'Jeda Timer' : 'Mulai Timer';
 
       const btn2x = document.getElementById('btnDoublePoint');
       if (btn2x) {
         btn2x.classList.toggle('active', isDoublePointActive);
-        btn2x.textContent = isDoublePointActive ? '🔥 2x ON' : '🔥 2x';
+        btn2x.innerHTML = isDoublePointActive ? '<span>🔥</span><span>2x ON</span>' : '<span>🔥</span><span>2x</span>';
       }
       if (isDoublePointActive && sec > 0) {
         capsule.classList.add('is-double-point');
@@ -6847,6 +6961,9 @@
         renderTimerUI();
         putarSuaraWaktuHabis();
         tambahLog('TIMER ⏱️', 'WAKTU HABIS (00:00)!');
+        if (timerConfig.autoPodiumOnEnd) {
+          setTimeout(() => tampilkanPodium(), 1100);
+        }
         return;
       }
 
@@ -6910,6 +7027,8 @@
         document.getElementById('chkTimerSound').checked = Boolean(timerConfig.soundEnabled);
         const chk2x = document.getElementById('chkAutoDouble2Min');
         if (chk2x) chk2x.checked = Boolean(timerConfig.autoDoubleLast2Min);
+        const chkPod = document.getElementById('chkAutoPodiumEnd');
+        if (chkPod) chkPod.checked = Boolean(timerConfig.autoPodiumOnEnd);
         pop.classList.add('show');
         if (wrap) wrap.classList.add('popover-open');
       }
@@ -6964,6 +7083,11 @@
 
     window.addEventListener('click', () => tutupSemuaPopupKecil());
     window.addEventListener('keydown', e => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName)) {
+        e.preventDefault();
+        jalankanUndoTerakhir();
+        return;
+      }
       if (e.key === 'Escape') {
         tutupModalEditKursi();
         tutupModalReset();
