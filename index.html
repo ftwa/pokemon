@@ -815,62 +815,109 @@
     .auto-toggle-pill.active::after {
       transform: translateX(22px);
     }
-    .auto-rules-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
-    }
-    .auto-bonus-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
-    }
-    .auto-tier-card {
-      background: #ffffff;
+    .auto-matrix-wrap {
       border: 1.5px solid #cbd5e1;
-      border-radius: 9px;
-      padding: 6px 7px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      transition: all 0.16s ease;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #ffffff;
     }
-    .auto-tier-card.is-off {
-      background: #f1f5f9;
-      border-color: #e2e8f0;
-      opacity: 0.62;
-    }
-    .auto-tier-head {
-      display: flex;
+    .auto-matrix-head,
+    .auto-matrix-row {
+      display: grid;
+      grid-template-columns: 126px repeat(4, minmax(0, 1fr));
       align-items: center;
-      justify-content: space-between;
-      gap: 4px;
-      cursor: pointer;
+      gap: 6px;
+      padding: 6px 8px;
     }
-    .auto-tier-name {
-      font-size: 10px;
+    .auto-matrix-head {
+      background: #f1f5f9;
+      border-bottom: 1.5px solid #cbd5e1;
+      font-size: 9.5px;
+      font-weight: 900;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.45px;
+      text-align: center;
+    }
+    .auto-matrix-head > span:first-child {
+      text-align: left;
+      padding-left: 2px;
+    }
+    .auto-matrix-row {
+      border-bottom: 1px solid #e2e8f0;
+      transition: background 0.14s ease, opacity 0.14s ease;
+    }
+    .auto-matrix-row:last-child {
+      border-bottom: none;
+    }
+    .auto-matrix-row.tier-legend { background: #fffdf5; }
+    .auto-matrix-row.tier-mitos { background: #fffafa; }
+    .auto-matrix-row.tier-secret { background: #f8fcff; }
+    .auto-matrix-row.tier-forgotten { background: #fcfaff; }
+    .auto-matrix-row.tier-khusus { background: #fefce8; border-top: 1.5px dashed #f59e0b; }
+    .auto-matrix-row.is-off {
+      background: #f1f5f9 !important;
+      opacity: 0.58;
+    }
+    .auto-matrix-tier-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
       font-weight: 900;
       text-transform: uppercase;
       letter-spacing: 0.3px;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
+      cursor: pointer;
+      user-select: none;
+      margin: 0;
     }
-    .auto-tier-card input[type="number"] {
+    .auto-matrix-tier-label input[type="checkbox"] {
+      width: 14px;
+      height: 14px;
+      margin: 0;
+      cursor: pointer;
+      accent-color: #0284c7;
+      flex-shrink: 0;
+    }
+    .auto-matrix-row.is-off .auto-matrix-tier-label span {
+      text-decoration: line-through;
+      color: #94a3b8 !important;
+    }
+    .auto-matrix-input {
       width: 100%;
-      padding: 4px 6px;
+      min-width: 0;
+      padding: 4px 4px;
       border-radius: 6px;
       border: 1.5px solid #cbd5e1;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 900;
       color: #0f172a;
-      background: #f8fafc;
+      background: #ffffff;
       text-align: center;
+      transition: border-color 0.14s ease, background 0.14s ease, color 0.14s ease;
     }
-    .auto-tier-card.is-off input[type="number"] {
+    .auto-matrix-input:focus {
+      outline: none;
+      border-color: #0284c7;
+      box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.15);
+    }
+    .auto-matrix-input.is-zero {
+      color: #94a3b8;
+      background: #f1f5f9;
+      border-color: #e2e8f0;
+    }
+    .auto-matrix-row.is-off .auto-matrix-input {
       color: #94a3b8;
       background: #e2e8f0;
+      border-color: #cbd5e1;
+      cursor: not-allowed;
+    }
+    .auto-matrix-note {
+      font-size: 10.5px;
+      color: #475569;
+      line-height: 1.38;
+      margin-top: 2px;
     }
     .auto-rules-preview {
       font-size: 11px;
@@ -880,7 +927,7 @@
       border: 1px solid #e2e8f0;
       border-radius: 8px;
       padding: 6px 9px;
-      line-height: 1.4;
+      line-height: 1.42;
     }
     .auto-preset-strip {
       display: flex;
@@ -903,34 +950,6 @@
       background: #e0f2fe;
       border-color: #0284c7;
       color: #0369a1;
-    }
-    .auto-rule-cell {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      padding: 6px;
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-    .auto-rule-cell label {
-      font-size: 10px;
-      font-weight: 800;
-      color: #475569;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-    }
-    .auto-rule-cell input {
-      width: 100%;
-      padding: 4px 6px;
-      border-radius: 6px;
-      border: 1px solid #cbd5e1;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
-      font-weight: 800;
-      color: #0f172a;
-      background: #ffffff;
-      text-align: center;
     }
     .auto-feed-box {
       max-height: 112px;
@@ -4200,7 +4219,7 @@
 
   <!-- MODAL MODE AUTO-SKOR ROBLOX (PURE LOCAL 0MS BRIDGE) -->
   <div class="modal-overlay" id="modalAutoSkor" onclick="if(event.target.id==='modalAutoSkor')tutupModalAuto()">
-    <div class="modal-box-px" style="width: 540px; max-height: 92vh; overflow-y: auto;">
+    <div class="modal-box-px" style="width: 560px; max-width: 95vw; max-height: 92vh; overflow-y: auto;">
       <button class="btn-close-hud" onclick="tutupModalAuto()">✕</button>
       <div class="modal-head-px">
         <span class="modal-sub-px">PURE LOCAL 0MS BRIDGE • 127.0.0.1:18420</span>
@@ -4235,56 +4254,62 @@
         </div>
       </div>
 
-      <!-- MATRIX POIN OTOMATIS (LEBIH MUDAH & AKURAT) -->
+      <!-- POINT MATRIKS BONUS PER TIER -->
       <div class="hud-field">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px;">
-          <label class="px-label">Tier yang Dihitung (Centang / Isi 0 = Diabaikan)</label>
+          <label class="px-label">📊 Point Matriks Bonus per Tier (Centang = Aktif • 0 = Diabaikan)</label>
         </div>
         <div class="auto-preset-strip">
-          <button type="button" class="auto-preset-chip" onclick="terapkanPresetAturanAuto('all')">⚡ Semua Tier</button>
+          <button type="button" class="auto-preset-chip" onclick="terapkanPresetAturanAuto('all')">⚡ Standar Matriks</button>
+          <button type="button" class="auto-preset-chip" onclick="terapkanPresetAturanAuto('legend_var_only')">✨ Legend Mutasi/Shiny Saja</button>
           <button type="button" class="auto-preset-chip" onclick="terapkanPresetAturanAuto('no_legend')">🔥 Tanpa Legend (Mitos+)</button>
           <button type="button" class="auto-preset-chip" onclick="terapkanPresetAturanAuto('secret_only')">💎 Secret+ Saja</button>
         </div>
-        <div class="auto-rules-grid">
-          <div class="auto-tier-card" id="cardTierForgotten">
-            <label class="auto-tier-head">
-              <span class="auto-tier-name" style="color:#7e22ce;">Forgotten</span>
-              <input type="checkbox" id="chkTierForgotten" checked onchange="toggleTierAktif('forgotten')" />
-            </label>
-            <input type="number" id="ruleForgotten" min="0" value="4" oninput="simpanPengaturanAuto()" />
+        <div class="auto-matrix-wrap">
+          <div class="auto-matrix-head">
+            <span>Tier</span>
+            <span>Dasar</span>
+            <span>+ Big</span>
+            <span>+ Shiny</span>
+            <span>+ Mutasi</span>
           </div>
-          <div class="auto-tier-card" id="cardTierSecret">
-            <label class="auto-tier-head">
-              <span class="auto-tier-name" style="color:#0284c7;">Secret</span>
-              <input type="checkbox" id="chkTierSecret" checked onchange="toggleTierAktif('secret')" />
-            </label>
-            <input type="number" id="ruleSecret" min="0" value="3" oninput="simpanPengaturanAuto()" />
+          <div class="auto-matrix-row tier-legend" id="rowMxLegend">
+            <label class="auto-matrix-tier-label"><input type="checkbox" id="chkMxLegend" checked onchange="toggleTierAktif('legend')" /><span style="color:#d97706;">Legend</span></label>
+            <input type="number" class="auto-matrix-input" id="mx_legend_base" min="0" max="999" value="1" oninput="simpanPengaturanAuto()" />
+            <input type="number" class="auto-matrix-input" id="mx_legend_big" min="0" max="999" value="1" oninput="simpanPengaturanAuto()" />
+            <input type="number" class="auto-matrix-input" id="mx_legend_shiny" min="0" max="999" value="1" oninput="simpanPengaturanAuto()" />
+            <input type="number" class="auto-matrix-input" id="mx_legend_mutasi" min="0" max="999" value="1" oninput="simpanPengaturanAuto()" />
           </div>
-          <div class="auto-tier-card" id="cardTierMitos">
-            <label class="auto-tier-head">
-              <span class="auto-tier-name" style="color:#dc2626;">Mitos</span>
-              <input type="checkbox" id="chkTierMitos" checked onchange="toggleTierAktif('mitos')" />
-            </label>
-            <input type="number" id="ruleMitos" min="0" value="2" oninput="simpanPengaturanAuto()" />
+          <div class="auto-matrix-row tier-mitos" id="rowMxMitos">
+            <label class="auto-matrix-tier-label"><input type="checkbox" id="chkMxMitos" checked onchange="toggleTierAktif('mitos')" /><span style="color:#dc2626;">Mitos</span></label>
+            <input type="number" class="auto-matrix-input" id="mx_mitos_base" min="0" max="999" value="2" oninput="simpanPengaturanAuto()" />
+            <input type="number" class="auto-matrix-input" id="mx_mitos_big" min="0" max="999" value="1" oninput="simpanPengaturanAuto()" />
+            <input type="number" class="auto-matrix-input" id="mx_mitos_shiny" min="0" max="999" value="1" oninput="simpanPengaturanAuto()" />
+            <input type="number" class="auto-matrix-input" id="mx_mitos_mutasi" min="0" max="999" value="2" oninput="simpanPengaturanAuto()" />
           </div>
-          <div class="auto-tier-card" id="cardTierLegend">
-            <label class="auto-tier-head">
-              <span class="auto-tier-name" style="color:#d97706;">Legend</span>
-              <input type="checkbox" id="chkTierLegend" checked onchange="toggleTierAktif('legend')" />
-            </label>
-            <input type="number" id="ruleLegend" min="0" value="1" oninput="simpanPengaturanAuto()" />
+          <div class="auto-matrix-row tier-secret" id="rowMxSecret">
+            <label class="auto-matrix-tier-label"><input type="checkbox" id="chkMxSecret" checked onchange="toggleTierAktif('secret')" /><span style="color:#0284c7;">Secret</span></label>
+            <input type="number" class="auto-matrix-input" id="mx_secret_base" min="0" max="999" value="5" oninput="simpanPengaturanAuto()" />
+            <input type="number" class="auto-matrix-input" id="mx_secret_big" min="0" max="999" value="2" oninput="simpanPengaturanAuto()" />
+            <input type="number" class="auto-matrix-input" id="mx_secret_shiny" min="0" max="999" value="2" oninput="simpanPengaturanAuto()" />
+            <input type="number" class="auto-matrix-input" id="mx_secret_mutasi" min="0" max="999" value="3" oninput="simpanPengaturanAuto()" />
+          </div>
+          <div class="auto-matrix-row tier-forgotten" id="rowMxForgotten">
+            <label class="auto-matrix-tier-label"><input type="checkbox" id="chkMxForgotten" checked onchange="toggleTierAktif('forgotten')" /><span style="color:#7e22ce;">Forgotten</span></label>
+            <input type="number" class="auto-matrix-input" id="mx_forgotten_base" min="0" max="999" value="10" oninput="simpanPengaturanAuto()" />
+            <input type="number" class="auto-matrix-input" id="mx_forgotten_big" min="0" max="999" value="3" oninput="simpanPengaturanAuto()" />
+            <input type="number" class="auto-matrix-input" id="mx_forgotten_shiny" min="0" max="999" value="4" oninput="simpanPengaturanAuto()" />
+            <input type="number" class="auto-matrix-input" id="mx_forgotten_mutasi" min="0" max="999" value="5" oninput="simpanPengaturanAuto()" />
+          </div>
+          <div class="auto-matrix-row tier-khusus" id="rowMxKhusus">
+            <label class="auto-matrix-tier-label"><input type="checkbox" id="chkMxKhusus" checked onchange="toggleTierAktif('khusus')" /><span style="color:#b45309;">⭐ Khusus</span></label>
+            <input type="number" class="auto-matrix-input" id="mx_khusus_base" min="0" max="999" value="5" oninput="simpanPengaturanAuto()" />
+            <input type="number" class="auto-matrix-input" id="mx_khusus_big" min="0" max="999" value="2" oninput="simpanPengaturanAuto()" />
+            <input type="number" class="auto-matrix-input" id="mx_khusus_shiny" min="0" max="999" value="2" oninput="simpanPengaturanAuto()" />
+            <input type="number" class="auto-matrix-input" id="mx_khusus_mutasi" min="0" max="999" value="3" oninput="simpanPengaturanAuto()" />
           </div>
         </div>
-      </div>
-
-      <div class="hud-field">
-        <label class="px-label">Bonus Tambahan (Hanya untuk Tier Aktif) &amp; Poin Khusus</label>
-        <div class="auto-bonus-grid">
-          <div class="auto-rule-cell"><label>+ Big</label><input type="number" id="ruleBig" min="0" value="1" oninput="simpanPengaturanAuto()" /></div>
-          <div class="auto-rule-cell"><label>+ Shiny</label><input type="number" id="ruleShiny" min="0" value="1" oninput="simpanPengaturanAuto()" /></div>
-          <div class="auto-rule-cell"><label>+ Mutasi</label><input type="number" id="ruleMutasi" min="0" value="1" oninput="simpanPengaturanAuto()" /></div>
-          <div class="auto-rule-cell"><label>Ikan Khusus</label><input type="number" id="ruleKhususBase" min="0" value="5" oninput="simpanPengaturanAuto()" /></div>
-        </div>
+        <div class="auto-matrix-note">💡 Poin = <b>Dasar</b> + bonus yang kena. Jika <b>Dasar = 0</b> tapi <b>+Mutasi = 1</b>, ikan normal diabaikan &amp; ikan Mutasi tetap masuk <b>+1</b>.</div>
         <div class="auto-rules-preview" id="autoRulesPreview"></div>
       </div>
 
@@ -6498,6 +6523,20 @@
        13. MODE AUTO-SKOR ENGINE (PURE NTFY.SH SSE + BROADCAST)
        ========================================================================= */
     const AUTO_CONFIG_KEY = 'pokedex_auto_config_v1';
+    const POINT_MATRIX_TIERS = [
+      { key: 'legend',    label: 'Legend',    rowId: 'rowMxLegend',    chkId: 'chkMxLegend' },
+      { key: 'mitos',     label: 'Mitos',     rowId: 'rowMxMitos',     chkId: 'chkMxMitos' },
+      { key: 'secret',    label: 'Secret',    rowId: 'rowMxSecret',    chkId: 'chkMxSecret' },
+      { key: 'forgotten', label: 'Forgotten', rowId: 'rowMxForgotten', chkId: 'chkMxForgotten' },
+      { key: 'khusus',    label: 'Khusus',    rowId: 'rowMxKhusus',    chkId: 'chkMxKhusus' }
+    ];
+    const DEFAULT_POINT_MATRIX = {
+      legend:    { enabled: true, base: 1,  big: 1, shiny: 1, mutasi: 1 },
+      mitos:     { enabled: true, base: 2,  big: 1, shiny: 1, mutasi: 2 },
+      secret:    { enabled: true, base: 5,  big: 2, shiny: 2, mutasi: 3 },
+      forgotten: { enabled: true, base: 10, big: 3, shiny: 4, mutasi: 5 },
+      khusus:    { enabled: true, base: 5,  big: 2, shiny: 2, mutasi: 3 }
+    };
     const DEFAULT_AUTO_CONFIG = {
       enabled: false,
       topic: 'pokedex_auto_skor_live_bus_v1',
@@ -6506,18 +6545,8 @@
       autoSort: true,
       notifMode: 'hybrid', // 'hybrid' | 'tcg' | 'mini'
       rules: {
-        forgotten: 4,
-        secret: 3,
-        mitos: 2,
-        legend: 1,
-        big: 1,
-        shiny: 1,
-        mutasi: 1,
         khususNama: '',
-        khususBase: 5,
-        khususBig: 2,
-        khususShiny: 2,
-        khususMutasi: 3
+        matrix: JSON.parse(JSON.stringify(DEFAULT_POINT_MATRIX))
       }
     };
 
@@ -6536,18 +6565,50 @@
     const processedAutoIds = new Set();
     const processedAutoKeys = new Map();
 
+    function cloneDefaultMatrix() {
+      return JSON.parse(JSON.stringify(DEFAULT_POINT_MATRIX));
+    }
+
+    function normalizePointMatrix(rawMatrix) {
+      const out = cloneDefaultMatrix();
+      if (!rawMatrix || typeof rawMatrix !== 'object') return out;
+      POINT_MATRIX_TIERS.forEach(({ key }) => {
+        const src = rawMatrix[key];
+        if (src && typeof src === 'object') {
+          out[key] = {
+            enabled: src.enabled !== false,
+            base: parseRuleNum(src.base, out[key].base),
+            big: parseRuleNum(src.big, out[key].big),
+            shiny: parseRuleNum(src.shiny, out[key].shiny),
+            mutasi: parseRuleNum(src.mutasi, out[key].mutasi)
+          };
+        }
+      });
+      return out;
+    }
+
     function muatPengaturanAuto() {
       try {
         const raw = localStorage.getItem(AUTO_CONFIG_KEY);
         if (raw) {
           const parsed = JSON.parse(raw);
+          const savedRules = parsed.rules || {};
           autoConfig = {
             ...DEFAULT_AUTO_CONFIG,
             ...parsed,
-            rules: { ...DEFAULT_AUTO_CONFIG.rules, ...(parsed.rules || {}) }
+            rules: {
+              khususNama: String(savedRules.khususNama || '').trim(),
+              matrix: normalizePointMatrix(savedRules.matrix)
+            }
           };
         }
       } catch (_) {}
+      if (!autoConfig.rules || !autoConfig.rules.matrix) {
+        autoConfig.rules = {
+          khususNama: String(autoConfig.rules?.khususNama || '').trim(),
+          matrix: cloneDefaultMatrix()
+        };
+      }
       autoConfig.topic = sanitizeAutoTopic(autoConfig.topic);
     }
 
@@ -6604,41 +6665,78 @@
       return Number.isFinite(n) && n >= 0 ? Math.floor(n) : fallback;
     }
 
-    function renderAutoRulesVisual() {
-      const r = autoConfig.rules;
-      const tiers = [
-        { key: 'forgotten', label: 'Forgotten', card: 'cardTierForgotten', chk: 'chkTierForgotten', inp: 'ruleForgotten' },
-        { key: 'secret',    label: 'Secret',    card: 'cardTierSecret',    chk: 'chkTierSecret',    inp: 'ruleSecret' },
-        { key: 'mitos',     label: 'Mitos',     card: 'cardTierMitos',     chk: 'chkTierMitos',     inp: 'ruleMitos' },
-        { key: 'legend',    label: 'Legend',    card: 'cardTierLegend',    chk: 'chkTierLegend',    inp: 'ruleLegend' }
-      ];
+    function getMatrixRow(tierKey) {
+      const m = (autoConfig.rules && autoConfig.rules.matrix) ? autoConfig.rules.matrix : DEFAULT_POINT_MATRIX;
+      const def = DEFAULT_POINT_MATRIX[tierKey] || { enabled: false, base: 0, big: 0, shiny: 0, mutasi: 0 };
+      const raw = m[tierKey];
+      if (!raw || typeof raw !== 'object') return { ...def };
+      return {
+        enabled: raw.enabled !== false,
+        base: parseRuleNum(raw.base, 0),
+        big: parseRuleNum(raw.big, 0),
+        shiny: parseRuleNum(raw.shiny, 0),
+        mutasi: parseRuleNum(raw.mutasi, 0)
+      };
+    }
 
+    function syncMatrixInputsFromConfig() {
+      POINT_MATRIX_TIERS.forEach(({ key, chkId }) => {
+        const row = getMatrixRow(key);
+        const chk = document.getElementById(chkId);
+        if (chk) chk.checked = row.enabled;
+        ['base', 'big', 'shiny', 'mutasi'].forEach(col => {
+          const inp = document.getElementById(`mx_${key}_${col}`);
+          if (inp) inp.value = row[col];
+        });
+      });
+    }
+
+    function renderAutoRulesVisual() {
       const aktif = [];
       const off = [];
-      tiers.forEach(t => {
-        const val = parseRuleNum(r[t.key], 0);
-        const isOn = val > 0;
-        const cardEl = document.getElementById(t.card);
-        const chkEl = document.getElementById(t.chk);
-        if (cardEl) cardEl.classList.toggle('is-off', !isOn);
-        if (chkEl) chkEl.checked = isOn;
-        if (isOn) aktif.push(`${t.label} (+${val})`);
-        else off.push(t.label);
+
+      POINT_MATRIX_TIERS.forEach(t => {
+        const row = getMatrixRow(t.key);
+        const maxPts = row.base + row.big + row.shiny + row.mutasi;
+        const isRowActive = row.enabled && maxPts > 0;
+        const rowEl = document.getElementById(t.rowId);
+        const chkEl = document.getElementById(t.chkId);
+        if (rowEl) rowEl.classList.toggle('is-off', !row.enabled || maxPts <= 0);
+        if (chkEl) chkEl.checked = row.enabled;
+
+        ['base', 'big', 'shiny', 'mutasi'].forEach(col => {
+          const inp = document.getElementById(`mx_${t.key}_${col}`);
+          if (inp) {
+            inp.disabled = !row.enabled;
+            inp.classList.toggle('is-zero', row[col] <= 0);
+          }
+        });
+
+        if (t.key === 'khusus') return;
+        if (!isRowActive) {
+          off.push(t.label);
+        } else if (row.base > 0) {
+          aktif.push(maxPts > row.base ? `${t.label} (${row.base}–${maxPts})` : `${t.label} (+${row.base})`);
+        } else {
+          const bList = [];
+          if (row.big > 0) bList.push(`Big +${row.big}`);
+          if (row.shiny > 0) bList.push(`Shiny +${row.shiny}`);
+          if (row.mutasi > 0) bList.push(`Mutasi +${row.mutasi}`);
+          aktif.push(`${t.label} (${bList.join('/')} saja)`);
+        }
       });
 
       const prev = document.getElementById('autoRulesPreview');
       if (prev) {
-        const bBig = parseRuleNum(r.big, 0);
-        const bShiny = parseRuleNum(r.shiny, 0);
-        const bMut = parseRuleNum(r.mutasi, 0);
-        const bonusTxt = [
-          bBig > 0 ? `Big +${bBig}` : '',
-          bShiny > 0 ? `Shiny +${bShiny}` : '',
-          bMut > 0 ? `Mutasi +${bMut}` : ''
-        ].filter(Boolean).join(', ') || 'Tanpa bonus';
         const aktifTxt = aktif.length ? aktif.join(' • ') : 'Tidak ada';
         const offTxt = off.length ? ` | ⛔ Diabaikan: ${off.join(', ')}` : '';
-        prev.textContent = `✅ Dihitung: ${aktifTxt}${offTxt} | Bonus: ${bonusTxt}`;
+        const kRow = getMatrixRow('khusus');
+        const kNama = String(autoConfig.rules?.khususNama || '').trim();
+        const kMax = kRow.base + kRow.big + kRow.shiny + kRow.mutasi;
+        const khususTxt = (kNama && kRow.enabled && kMax > 0)
+          ? ` | ⭐ Khusus (${kRow.base > 0 ? `${kRow.base}–${kMax}` : `bonus ≤${kMax}`})`
+          : '';
+        prev.textContent = `✅ Aktif: ${aktifTxt}${offTxt}${khususTxt}`;
       }
       updateSpecialFishBadge();
     }
@@ -6646,12 +6744,14 @@
     function updateSpecialFishBadge() {
       const el = document.getElementById('specialFishBadge');
       if (!el) return;
-      const nama = String(autoConfig.rules.khususNama || '').trim();
-      const pts = parseRuleNum(autoConfig.rules.khususBase, 0);
-      if (nama && pts > 0) {
+      const nama = String(autoConfig.rules?.khususNama || '').trim();
+      const kRow = getMatrixRow('khusus');
+      const kMax = kRow.base + kRow.big + kRow.shiny + kRow.mutasi;
+      if (nama && kRow.enabled && kMax > 0) {
         const cleanList = nama.split(',').map(s => s.trim()).filter(Boolean).join(', ');
-        el.textContent = `⭐ KHUSUS: ${cleanList} (+${pts})`;
-        el.title = `Target Ikan Khusus: ${cleanList} (+${pts} Poin)`;
+        const tagPts = kRow.base > 0 ? `+${kRow.base}` : `Bonus`;
+        el.textContent = `⭐ KHUSUS: ${cleanList} (${tagPts})`;
+        el.title = `Target Ikan Khusus: ${cleanList} (Dasar ${kRow.base}, +Big ${kRow.big}, +Shiny ${kRow.shiny}, +Mutasi ${kRow.mutasi})`;
         el.classList.add('show');
       } else {
         el.textContent = '';
@@ -6660,31 +6760,38 @@
     }
 
     function toggleTierAktif(tierKey) {
-      const defaultMap = { forgotten: 4, secret: 3, mitos: 2, legend: 1 };
-      const inpMap = { forgotten: 'ruleForgotten', secret: 'ruleSecret', mitos: 'ruleMitos', legend: 'ruleLegend' };
-      const chkMap = { forgotten: 'chkTierForgotten', secret: 'chkTierSecret', mitos: 'chkTierMitos', legend: 'chkTierLegend' };
-      const chk = document.getElementById(chkMap[tierKey]);
-      const inp = document.getElementById(inpMap[tierKey]);
-      if (!chk || !inp) return;
-      if (!chk.checked) {
-        inp.value = 0;
-      } else if (parseRuleNum(inp.value, 0) === 0) {
-        inp.value = defaultMap[tierKey] || 1;
+      const meta = POINT_MATRIX_TIERS.find(t => t.key === tierKey);
+      if (!meta) return;
+      const chk = document.getElementById(meta.chkId);
+      if (!chk) return;
+      const row = getMatrixRow(tierKey);
+      row.enabled = Boolean(chk.checked);
+      if (row.enabled && (row.base + row.big + row.shiny + row.mutasi) === 0) {
+        const def = DEFAULT_POINT_MATRIX[tierKey];
+        if (def) {
+          row.base = def.base;
+          row.big = def.big;
+          row.shiny = def.shiny;
+          row.mutasi = def.mutasi;
+        }
       }
+      autoConfig.rules.matrix[tierKey] = row;
+      syncMatrixInputsFromConfig();
       simpanPengaturanAuto();
     }
 
     function terapkanPresetAturanAuto(preset) {
-      const vals = preset === 'no_legend'
-        ? { forgotten: 4, secret: 3, mitos: 2, legend: 0 }
-        : preset === 'secret_only'
-          ? { forgotten: 4, secret: 3, mitos: 0, legend: 0 }
-          : { forgotten: 4, secret: 3, mitos: 2, legend: 1 };
-
-      document.getElementById('ruleForgotten').value = vals.forgotten;
-      document.getElementById('ruleSecret').value = vals.secret;
-      document.getElementById('ruleMitos').value = vals.mitos;
-      document.getElementById('ruleLegend').value = vals.legend;
+      const m = cloneDefaultMatrix();
+      if (preset === 'legend_var_only') {
+        m.legend = { enabled: true, base: 0, big: 0, shiny: 1, mutasi: 1 };
+      } else if (preset === 'no_legend') {
+        m.legend.enabled = false;
+      } else if (preset === 'secret_only') {
+        m.legend.enabled = false;
+        m.mitos.enabled = false;
+      }
+      autoConfig.rules.matrix = m;
+      syncMatrixInputsFromConfig();
       simpanPengaturanAuto(true);
     }
 
@@ -6694,14 +6801,7 @@
       if (chkTimer) chkTimer.checked = Boolean(autoConfig.requireTimerRunning);
       document.getElementById('chkAutoFillSeat').checked = Boolean(autoConfig.autoFillSeat);
       document.getElementById('chkAutoSortRank').checked = Boolean(autoConfig.autoSort);
-      document.getElementById('ruleForgotten').value = parseRuleNum(autoConfig.rules.forgotten, 4);
-      document.getElementById('ruleSecret').value = parseRuleNum(autoConfig.rules.secret, 3);
-      document.getElementById('ruleMitos').value = parseRuleNum(autoConfig.rules.mitos, 2);
-      document.getElementById('ruleLegend').value = parseRuleNum(autoConfig.rules.legend, 1);
-      document.getElementById('ruleBig').value = parseRuleNum(autoConfig.rules.big, 1);
-      document.getElementById('ruleShiny').value = parseRuleNum(autoConfig.rules.shiny, 1);
-      document.getElementById('ruleMutasi').value = parseRuleNum(autoConfig.rules.mutasi, 1);
-      document.getElementById('ruleKhususBase').value = parseRuleNum(autoConfig.rules.khususBase, 5);
+      syncMatrixInputsFromConfig();
       document.getElementById('inputIkanKhusus').value = autoConfig.rules.khususNama || '';
       document.getElementById('autoActionStatus').textContent = '';
       updateNotifModeButtonsUI();
@@ -6744,20 +6844,23 @@
       autoConfig.autoFillSeat = Boolean(document.getElementById('chkAutoFillSeat').checked);
       autoConfig.autoSort = Boolean(document.getElementById('chkAutoSortRank').checked);
 
-      autoConfig.rules.forgotten = parseRuleNum(document.getElementById('ruleForgotten').value, 0);
-      autoConfig.rules.secret = parseRuleNum(document.getElementById('ruleSecret').value, 0);
-      autoConfig.rules.mitos = parseRuleNum(document.getElementById('ruleMitos').value, 0);
-      autoConfig.rules.legend = parseRuleNum(document.getElementById('ruleLegend').value, 0);
-      autoConfig.rules.big = parseRuleNum(document.getElementById('ruleBig').value, 0);
-      autoConfig.rules.shiny = parseRuleNum(document.getElementById('ruleShiny').value, 0);
-      autoConfig.rules.mutasi = parseRuleNum(document.getElementById('ruleMutasi').value, 0);
-      autoConfig.rules.khususBase = parseRuleNum(document.getElementById('ruleKhususBase').value, 0);
+      if (!autoConfig.rules.matrix) autoConfig.rules.matrix = cloneDefaultMatrix();
+      POINT_MATRIX_TIERS.forEach(({ key, chkId }) => {
+        const chk = document.getElementById(chkId);
+        autoConfig.rules.matrix[key] = {
+          enabled: chk ? Boolean(chk.checked) : true,
+          base: parseRuleNum(document.getElementById(`mx_${key}_base`)?.value, 0),
+          big: parseRuleNum(document.getElementById(`mx_${key}_big`)?.value, 0),
+          shiny: parseRuleNum(document.getElementById(`mx_${key}_shiny`)?.value, 0),
+          mutasi: parseRuleNum(document.getElementById(`mx_${key}_mutasi`)?.value, 0)
+        };
+      });
       autoConfig.rules.khususNama = String(document.getElementById('inputIkanKhusus').value || '').trim();
 
       simpanConfigAutoStorage();
       renderAutoRulesVisual();
       if (showSavedMsg) {
-        document.getElementById('autoActionStatus').textContent = '✅ Aturan poin berhasil diterapkan!';
+        document.getElementById('autoActionStatus').textContent = '✅ Point Matriks berhasil diterapkan!';
       }
       updateAutoModeUI();
     }
@@ -7143,11 +7246,45 @@
       return 'NORMAL';
     }
 
+    function hitungDariBarisMatriks(row, labelKategori, hasBig, hasShiny, hasMutasi) {
+      if (!row || !row.enabled) {
+        return { poin: 0, rincian: `Tier ${labelKategori} dinonaktifkan`, kategori: labelKategori, valid: false };
+      }
+      let total = 0;
+      const rincian = [];
+      const prefix = labelKategori.toLowerCase();
+
+      if (row.base > 0) {
+        total += row.base;
+        rincian.push(`${prefix} +${row.base}`);
+      }
+      if (hasBig && row.big > 0) {
+        total += row.big;
+        rincian.push(rincian.length > 0 ? `big +${row.big}` : `${prefix} big +${row.big}`);
+      }
+      if (hasShiny && row.shiny > 0) {
+        total += row.shiny;
+        rincian.push(rincian.length > 0 ? `shiny +${row.shiny}` : `${prefix} shiny +${row.shiny}`);
+      }
+      if (hasMutasi && row.mutasi > 0) {
+        total += row.mutasi;
+        rincian.push(rincian.length > 0 ? `mutasi +${row.mutasi}` : `${prefix} mutasi +${row.mutasi}`);
+      }
+
+      if (total <= 0) {
+        const alasan = (row.big > 0 || row.shiny > 0 || row.mutasi > 0)
+          ? `${labelKategori} normal diabaikan (Dasar 0)`
+          : `Tier ${labelKategori} bernilai 0`;
+        return { poin: 0, rincian: alasan, kategori: labelKategori, valid: false };
+      }
+      return { poin: total, rincian: rincian.join(', '), kategori: labelKategori, valid: true };
+    }
+
     function hitungPoinAutoClient(tierStr, namaIkan, varianStr) {
       const tierClean = String(tierStr || '').toLowerCase().trim();
       const namaClean = String(namaIkan || '').toLowerCase().trim();
       const varianClean = String(varianStr || '').toLowerCase().trim();
-      const rules = autoConfig.rules;
+      const rules = autoConfig.rules || {};
 
       const targetKhusus = String(rules.khususNama || '').toLowerCase().trim();
       let isKhusus = false;
@@ -7160,27 +7297,14 @@
       const teksCek = `${namaIkan} ${varianStr}`.toUpperCase();
       const bukanMutasi = ['none', '-', 'no', 'normal', '', 'shiny', 'big'];
       const varianTokens = varianClean.split(',').map(v => v.trim()).filter(v => v && !bukanMutasi.includes(v));
+      const hasBig = /\bBIG\b/.test(teksCek);
+      const hasShiny = /\bSHINY\b/.test(teksCek);
+      const hasMutasi = varianTokens.length > 0;
 
-      if (isKhusus || tierClean.includes('khusus') || tierClean.includes('special')) {
-        const base = parseRuleNum(rules.khususBase, 0);
-        if (base <= 0) {
-          return { poin: 0, rincian: 'Ikan khusus nonaktif (0)', kategori: 'KHUSUS', valid: false };
-        }
-        let total = base;
-        const rincian = [`khusus +${base}`];
-        if (/\bBIG\b/.test(teksCek)) {
-          const b = parseRuleNum(rules.big, 0);
-          if (b > 0) { total += b; rincian.push(`big +${b}`); }
-        }
-        if (/\bSHINY\b/.test(teksCek)) {
-          const s = parseRuleNum(rules.shiny, 0);
-          if (s > 0) { total += s; rincian.push(`shiny +${s}`); }
-        }
-        if (varianTokens.length > 0) {
-          const m = parseRuleNum(rules.mutasi, 0);
-          if (m > 0) { total += m; rincian.push(`mutasi +${m}`); }
-        }
-        return { poin: total, rincian: rincian.join(', '), kategori: 'KHUSUS', valid: true };
+      const isExplicitKhususTier = tierClean.includes('khusus') || tierClean.includes('special');
+      const khususRow = getMatrixRow('khusus');
+      if (isExplicitKhususTier || (isKhusus && khususRow.enabled)) {
+        return hitungDariBarisMatriks(khususRow, 'KHUSUS', hasBig, hasShiny, hasMutasi);
       }
 
       // PRIORITAS 1: Cek database resmi 419 ikan Fish It dulu agar tier ikan seperti
@@ -7200,35 +7324,14 @@
         return { poin: 0, rincian: 'Bukan tier turnamen', kategori: 'NORMAL', valid: false };
       }
 
-      const mapDasar = {
-        FORGOTTEN: parseRuleNum(rules.forgotten, 0),
-        SECRET: parseRuleNum(rules.secret, 0),
-        MITOS: parseRuleNum(rules.mitos, 0),
-        LEGEND: parseRuleNum(rules.legend, 0)
+      const keyMap = {
+        FORGOTTEN: 'forgotten',
+        SECRET: 'secret',
+        MITOS: 'mitos',
+        LEGEND: 'legend'
       };
-      const basePoint = mapDasar[kategori];
-
-      // Jika tier diset 0 / dinonaktifkan, abaikan total (termasuk bonus Big/Shiny/Mutasi!)
-      if (basePoint <= 0) {
-        return { poin: 0, rincian: `Tier ${kategori} dinonaktifkan (0)`, kategori, valid: false };
-      }
-
-      let total = basePoint;
-      const rincian = [`${kategori.toLowerCase()} +${basePoint}`];
-
-      if (/\bBIG\b/.test(teksCek)) {
-        const b = parseRuleNum(rules.big, 0);
-        if (b > 0) { total += b; rincian.push(`big +${b}`); }
-      }
-      if (/\bSHINY\b/.test(teksCek)) {
-        const s = parseRuleNum(rules.shiny, 0);
-        if (s > 0) { total += s; rincian.push(`shiny +${s}`); }
-      }
-      if (varianTokens.length > 0) {
-        const m = parseRuleNum(rules.mutasi, 0);
-        if (m > 0) { total += m; rincian.push(`mutasi +${m}`); }
-      }
-      return { poin: total, rincian: rincian.join(', '), kategori, valid: true };
+      const row = getMatrixRow(keyMap[kategori]);
+      return hitungDariBarisMatriks(row, kategori, hasBig, hasShiny, hasMutasi);
     }
 
     async function lengkapiAvatarPemainAuto(seatObj, username, userId) {
@@ -7570,19 +7673,23 @@
       recentCatchTimestamps.length = 0;
 
       const demoCatches = [
-        { seat: seatFor(0), delta: 4, fish: 'Megalodon',        varTxt: 'Shiny ',  tier: 'SECRET', rincian: 'secret +3, shiny +1',  delay: 0 },
-        { seat: seatFor(1), delta: 2, fish: 'Plasma Shark',     varTxt: 'Big ',    tier: 'LEGEND', rincian: 'legend +1, big +1',    delay: 140 },
-        { seat: seatFor(2), delta: 3, fish: 'Cactus Spearfish', varTxt: 'Big ',    tier: 'MITOS',  rincian: 'mitos +2, big +1',     delay: 280 },
-        { seat: seatFor(3), delta: 2, fish: 'Dotted Stingray',  varTxt: 'FROZEN ', tier: 'LEGEND', rincian: 'legend +1, mutasi +1', delay: 420 }
+        { seat: seatFor(0), fish: 'Megalodon',        variant: 'Shiny',  varTxt: 'Shiny ',  tier: 'SECRET', hasBig: false, hasShiny: true,  hasMutasi: false, delay: 0 },
+        { seat: seatFor(1), fish: 'Plasma Shark',     variant: 'Big',    varTxt: 'Big ',    tier: 'LEGEND', hasBig: true,  hasShiny: false, hasMutasi: false, delay: 140 },
+        { seat: seatFor(2), fish: 'Cactus Spearfish', variant: 'Big',    varTxt: 'Big ',    tier: 'MITOS',  hasBig: true,  hasShiny: false, hasMutasi: false, delay: 280 },
+        { seat: seatFor(3), fish: 'Dotted Stingray',  variant: 'FROZEN', varTxt: 'FROZEN ', tier: 'LEGEND', hasBig: false, hasShiny: false, hasMutasi: true,  delay: 420 }
       ];
 
-      // Pastikan kursi demo punya nama sementara hanya di tampilan jika kursi kosong (tanpa ubah DB)
+      // Hitung poin demo langsung mengikuti Point Matriks aktif (tanpa ubah DB / poin asli!)
       demoCatches.forEach(item => {
         setTimeout(() => {
+          const liveCalc = hitungPoinAutoClient(item.tier, item.fish, item.variant);
+          const calc = (liveCalc && liveCalc.valid && liveCalc.poin > 0)
+            ? liveCalc
+            : hitungDariBarisMatriks(DEFAULT_POINT_MATRIX[item.tier.toLowerCase()], item.tier, item.hasBig, item.hasShiny, item.hasMutasi);
           const info = cariInfoIkanDb(item.fish);
-          const meta = info ? { ...info, kategori: item.tier } : null;
-          const lbl = `🎣 ${item.tier} • ${item.varTxt}${item.fish}`;
-          kirimNotifTangkapan(item.seat, item.delta, lbl, item.rincian, meta, item.tier);
+          const meta = info ? { ...info, kategori: calc.kategori } : null;
+          const lbl = `🎣 ${calc.kategori} • ${item.varTxt}${item.fish}`;
+          kirimNotifTangkapan(item.seat, calc.poin, lbl, calc.rincian, meta, calc.kategori);
         }, item.delay);
       });
       tambahLog('DEMO 🔥', `Preview banjir 4 tangkapan (${(autoConfig.notifMode || 'hybrid').toUpperCase()}) di layar depan (poin asli tidak diubah).`);
