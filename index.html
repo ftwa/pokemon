@@ -5490,7 +5490,7 @@
     let isTcgToastPlaying = false;
     let tcgQueueGapTimer = null;
     const recentCatchTimestamps = [];
-    const activeMiniToasts = new Map(); // playerKey -> { el, count, totalDelta, timer, updatedAt }
+    const activeMiniTimers = new WeakMap();
 
     function hitungPrioritasNotif(kategori = '', isDouble = false) {
       const k = String(kategori || '').toUpperCase();
@@ -5522,61 +5522,16 @@
       const isDouble = Boolean(typeof isDoublePointActive !== 'undefined' && isDoublePointActive && deltaPoin > 0);
       const accent = warnaTierMini(kategori, isDouble);
       const nama = p.nick || p.user || p.robloxUser || (seatIdx === 19 ? 'HOST' : `Kursi ${seatIdx + 1}`);
-      const playerKey = String(p.id || nama.toLowerCase());
-      const now = Date.now();
       const fishTitle = String(labelAtas || '').replace(/^🎣\s*/, '');
       const fishImg = fishMeta && fishMeta.img ? fishMeta.img : '';
 
-      // Smart Combo Merge: gabungkan tangkapan beruntun pemain yang sama dalam 3 detik!
-      const existing = activeMiniToasts.get(playerKey);
-      if (existing && existing.el && existing.el.isConnected && (now - existing.updatedAt) < 3200) {
-        clearTimeout(existing.timer);
-        existing.count += 1;
-        existing.totalDelta += deltaPoin;
-        existing.deltas.push(deltaPoin);
-        existing.updatedAt = now;
-
-        const ptsEl = existing.el.querySelector('.mini-catch-pts');
-        const comboEl = existing.el.querySelector('.mini-catch-combo');
-        const fishEl = existing.el.querySelector('.mini-catch-fishname');
-        const subEl = existing.el.querySelector('.mini-catch-sub');
-        const imgEl = existing.el.querySelector('.mini-catch-fish');
-        if (ptsEl) ptsEl.textContent = `${existing.totalDelta >= 0 ? '+' : ''}${existing.totalDelta}`;
-        if (comboEl) {
-          comboEl.textContent = `×${existing.count} COMBO`;
-          comboEl.style.display = 'inline-block';
-        }
-        if (fishEl) fishEl.textContent = fishTitle;
-        const rincianCombo = existing.deltas.slice(-4).map(d => (d >= 0 ? `+${d}` : `${d}`)).join(' ');
-        if (subEl) subEl.textContent = `${existing.count} ikan (${rincianCombo}) • Total: ${p.poin || 0} Pts`;
-        if (imgEl && fishImg) imgEl.src = fishImg;
-
-        existing.el.style.setProperty('--mc-accent', accent);
-        existing.el.classList.remove('is-combo-pop', 'is-leaving');
-        void existing.el.offsetWidth;
-        existing.el.classList.add('is-combo-pop');
-
-        if (deltaPoin > 0) putarSuaraNotifPoin();
-        existing.timer = setTimeout(() => {
-          existing.el.classList.add('is-leaving');
-          setTimeout(() => {
-            existing.el.remove();
-            if (activeMiniToasts.get(playerKey) === existing) activeMiniToasts.delete(playerKey);
-          }, 260);
-        }, 3200);
-        return;
-      }
-
+      // 1 tangkapan = 1 kartu individual (tanpa combo merge agar selalu jelas & tidak membingungkan penonton)
       // Batasi maksimal 4 kartu mini aktif bersamaan agar sudut layar tetap lega
       while (stack.children.length >= 4) {
         const oldest = stack.firstElementChild;
         if (!oldest) break;
-        const oldKey = oldest.dataset.playerKey;
-        const oldRec = oldKey && activeMiniToasts.get(oldKey);
-        if (oldRec) {
-          clearTimeout(oldRec.timer);
-          activeMiniToasts.delete(oldKey);
-        }
+        const oldTimer = activeMiniTimers.get(oldest);
+        if (oldTimer) clearTimeout(oldTimer);
         oldest.remove();
       }
 
@@ -5590,14 +5545,12 @@
 
       const card = document.createElement('div');
       card.className = 'mini-catch-card';
-      card.dataset.playerKey = playerKey;
       card.style.setProperty('--mc-accent', accent);
       card.innerHTML = `
         ${avHtml}
         <div class="mini-catch-body">
           <div class="mini-catch-top">
             <span class="mini-catch-player">${escapeHtml(nama)}</span>
-            <span class="mini-catch-combo" style="display:none;">×1</span>
           </div>
           <div class="mini-catch-fishname">${escapeHtml(fishTitle)}</div>
           <div class="mini-catch-sub">${escapeHtml((extraDetail ? extraDetail + ' • ' : '') + `Total: ${p.poin || 0} Pts`)}</div>
@@ -5609,15 +5562,11 @@
 
       if (deltaPoin > 0) putarSuaraNotifPoin();
 
-      const rec = { el: card, count: 1, totalDelta: deltaPoin, deltas: [deltaPoin], updatedAt: now, timer: null };
-      rec.timer = setTimeout(() => {
+      const timer = setTimeout(() => {
         card.classList.add('is-leaving');
-        setTimeout(() => {
-          card.remove();
-          if (activeMiniToasts.get(playerKey) === rec) activeMiniToasts.delete(playerKey);
-        }, 260);
+        setTimeout(() => card.remove(), 260);
       }, 3200);
-      activeMiniToasts.set(playerKey, rec);
+      activeMiniTimers.set(card, timer);
     }
 
     function kirimNotifTangkapan(seatIdx, deltaPoin, labelAtas, extraDetail = '', fishMeta = null, kategori = '') {
@@ -7623,9 +7572,8 @@
       const demoCatches = [
         { seat: seatFor(0), delta: 4, fish: 'Megalodon',        varTxt: 'Shiny ',  tier: 'SECRET', rincian: 'secret +3, shiny +1',  delay: 0 },
         { seat: seatFor(1), delta: 2, fish: 'Plasma Shark',     varTxt: 'Big ',    tier: 'LEGEND', rincian: 'legend +1, big +1',    delay: 140 },
-        { seat: seatFor(2), delta: 3, fish: 'Magma Shark',      varTxt: 'ALBINO ', tier: 'MITOS',  rincian: 'mitos +2, mutasi +1',  delay: 260 },
-        { seat: seatFor(2), delta: 3, fish: 'Cactus Spearfish', varTxt: 'Big ',    tier: 'MITOS',  rincian: 'mitos +2, big +1',     delay: 420 },
-        { seat: seatFor(3), delta: 2, fish: 'Dotted Stingray',  varTxt: 'FROZEN ', tier: 'LEGEND', rincian: 'legend +1, mutasi +1', delay: 560 }
+        { seat: seatFor(2), delta: 3, fish: 'Cactus Spearfish', varTxt: 'Big ',    tier: 'MITOS',  rincian: 'mitos +2, big +1',     delay: 280 },
+        { seat: seatFor(3), delta: 2, fish: 'Dotted Stingray',  varTxt: 'FROZEN ', tier: 'LEGEND', rincian: 'legend +1, mutasi +1', delay: 420 }
       ];
 
       // Pastikan kursi demo punya nama sementara hanya di tampilan jika kursi kosong (tanpa ubah DB)
@@ -7637,7 +7585,7 @@
           kirimNotifTangkapan(item.seat, item.delta, lbl, item.rincian, meta, item.tier);
         }, item.delay);
       });
-      tambahLog('DEMO 🔥', `Preview banjir 5 tangkapan (${(autoConfig.notifMode || 'hybrid').toUpperCase()}) di layar depan (poin asli tidak diubah).`);
+      tambahLog('DEMO 🔥', `Preview banjir 4 tangkapan (${(autoConfig.notifMode || 'hybrid').toUpperCase()}) di layar depan (poin asli tidak diubah).`);
     }
 
     function inisialisasiModeAuto() {
