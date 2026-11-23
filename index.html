@@ -5533,6 +5533,7 @@
         clearTimeout(existing.timer);
         existing.count += 1;
         existing.totalDelta += deltaPoin;
+        existing.deltas.push(deltaPoin);
         existing.updatedAt = now;
 
         const ptsEl = existing.el.querySelector('.mini-catch-pts');
@@ -5546,7 +5547,8 @@
           comboEl.style.display = 'inline-block';
         }
         if (fishEl) fishEl.textContent = fishTitle;
-        if (subEl) subEl.textContent = `${extraDetail ? extraDetail + ' • ' : ''}Total: ${p.poin || 0} Pts`;
+        const rincianCombo = existing.deltas.slice(-4).map(d => (d >= 0 ? `+${d}` : `${d}`)).join(' ');
+        if (subEl) subEl.textContent = `${existing.count} ikan (${rincianCombo}) • Total: ${p.poin || 0} Pts`;
         if (imgEl && fishImg) imgEl.src = fishImg;
 
         existing.el.style.setProperty('--mc-accent', accent);
@@ -5607,7 +5609,7 @@
 
       if (deltaPoin > 0) putarSuaraNotifPoin();
 
-      const rec = { el: card, count: 1, totalDelta: deltaPoin, updatedAt: now, timer: null };
+      const rec = { el: card, count: 1, totalDelta: deltaPoin, deltas: [deltaPoin], updatedAt: now, timer: null };
       rec.timer = setTimeout(() => {
         card.classList.add('is-leaving');
         setTimeout(() => {
@@ -7201,8 +7203,9 @@
       const targetKhusus = String(rules.khususNama || '').toLowerCase().trim();
       let isKhusus = false;
       if (targetKhusus && namaClean) {
+        const escK = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         const list = targetKhusus.split(',').map(s => s.trim()).filter(Boolean);
-        if (list.some(k => namaClean.includes(k))) isKhusus = true;
+        if (list.some(k => new RegExp(`(?:^|[^a-z0-9])${escK(k)}(?:$|[^a-z0-9])`).test(namaClean))) isKhusus = true;
       }
 
       const teksCek = `${namaIkan} ${varianStr}`.toUpperCase();
@@ -7410,7 +7413,7 @@
 
       const dedupKey = `${rawUser.toLowerCase()}|${rawFish.toLowerCase()}|${rawVariant.toLowerCase()}|${rawTier.toLowerCase()}`;
       const now = Date.now();
-      if (processedAutoKeys.has(dedupKey) && (now - processedAutoKeys.get(dedupKey)) < 2000) return;
+      if (processedAutoKeys.has(dedupKey) && (now - processedAutoKeys.get(dedupKey)) < 600) return;
 
       if (evtId) {
         processedAutoIds.add(evtId);

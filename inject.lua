@@ -268,7 +268,7 @@ local function sendCatchToLocal(player, fish, variant, tier, displayName, userId
     local mainDisplay = tostring(displayName or player)
     local catchKey = string.format("%s_%s_%s_%s", mainDisplay, tostring(fish), tostring(variant), tostring(tier))
     local now = tick()
-    if processedCatchHash[catchKey] and (now - processedCatchHash[catchKey]) < 1.8 then
+    if processedCatchHash[catchKey] and (now - processedCatchHash[catchKey]) < 0.6 then
         return
     end
     processedCatchHash[catchKey] = now
