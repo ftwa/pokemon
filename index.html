@@ -2872,6 +2872,167 @@
     .fish-cat-info { min-width: 0; flex: 1; line-height: 1.2; }
     .fish-cat-name { font-size: 11px; font-weight: 800; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .fish-cat-sub { font-size: 9.5px; color: #0e7490; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* HYBRID MINI CATCH STACK (POJOK KANAN BAWAH — ANTI HALANG TABEL SAAT RAMAI) */
+    .mini-catch-stack {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      z-index: 24500;
+      width: 318px;
+      max-width: calc(100vw - 24px);
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 8px;
+      pointer-events: none;
+    }
+    .mini-catch-card {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 8px 10px 8px 11px;
+      border-radius: 13px;
+      background: rgba(255, 255, 255, 0.94);
+      border: 1.5px solid #cbd5e1;
+      border-left: 5px solid var(--mc-accent, #0284c7);
+      box-shadow: 0 10px 26px rgba(15, 23, 42, 0.22), 0 0 0 1px rgba(255, 255, 255, 0.85) inset;
+      backdrop-filter: blur(8px);
+      animation: miniCatchIn 0.28s cubic-bezier(0.2, 1.15, 0.35, 1) forwards;
+      transition: opacity 0.24s ease, transform 0.24s ease;
+    }
+    .mini-catch-card.is-leaving {
+      opacity: 0;
+      transform: translateX(36px) scale(0.95);
+    }
+    .mini-catch-card.is-combo-pop {
+      animation: miniComboPop 0.32s cubic-bezier(0.2, 1.3, 0.35, 1);
+    }
+    @keyframes miniCatchIn {
+      0%   { opacity: 0; transform: translateX(42px) scale(0.92); }
+      100% { opacity: 1; transform: translateX(0) scale(1); }
+    }
+    @keyframes miniComboPop {
+      0%   { transform: scale(1); }
+      45%  { transform: scale(1.045); box-shadow: 0 12px 30px rgba(245, 158, 11, 0.4); }
+      100% { transform: scale(1); }
+    }
+    .mini-catch-av {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--mc-accent, #0284c7);
+      background: #e2e8f0;
+      flex-shrink: 0;
+    }
+    .mini-catch-av-fb {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #0f172a;
+      color: #ffffff;
+      border: 2px solid var(--mc-accent, #0284c7);
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .mini-catch-fish {
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
+      flex-shrink: 0;
+      filter: drop-shadow(0 3px 6px rgba(15, 23, 42, 0.32));
+    }
+    .mini-catch-body {
+      min-width: 0;
+      flex: 1;
+      line-height: 1.2;
+    }
+    .mini-catch-top {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .mini-catch-player {
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 900;
+      color: #0f172a;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .mini-catch-combo {
+      flex-shrink: 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9.5px;
+      font-weight: 900;
+      color: #ffffff;
+      background: linear-gradient(135deg, #f59e0b, #ea580c);
+      padding: 1px 6px;
+      border-radius: 99px;
+      box-shadow: 0 2px 6px rgba(234, 88, 12, 0.35);
+    }
+    .mini-catch-fishname {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--mc-accent, #0369a1);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 1px;
+    }
+    .mini-catch-sub {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9.5px;
+      font-weight: 700;
+      color: #64748b;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .mini-catch-pts {
+      flex-shrink: 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 16px;
+      font-weight: 900;
+      color: #059669;
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      padding: 3px 8px;
+      border-radius: 9px;
+    }
+    .auto-notif-mode-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-top: 4px;
+    }
+    .btn-notif-mode {
+      border: 1.5px solid #cbd5e1;
+      background: #f8fafc;
+      color: #334155;
+      border-radius: 9px;
+      padding: 6px 6px;
+      font-size: 10.5px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-align: center;
+      line-height: 1.25;
+    }
+    .btn-notif-mode:hover { border-color: #38bdf8; background: #f0f9ff; }
+    .btn-notif-mode.active {
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      color: #ffffff;
+      border-color: #0284c7;
+      box-shadow: 0 3px 10px rgba(2, 132, 199, 0.28);
+    }
     .tcg-art-3d-wrap {
       position: absolute;
       inset: 0;
@@ -4064,6 +4225,16 @@
         <label><input type="checkbox" id="chkAutoSortRank" onchange="simpanPengaturanAuto()" /> Auto-Urutkan Peringkat</label>
       </div>
 
+      <!-- GAYA NOTIFIKASI SAAT RAMAI -->
+      <div class="hud-field">
+        <label class="px-label">Gaya Notifikasi Tangkapan (Anti-Menumpuk Saat Ramai)</label>
+        <div class="auto-notif-mode-row">
+          <button type="button" class="btn-notif-mode" id="btnNotifModeHybrid" onclick="pilihModeNotifAuto('hybrid')">⚡ Hybrid Cerdas<br/><span style="font-size:9px; font-weight:600; opacity:0.85;">Sepi TCG • Ramai Mini</span></button>
+          <button type="button" class="btn-notif-mode" id="btnNotifModeTcg" onclick="pilihModeNotifAuto('tcg')">🃏 Selalu Kartu TCG<br/><span style="font-size:9px; font-weight:600; opacity:0.85;">Antrean Prioritas</span></button>
+          <button type="button" class="btn-notif-mode" id="btnNotifModeMini" onclick="pilihModeNotifAuto('mini')">📌 Mini Pojok Saja<br/><span style="font-size:9px; font-weight:600; opacity:0.85;">0% Halangi Tabel</span></button>
+        </div>
+      </div>
+
       <!-- MATRIX POIN OTOMATIS (LEBIH MUDAH & AKURAT) -->
       <div class="hud-field">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px;">
@@ -4214,9 +4385,10 @@
     </div>
   </div>
 
-  <!-- BACKDROP & 3D HOLOGRAPHIC TCG CARD TOAST -->
+  <!-- BACKDROP & 3D HOLOGRAPHIC TCG CARD TOAST + MINI LIVE STACK -->
   <div id="tcgNotifBackdrop"></div>
   <div id="centerNotifPopup" class="tcg-toast-card" aria-live="polite"></div>
+  <div id="miniCatchStack" class="mini-catch-stack" aria-live="polite"></div>
 
   <script>
     /* =========================================================================
@@ -4487,6 +4659,15 @@
       return idx === 19 ? data.host : data.players[idx];
     }
 
+    function escapeHtml(str) {
+      return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
     function hasPlayerContent(p) {
       return Boolean(p && ((p.user && p.user.trim()) || (p.nick && p.nick.trim()) || (p.robloxUser && p.robloxUser.trim())));
     }
@@ -4495,6 +4676,7 @@
        2. WEB AUDIO SYNTH & CUSTOM AUDIO MODULE
        ========================================================================= */
     let audioCtx = null;
+    let lastPoinSoundAt = 0;
     function getAudioCtx() {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -4518,7 +4700,10 @@
       } catch (_) {}
     }
 
-    function putarSuaraNotifPoin() {
+    function putarSuaraNotifPoin(forcePlay = false) {
+      const now = Date.now();
+      if (!forcePlay && (now - lastPoinSoundAt) < 350) return;
+      lastPoinSoundAt = now;
       if (customAudioPoin) {
         try {
           const a = new Audio(customAudioPoin);
@@ -4685,9 +4870,9 @@
           tr.classList.add(`tag-${p.colorTag}`);
         }
 
-        const initial = (p.nick || p.user || p.robloxUser || (isHost ? 'H' : '-')).charAt(0).toUpperCase();
+        const initial = escapeHtml((p.nick || p.user || p.robloxUser || (isHost ? 'H' : '-')).charAt(0).toUpperCase());
         const avatarHtml = p.avatar
-          ? `<img class="avatar-mini" src="${p.avatar}" alt="" loading="lazy" onerror="this.outerHTML='<div class=\\'avatar-placeholder\\'>${initial}</div>'" />`
+          ? `<img class="avatar-mini" src="${escapeHtml(p.avatar)}" alt="" loading="lazy" onerror="this.outerHTML='<div class=\\'avatar-placeholder\\'>${initial}</div>'" />`
           : `<div class="avatar-placeholder">${isHost ? 'H' : initial}</div>`;
 
         const namaPemainText = isHost ? (p.user || 'HOST') : (p.user || '(Kosong)');
@@ -4706,8 +4891,8 @@
             <div class="player-cell-flex">
               ${
                 inlineEditingSeatIdx === i
-                  ? `<input type="text" class="inline-name-input" id="inlineNameInput_${i}" value="${(isHost ? (p.user || 'HOST') : (p.user || '')).replace(/"/g, '&quot;')}" placeholder="Ketik nama pemain..." onclick="event.stopPropagation()" onkeydown="handleInlineNameKey(${i}, event)" onblur="simpanInlineNama(${i})" />`
-                  : `<span class="name-player ${!filled && !isHost ? 'name-empty' : ''}">${namaPemainText}</span>`
+                  ? `<input type="text" class="inline-name-input" id="inlineNameInput_${i}" value="${escapeHtml(isHost ? (p.user || 'HOST') : (p.user || ''))}" placeholder="Ketik nama pemain..." onclick="event.stopPropagation()" onkeydown="handleInlineNameKey(${i}, event)" onblur="simpanInlineNama(${i})" />`
+                  : `<span class="name-player ${!filled && !isHost ? 'name-empty' : ''}">${escapeHtml(namaPemainText)}</span>`
               }
               <div class="inline-actions">${statusBtnHtml}</div>
             </div>
@@ -4716,8 +4901,8 @@
             <div class="display-cell-flex">
               ${avatarHtml}
               <div class="display-name-wrap">
-                <span class="name-display ${!p.nick && !isHost ? 'name-empty' : ''}">${displayNameText}</span>
-                ${subHandle ? `<span class="sub-handle">${subHandle}</span>` : ''}
+                <span class="name-display ${!p.nick && !isHost ? 'name-empty' : ''}">${escapeHtml(displayNameText)}</span>
+                ${subHandle ? `<span class="sub-handle">${escapeHtml(subHandle)}</span>` : ''}
               </div>
             </div>
           </td>
@@ -5256,10 +5441,11 @@
       p.avatar = head;
       p.avatar3d = body3d;
       p.userId = uid;
+      p.robloxId = uid;
       p.colorTag = col;
 
       tutupModalEditKursi();
-      if (idx === 19) {
+      if (idx === 19 && db.gameMode !== 'duo') {
         simpanDB();
         renderPokedexTables();
       } else {
@@ -5281,12 +5467,13 @@
       p.avatar3d = '';
       p.customGif = '';
       p.userId = '';
+      p.robloxId = '';
       p.poin = 0;
       p.isPaid = idx === 19;
       p.colorTag = '';
 
       tutupModalEditKursi();
-      if (idx === 19) {
+      if (idx === 19 && db.gameMode !== 'duo') {
         simpanDB();
         renderPokedexTables();
       } else {
@@ -5296,13 +5483,167 @@
     }
 
     /* =========================================================================
-       7. MODE HYBRID: SMART TOAST QUEUE — FULL TCG 3D HOLOGRAPHIC CARD
+       7. HYBRID 2-JALUR: PRIORITY TCG 3D CARD + MINI LIVE STACK (COMBO MERGE)
        ========================================================================= */
     const tcgToastQueue = [];
     let isTcgToastPlaying = false;
     let tcgQueueGapTimer = null;
+    const recentCatchTimestamps = [];
+    const activeMiniToasts = new Map(); // playerKey -> { el, count, totalDelta, timer, updatedAt }
 
-    function tampilkanToastTcg(seatIdx, deltaPoin, labelAtas = 'TAMBAH POIN', extraDetail = '', fishMeta = null) {
+    function hitungPrioritasNotif(kategori = '', isDouble = false) {
+      const k = String(kategori || '').toUpperCase();
+      let p = 1;
+      if (k === 'FORGOTTEN') p = 5;
+      else if (k === 'KHUSUS') p = 4;
+      else if (k === 'SECRET') p = 3;
+      else if (k === 'MITOS' || k === 'MYTHIC') p = 2;
+      if (isDouble) p += 0.5;
+      return p;
+    }
+
+    function warnaTierMini(kategori = '', isDouble = false) {
+      if (isDouble) return '#d97706';
+      const k = String(kategori || '').toUpperCase();
+      if (k === 'FORGOTTEN') return '#7e22ce';
+      if (k === 'KHUSUS') return '#ca8a04';
+      if (k === 'SECRET') return '#0284c7';
+      if (k === 'MITOS' || k === 'MYTHIC') return '#dc2626';
+      if (k === 'LEGEND' || k === 'LEGENDARY') return '#d97706';
+      return '#0284c7';
+    }
+
+    function tampilkanMiniCatchToast(seatIdx, deltaPoin, labelAtas = 'TAMBAH POIN', extraDetail = '', fishMeta = null, kategori = '') {
+      const stack = document.getElementById('miniCatchStack');
+      const p = getSeat(seatIdx);
+      if (!stack || !p) return;
+
+      const isDouble = Boolean(typeof isDoublePointActive !== 'undefined' && isDoublePointActive && deltaPoin > 0);
+      const accent = warnaTierMini(kategori, isDouble);
+      const nama = p.nick || p.user || p.robloxUser || (seatIdx === 19 ? 'HOST' : `Kursi ${seatIdx + 1}`);
+      const playerKey = String(p.id || nama.toLowerCase());
+      const now = Date.now();
+      const fishTitle = String(labelAtas || '').replace(/^🎣\s*/, '');
+      const fishImg = fishMeta && fishMeta.img ? fishMeta.img : '';
+
+      // Smart Combo Merge: gabungkan tangkapan beruntun pemain yang sama dalam 3 detik!
+      const existing = activeMiniToasts.get(playerKey);
+      if (existing && existing.el && existing.el.isConnected && (now - existing.updatedAt) < 3200) {
+        clearTimeout(existing.timer);
+        existing.count += 1;
+        existing.totalDelta += deltaPoin;
+        existing.updatedAt = now;
+
+        const ptsEl = existing.el.querySelector('.mini-catch-pts');
+        const comboEl = existing.el.querySelector('.mini-catch-combo');
+        const fishEl = existing.el.querySelector('.mini-catch-fishname');
+        const subEl = existing.el.querySelector('.mini-catch-sub');
+        const imgEl = existing.el.querySelector('.mini-catch-fish');
+        if (ptsEl) ptsEl.textContent = `${existing.totalDelta >= 0 ? '+' : ''}${existing.totalDelta}`;
+        if (comboEl) {
+          comboEl.textContent = `×${existing.count} COMBO`;
+          comboEl.style.display = 'inline-block';
+        }
+        if (fishEl) fishEl.textContent = fishTitle;
+        if (subEl) subEl.textContent = `${extraDetail ? extraDetail + ' • ' : ''}Total: ${p.poin || 0} Pts`;
+        if (imgEl && fishImg) imgEl.src = fishImg;
+
+        existing.el.style.setProperty('--mc-accent', accent);
+        existing.el.classList.remove('is-combo-pop', 'is-leaving');
+        void existing.el.offsetWidth;
+        existing.el.classList.add('is-combo-pop');
+
+        if (deltaPoin > 0) putarSuaraNotifPoin();
+        existing.timer = setTimeout(() => {
+          existing.el.classList.add('is-leaving');
+          setTimeout(() => {
+            existing.el.remove();
+            if (activeMiniToasts.get(playerKey) === existing) activeMiniToasts.delete(playerKey);
+          }, 260);
+        }, 3200);
+        return;
+      }
+
+      // Batasi maksimal 4 kartu mini aktif bersamaan agar sudut layar tetap lega
+      while (stack.children.length >= 4) {
+        const oldest = stack.firstElementChild;
+        if (!oldest) break;
+        const oldKey = oldest.dataset.playerKey;
+        const oldRec = oldKey && activeMiniToasts.get(oldKey);
+        if (oldRec) {
+          clearTimeout(oldRec.timer);
+          activeMiniToasts.delete(oldKey);
+        }
+        oldest.remove();
+      }
+
+      const init = escapeHtml(nama.charAt(0).toUpperCase() || '?');
+      const avHtml = p.avatar
+        ? `<img class="mini-catch-av" src="${escapeHtml(p.avatar)}" alt="" onerror="this.outerHTML='<div class=\\'mini-catch-av-fb\\'>${init}</div>'" />`
+        : `<div class="mini-catch-av-fb">${init}</div>`;
+      const fishImgHtml = fishImg
+        ? `<img class="mini-catch-fish" src="${escapeHtml(fishImg)}" alt="" onerror="this.remove()" />`
+        : '';
+
+      const card = document.createElement('div');
+      card.className = 'mini-catch-card';
+      card.dataset.playerKey = playerKey;
+      card.style.setProperty('--mc-accent', accent);
+      card.innerHTML = `
+        ${avHtml}
+        <div class="mini-catch-body">
+          <div class="mini-catch-top">
+            <span class="mini-catch-player">${escapeHtml(nama)}</span>
+            <span class="mini-catch-combo" style="display:none;">×1</span>
+          </div>
+          <div class="mini-catch-fishname">${escapeHtml(fishTitle)}</div>
+          <div class="mini-catch-sub">${escapeHtml((extraDetail ? extraDetail + ' • ' : '') + `Total: ${p.poin || 0} Pts`)}</div>
+        </div>
+        ${fishImgHtml}
+        <div class="mini-catch-pts">${deltaPoin >= 0 ? '+' : ''}${deltaPoin}</div>
+      `;
+      stack.appendChild(card);
+
+      if (deltaPoin > 0) putarSuaraNotifPoin();
+
+      const rec = { el: card, count: 1, totalDelta: deltaPoin, updatedAt: now, timer: null };
+      rec.timer = setTimeout(() => {
+        card.classList.add('is-leaving');
+        setTimeout(() => {
+          card.remove();
+          if (activeMiniToasts.get(playerKey) === rec) activeMiniToasts.delete(playerKey);
+        }, 260);
+      }, 3200);
+      activeMiniToasts.set(playerKey, rec);
+    }
+
+    function kirimNotifTangkapan(seatIdx, deltaPoin, labelAtas, extraDetail = '', fishMeta = null, kategori = '') {
+      const mode = (typeof autoConfig !== 'undefined' && autoConfig.notifMode) ? autoConfig.notifMode : 'hybrid';
+      const now = Date.now();
+      recentCatchTimestamps.push(now);
+      while (recentCatchTimestamps.length > 0 && (now - recentCatchTimestamps[0]) > 3500) {
+        recentCatchTimestamps.shift();
+      }
+
+      const isDouble = Boolean(typeof isDoublePointActive !== 'undefined' && isDoublePointActive && deltaPoin > 0);
+      const prio = hitungPrioritasNotif(kategori, isDouble);
+      const isVip = prio >= 3; // SECRET, KHUSUS, FORGOTTEN, atau 2x Clutch
+
+      if (mode === 'mini') {
+        tampilkanMiniCatchToast(seatIdx, deltaPoin, labelAtas, extraDetail, fishMeta, kategori);
+        return;
+      }
+      if (mode === 'hybrid') {
+        const sedangRamai = isTcgToastPlaying || tcgToastQueue.length > 0 || recentCatchTimestamps.length >= 3;
+        if (!isVip && sedangRamai) {
+          tampilkanMiniCatchToast(seatIdx, deltaPoin, labelAtas, extraDetail, fishMeta, kategori);
+          return;
+        }
+      }
+      tampilkanToastTcg(seatIdx, deltaPoin, labelAtas, extraDetail, fishMeta, prio);
+    }
+
+    function tampilkanToastTcg(seatIdx, deltaPoin, labelAtas = 'TAMBAH POIN', extraDetail = '', fishMeta = null, priority = 1) {
       const p = getSeat(seatIdx);
       if (!p) return;
 
@@ -5318,9 +5659,7 @@
         teamInfo = { name: t.name, color: t.color, score: (p.poin || 0) + (partner?.poin || 0) };
       }
 
-      // Simpan snapshot lengkap pemain agar antrean selalu akurat meski tabel bergeser
-      if (tcgToastQueue.length >= 12) tcgToastQueue.shift();
-      tcgToastQueue.push({
+      const newEntry = {
         seatIdx,
         isDuo,
         player: { ...p },
@@ -5330,14 +5669,31 @@
         labelAtas,
         extraDetail,
         fishMeta: fishMeta ? { ...fishMeta } : null,
+        priority,
         sessionName: db.activeSession,
         isDouble: Boolean(typeof isDoublePointActive !== 'undefined' && isDoublePointActive && deltaPoin > 0)
-      });
+      };
+
+      // Priority Queue: kartu langka (Secret/Khusus/Forgotten) menyalip kartu biasa!
+      if (tcgToastQueue.length >= 10) {
+        // Buang kartu berprioritas terendah agar tangkapan langka tidak pernah terbuang
+        let dropIdx = 0;
+        for (let i = 1; i < tcgToastQueue.length; i++) {
+          if ((tcgToastQueue[i].priority || 1) < (tcgToastQueue[dropIdx].priority || 1)) dropIdx = i;
+        }
+        tcgToastQueue.splice(dropIdx, 1);
+      }
+
+      let insertIdx = tcgToastQueue.length;
+      if (priority >= 3) {
+        insertIdx = tcgToastQueue.findIndex(q => (q.priority || 1) < priority);
+        if (insertIdx < 0) insertIdx = tcgToastQueue.length;
+      }
+      tcgToastQueue.splice(insertIdx, 0, newEntry);
 
       if (!isTcgToastPlaying) {
         prosesAntreanToastTcg();
       } else {
-        // Perbarui badge jumlah antrean secara live jika kartu sedang tampil
         const qBadge = document.getElementById('tcgQueueCounter');
         if (qBadge) qBadge.textContent = `⏳ +${tcgToastQueue.length} ANTRE`;
       }
@@ -5428,8 +5784,8 @@
         <div class="tcg-card-inner ${hasFishArt ? 'has-fish-card' : ''}">
           <div class="tcg-header">
             <div class="tcg-header-left">
-              <span class="tcg-rank-pill">${rankText}</span>
-              <span class="tcg-player-name">${nama}</span>
+              <span class="tcg-rank-pill">${escapeHtml(rankText)}</span>
+              <span class="tcg-player-name">${escapeHtml(nama)}</span>
             </div>
             <div class="tcg-hp-wrap">
               <span class="tcg-hp-label">PTS</span>
@@ -5445,17 +5801,17 @@
             </div>
           </div>
 
-          <div class="tcg-info-ribbon">${ribbonText}</div>
+          <div class="tcg-info-ribbon">${escapeHtml(ribbonText)}</div>
 
           <div class="tcg-score-panel ${hasFishArt ? 'has-fish' : ''}">
             ${fishPanelStageHtml}
-            <div class="tcg-delta-main">${tanda} POIN</div>
-            <div class="tcg-total-line">${totalText}</div>
+            <div class="tcg-delta-main">${escapeHtml(tanda)} POIN</div>
+            <div class="tcg-total-line">${escapeHtml(totalText)}</div>
           </div>
 
           <div class="tcg-footer">
             <span>bobo hu</span>
-            <span id="tcgQueueCounter">${queueText}</span>
+            <span id="tcgQueueCounter">${escapeHtml(queueText)}</span>
           </div>
         </div>
       `;
@@ -5577,7 +5933,7 @@
       const selisih = val - awal;
       if (selisih !== 0) tampilkanToastTcg(idx, selisih, 'SET TOTAL');
       simpanDB();
-      if (idx === 19) renderPokedexTables();
+      if (idx === 19 && db.gameMode !== 'duo') renderPokedexTables();
       else urutkanOtomatis(p.id, selisih);
       tambahLog(p.nick || p.user || `Kursi ${idx + 1}`, `Total poin disetel ke ${val}`);
     }
@@ -6016,8 +6372,8 @@
       const data = getActiveData();
       const allSeats = [...data.players, data.host];
       const needIds = allSeats
-        .filter(p => p && p.userId && (!p.avatar3d || p.avatar3d.includes('dicebear.com')))
-        .map(p => String(p.userId));
+        .filter(p => p && (p.userId || p.robloxId) && (!p.avatar3d || p.avatar3d.includes('dicebear.com')))
+        .map(p => String(p.userId || p.robloxId));
       const uniqueIds = [...new Set(needIds)];
       if (uniqueIds.length === 0) return;
       try {
@@ -6036,8 +6392,11 @@
         });
         let changed = false;
         allSeats.forEach(p => {
-          if (p && p.userId && urlMap[String(p.userId)]) {
-            p.avatar3d = urlMap[String(p.userId)];
+          const pid = p && (p.userId || p.robloxId);
+          if (pid && urlMap[String(pid)]) {
+            p.avatar3d = urlMap[String(pid)];
+            p.userId = String(pid);
+            p.robloxId = String(pid);
             changed = true;
           }
         });
@@ -6082,11 +6441,17 @@
       jalankanUrutanPokeballPodium();
     }
 
+    let fireworksResizeHandler = null;
+
     function tutupPodium() {
       bersihkanTimerPodium();
       document.getElementById('podiumOverlay').classList.remove('active');
       if (fireworksTimer) { clearInterval(fireworksTimer); fireworksTimer = null; }
       if (fireworksRaf) { cancelAnimationFrame(fireworksRaf); fireworksRaf = null; }
+      if (fireworksResizeHandler) {
+        window.removeEventListener('resize', fireworksResizeHandler);
+        fireworksResizeHandler = null;
+      }
       if (activePodiumAudioObj) {
         try { activePodiumAudioObj.pause(); activePodiumAudioObj.currentTime = 0; } catch (_) {}
       }
@@ -6099,8 +6464,10 @@
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
       };
+      if (fireworksResizeHandler) window.removeEventListener('resize', fireworksResizeHandler);
+      fireworksResizeHandler = resizeCanvas;
       resizeCanvas();
-      window.addEventListener('resize', resizeCanvas);
+      window.addEventListener('resize', fireworksResizeHandler);
 
       const particles = [];
       const colors = ['#facc15', '#38bdf8', '#fb923c', '#4ade80', '#f43f5e', '#a855f7', '#ffffff'];
@@ -6155,7 +6522,7 @@
       const jam = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`;
       const item = document.createElement('div');
       item.className = 'log-item';
-      item.innerHTML = `<span><b style="color:#b91c1c;">[${jam}] ${tag}:</b> ${pesan}</span>`;
+      item.innerHTML = `<span><b style="color:#b91c1c;">[${jam}] ${escapeHtml(tag)}:</b> ${escapeHtml(pesan)}</span>`;
       list.insertBefore(item, list.firstChild);
       if (list.children.length > 40) list.removeChild(list.lastChild);
     }
@@ -6185,6 +6552,7 @@
       requireTimerRunning: true,
       autoFillSeat: true,
       autoSort: true,
+      notifMode: 'hybrid', // 'hybrid' | 'tcg' | 'mini'
       rules: {
         forgotten: 4,
         secret: 3,
@@ -6384,10 +6752,33 @@
       document.getElementById('ruleKhususBase').value = parseRuleNum(autoConfig.rules.khususBase, 5);
       document.getElementById('inputIkanKhusus').value = autoConfig.rules.khususNama || '';
       document.getElementById('autoActionStatus').textContent = '';
+      updateNotifModeButtonsUI();
       renderAutoRulesVisual();
       renderAutoFeedList();
       updateAutoModeUI();
       document.getElementById('modalAutoSkor').classList.add('show');
+    }
+
+    function updateNotifModeButtonsUI() {
+      const m = autoConfig.notifMode || 'hybrid';
+      const map = { hybrid: 'btnNotifModeHybrid', tcg: 'btnNotifModeTcg', mini: 'btnNotifModeMini' };
+      Object.entries(map).forEach(([k, id]) => {
+        const el = document.getElementById(id);
+        if (el) el.classList.toggle('active', m === k);
+      });
+    }
+
+    function pilihModeNotifAuto(mode) {
+      if (!['hybrid', 'tcg', 'mini'].includes(mode)) mode = 'hybrid';
+      autoConfig.notifMode = mode;
+      simpanConfigAutoStorage();
+      updateNotifModeButtonsUI();
+      const label = mode === 'hybrid'
+        ? '⚡ Hybrid Cerdas (Sepi TCG, Ramai Mini Pojok, Secret/Forgotten tetap TCG!)'
+        : (mode === 'mini' ? '📌 Mini Pojok Saja (0% halangi tabel skor)' : '🃏 Selalu Kartu TCG (Antrean Prioritas)');
+      const status = document.getElementById('autoActionStatus');
+      if (status) status.textContent = `✅ Mode notifikasi: ${label}`;
+      tambahLog('NOTIF', `Mode notifikasi diubah ke ${mode.toUpperCase()}`);
     }
 
     function tutupModalAuto() {
@@ -6696,14 +7087,13 @@
         return;
       }
       grid.innerHTML = list.slice(0, 120).map(f => {
-        const safeName = String(f.n || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
         const sub = `🏝️ ${f.locClean}${f.o && f.o !== '-' ? ' • ' + f.o : ''}`;
         return `
-          <div class="fish-cat-card" onclick="tambahIkanKeKhusus('${safeName}')" title="Klik untuk menambah ke Target Ikan Khusus">
-            ${f.i ? `<img src="${f.i}" alt="" loading="lazy" onerror="this.style.display='none'" />` : ''}
+          <div class="fish-cat-card" data-fish-name="${escapeHtml(f.n)}" onclick="tambahIkanKeKhusus(this.dataset.fishName)" title="Klik untuk menambah ke Target Ikan Khusus">
+            ${f.i ? `<img src="${escapeHtml(f.i)}" alt="" loading="lazy" onerror="this.style.display='none'" />` : ''}
             <div class="fish-cat-info">
-              <div class="fish-cat-name">${f.n}</div>
-              <div class="fish-cat-sub">${sub}</div>
+              <div class="fish-cat-name">${escapeHtml(f.n)}</div>
+              <div class="fish-cat-sub">${escapeHtml(sub)}</div>
             </div>
           </div>`;
       }).join('');
@@ -6771,21 +7161,34 @@
         if (aliases[sub] && merged[aliases[sub]]) return buildMeta(aliases[sub], merged[aliases[sub]]);
       }
 
-      // Longest substring match agar "Shiny Big Megalodon" tetap cocok ke "megalodon"
+      // Word-boundary match agar kata 4 huruf seperti "orca"/"ruby" tidak salah cocok di tengah kata lain
+      const escRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       let bestKey = '';
       for (const k of Object.keys(merged)) {
-        if (k.length >= 4 && k0.includes(k) && k.length > bestKey.length) {
-          bestKey = k;
+        if (k.length >= 4 && k.length > bestKey.length && k0.includes(k)) {
+          const re = new RegExp(`(?:^|[^a-z0-9])${escRe(k)}(?:$|[^a-z0-9])`);
+          if (re.test(k0)) bestKey = k;
         }
       }
       if (bestKey) return buildMeta(bestKey, merged[bestKey]);
 
       for (const [ak, target] of Object.entries(aliases)) {
         if (ak.length >= 4 && k0.includes(ak) && merged[target]) {
-          return buildMeta(target, merged[target]);
+          const re = new RegExp(`(?:^|[^a-z0-9])${escRe(ak)}(?:$|[^a-z0-9])`);
+          if (re.test(k0)) return buildMeta(target, merged[target]);
         }
       }
       return null;
+    }
+
+    function mapTierKeKategori(rawTier) {
+      const s = String(rawTier || '').toLowerCase().trim();
+      if (!s) return 'NORMAL';
+      if (s.includes('forgotten')) return 'FORGOTTEN';
+      if (s.includes('secret')) return 'SECRET';
+      if (s.includes('mythic') || s.includes('mitos')) return 'MITOS';
+      if (s.includes('legend')) return 'LEGEND';
+      return 'NORMAL';
     }
 
     function hitungPoinAutoClient(tierStr, namaIkan, varianStr) {
@@ -6827,21 +7230,17 @@
         return { poin: total, rincian: rincian.join(', '), kategori: 'KHUSUS', valid: true };
       }
 
+      // PRIORITAS 1: Cek database resmi 419 ikan Fish It dulu agar tier ikan seperti
+      // Dotted Stingray (Legend 1 in 91K), Plasma Shark (Legend 1 in 225K), Blob Shark (Secret 1 in 250K),
+      // King Crab (Mitos 1 in 1.2M), Aurora Narwhal (Mitos 1 in 2K) 100% AKURAT!
       let kategori = 'NORMAL';
-      if (tierClean.includes('forgotten')) kategori = 'FORGOTTEN';
-      else if (tierClean.includes('secret')) kategori = 'SECRET';
-      else if (tierClean.includes('mythic') || tierClean.includes('mitos')) kategori = 'MITOS';
-      else if (tierClean.includes('legend')) kategori = 'LEGEND';
-
+      const dbFish = cariInfoIkanDb(namaIkan);
+      if (dbFish && dbFish.tier) {
+        kategori = mapTierKeKategori(dbFish.tier);
+      }
+      // PRIORITAS 2: Jika ikan baru belum ada di DB, gunakan tier dari inject.lua (warna RGB chat / odds)
       if (kategori === 'NORMAL') {
-        const dbFish = cariInfoIkanDb(namaIkan);
-        if (dbFish && dbFish.tier) {
-          const dt = String(dbFish.tier).toLowerCase();
-          if (dt.includes('forgotten')) kategori = 'FORGOTTEN';
-          else if (dt.includes('secret')) kategori = 'SECRET';
-          else if (dt.includes('mythic') || dt.includes('mitos')) kategori = 'MITOS';
-          else if (dt.includes('legend')) kategori = 'LEGEND';
-        }
+        kategori = mapTierKeKategori(tierClean);
       }
 
       if (kategori === 'NORMAL') {
@@ -6889,7 +7288,10 @@
             if (d.avatar) seatObj.avatar = d.avatar;
             if (d.avatar3d || d.fullBody) seatObj.avatar3d = d.avatar3d || d.fullBody;
             if (d.username) seatObj.robloxUser = d.username;
-            if (d.userId) seatObj.robloxId = d.userId;
+            if (d.userId) {
+              seatObj.robloxId = String(d.userId);
+              seatObj.userId = String(d.userId);
+            }
             if (d.displayName && (!seatObj.user || seatObj.user === username)) seatObj.user = d.displayName;
             simpanDB();
             renderPokedexTables();
@@ -6919,20 +7321,19 @@
     }
 
     function cariAtauBuatKursiPemainAuto(info) {
-      const data = getActiveData();
-      const players = data.players;
-      const maxSearch = db.gameMode === 'duo' ? 20 : 19; // slot 19 = HOST di mode solo
+      const maxSearch = db.gameMode === 'duo' ? 20 : 19; // slot 19 = HOST di mode solo, Pemain 2 DUO 10 di mode duo
 
       const candidates = [info.username, info.displayName, info.user]
         .map(s => String(s || '').trim().replace(/^@+/, '').toLowerCase())
         .filter(Boolean);
       const targetUid = Number(info.userId || 0) || 0;
 
-      // 1. Cari pemain yang sudah ada di kursi
-      for (let i = 0; i < players.length; i++) {
-        const p = players[i];
+      // 1. Cari pemain yang sudah ada di seluruh 20 kursi (termasuk slot 20 / data.host di Mode Duo!)
+      for (let i = 0; i < 20; i++) {
+        const p = getSeat(i);
         if (!hasPlayerContent(p)) continue;
-        if (targetUid && p.robloxId && Number(p.robloxId) === targetUid) return i;
+        const pUid = Number(p.userId || p.robloxId || 0) || 0;
+        if (targetUid && pUid && pUid === targetUid) return i;
         const fields = [p.robloxUser, p.user, p.nick]
           .map(s => String(s || '').trim().replace(/^@+/, '').toLowerCase())
           .filter(Boolean);
@@ -6942,14 +7343,17 @@
       // 2. Jika belum ada & Auto-Isi Kursi Kosong aktif, klaim kursi kosong pertama
       if (!autoConfig.autoFillSeat) return -1;
       for (let i = 0; i < maxSearch; i++) {
-        const p = players[i];
-        if (!hasPlayerContent(p)) {
+        const p = getSeat(i);
+        if (p && !hasPlayerContent(p)) {
           const display = info.displayName || info.user || info.username || `Pemain ${i + 1}`;
           const rbx = info.username || info.displayName || info.user || '';
           p.nick = display;
           p.user = display;
           p.robloxUser = rbx.replace(/^@+/, '');
-          if (targetUid) p.robloxId = targetUid;
+          if (targetUid) {
+            p.robloxId = String(targetUid);
+            p.userId = String(targetUid);
+          }
           p.avatar = getFallbackCharacterUrl(p.robloxUser || display);
           p.poin = 0;
           lengkapiAvatarPemainAuto(p, p.robloxUser, targetUid);
@@ -6957,6 +7361,29 @@
         }
       }
       return -1;
+    }
+
+    let autoSortDebounceTimer = null;
+    let pendingAutoSortPlayerId = null;
+    let pendingAutoSortDelta = 0;
+
+    function jadwalUrutkanAuto(playerId, deltaPoin) {
+      pendingAutoSortPlayerId = playerId;
+      pendingAutoSortDelta = deltaPoin;
+      if (autoSortDebounceTimer) return;
+      autoSortDebounceTimer = setTimeout(() => {
+        autoSortDebounceTimer = null;
+        const pid = pendingAutoSortPlayerId;
+        const dlt = pendingAutoSortDelta;
+        pendingAutoSortPlayerId = null;
+        pendingAutoSortDelta = 0;
+        if (autoConfig.autoSort) {
+          urutkanOtomatis(pid, dlt);
+        } else {
+          simpanDB();
+          renderPokedexTables();
+        }
+      }, 120);
     }
 
     function prosesEventCatchAuto(evt, isManualSim = false) {
@@ -6992,8 +7419,13 @@
         }
       }
       processedAutoKeys.set(dedupKey, now);
+      if (processedAutoKeys.size > 300) {
+        for (const [k, ts] of processedAutoKeys.entries()) {
+          if ((now - ts) > 15000) processedAutoKeys.delete(k);
+        }
+      }
 
-      // Hitung poin sesuai aturan live di Pokédex UI
+      // Hitung poin sesuai aturan live di Pokédex UI (authoritative fish_database.js -> fallback RGB tier)
       const kalkulasi = hitungPoinAutoClient(rawTier, rawFish, rawVariant);
       if (!kalkulasi.valid || kalkulasi.poin <= 0) return;
 
@@ -7027,13 +7459,10 @@
         : null;
 
       const labelAtas = `🎣 ${kalkulasi.kategori} • ${fullFish}`;
-      tampilkanToastTcg(seatIdx, finalPoin, labelAtas, finalRincian, tcgFishMeta);
+      kirimNotifTangkapan(seatIdx, finalPoin, labelAtas, finalRincian, tcgFishMeta, kalkulasi.kategori);
 
-      if (autoConfig.autoSort) {
-        urutkanOtomatis(p.id, finalPoin);
-      } else {
-        renderPokedexTables();
-      }
+      // Debounced 120ms sort agar saat 10+ pemain dapat ikan bersamaan, tabel tetap 60fps mulus!
+      jadwalUrutkanAuto(p.id, finalPoin);
 
       const jam = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
       autoCatchHistory.unshift({
@@ -7064,15 +7493,15 @@
       box.innerHTML = autoCatchHistory.slice(0, 8).map(item => `
         <div class="auto-feed-item">
           <div class="auto-feed-left">
-            ${item.fishImg ? `<img class="auto-feed-thumb" src="${item.fishImg}" alt="" onerror="this.remove();" />` : ''}
+            ${item.fishImg ? `<img class="auto-feed-thumb" src="${escapeHtml(item.fishImg)}" alt="" onerror="this.remove();" />` : ''}
             <div>
-              <b style="color:#0f172a;">${item.player}</b>
-              <span style="color:#0284c7; font-weight:700;"> ${item.fish}</span>
-              <span style="color:#64748b;"> (${item.rincian})</span>
+              <b style="color:#0f172a;">${escapeHtml(item.player)}</b>
+              <span style="color:#0284c7; font-weight:700;"> ${escapeHtml(item.fish)}</span>
+              <span style="color:#64748b;"> (${escapeHtml(item.rincian)})</span>
             </div>
           </div>
           <div style="white-space:nowrap; font-family:'JetBrains Mono',monospace; font-weight:900; color:#059669;">
-            +${item.poin} <span style="color:#94a3b8; font-weight:600; font-size:10px;">${item.time}</span>
+            +${item.poin} <span style="color:#94a3b8; font-weight:600; font-size:10px;">${escapeHtml(item.time)}</span>
           </div>
         </div>
       `).join('');

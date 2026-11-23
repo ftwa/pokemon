@@ -119,42 +119,73 @@ local PROTECTED_FISH_LIST = {
 table.sort(PROTECTED_FISH_LIST, function(a, b) return #a > #b end)
 
 -- ============================================================
--- 2. DETEKSI TIER & PEMISAH VARIAN (STRICT VALID-ONLY)
+-- 2. DETEKSI TIER (RGB + HEX SETELAH "obtained") & PEMISAH VARIAN
 -- ============================================================
-local function determineTier(rawText, cleanText)
-    local hex = rawText:match('color=["\']#?(%x%x%x%x%x%x)["\']')
-    if hex then
-        local r = tonumber(hex:sub(1, 2), 16) or 0
-        local g = tonumber(hex:sub(3, 4), 16) or 0
-        local b = tonumber(hex:sub(5, 6), 16) or 0
+local function classifyRgbColor(r, g, b)
+    -- FORGOTTEN: Ungu / Violet / Magenta terang atau Putih-Prismatik
+    if (r >= 150 and b >= 200 and g <= 155) or (r >= 225 and g >= 225 and b >= 225) then
+        return "FORGOTTEN"
+    -- SECRET: Teal / Cyan / Hijau Mint cerah (misal rgb(24, 255, 152) atau rgb(56, 220, 255))
+    elseif (g >= 170 and b >= 110 and r <= 140) or (g >= 200 and r <= 100) then
+        return "SECRET"
+    -- MYTHIC: Merah terang / Crimson (misal rgb(255, 45, 45))
+    elseif r >= 200 and g <= 100 and b <= 110 then
+        return "MYTHIC"
+    -- LEGENDARY: Oranye / Emas / Kuning (misal rgb(255, 185, 43))
+    elseif r >= 200 and g >= 120 and b <= 100 then
+        return "LEGENDARY"
+    end
+    return nil
+end
 
-        if (r > 160 and b > 200 and g < 150) or (r > 150 and b > 230) then
-            return "FORGOTTEN"
-        elseif (g > 170 and (b > 110 or r < 130)) or (r > 110 and b > 140 and g < 110) then
-            return "SECRET"
-        elseif r > 200 and g < 90 then
-            return "MYTHIC"
-        elseif r > 190 and g > 110 and b < 90 then
-            return "LEGENDARY"
+local function determineTier(rawText, cleanText)
+    -- PENTING: Hanya baca tag <font color=...> SETELAH kata "obtained"
+    -- agar warna nama pemain (misal ungu rgb(107,50,124)) TIDAK salah dibaca sebagai tier ikan!
+    local afterObtained = rawText:match("[Oo]btained(.*)") or rawText
+
+    -- 1. Cek format rgb(R, G, B) yang dipakai Fish It modern
+    for rStr, gStr, bStr in afterObtained:gmatch('color=["\']rgb%(%s*(%d+)%s*,%s*(%d+)%s*,%s*(%d+)%s*%)["\']') do
+        local tierFromRgb = classifyRgbColor(tonumber(rStr) or 0, tonumber(gStr) or 0, tonumber(bStr) or 0)
+        if tierFromRgb then
+            return tierFromRgb
         end
     end
 
+    -- 2. Cek format HEX (#RRGGBB) jika ada
+    for hex in afterObtained:gmatch('color=["\']#?(%x%x%x%x%x%x)["\']') do
+        local r = tonumber(hex:sub(1, 2), 16) or 0
+        local g = tonumber(hex:sub(3, 4), 16) or 0
+        local b = tonumber(hex:sub(5, 6), 16) or 0
+        local tierFromHex = classifyRgbColor(r, g, b)
+        if tierFromHex then
+            return tierFromHex
+        end
+    end
+
+    -- 3. Fallback berdasarkan teks odds (hanya jika tidak ada warna di chat)
     local chanceStr = cleanText:match("with%s+a%s+1%s+in%s+([%w%.,]+)%s+chance")
     if chanceStr then
         local upper = string.upper(chanceStr)
-        local rawDigits = string.gsub(chanceStr, "[^%d]", "")
-        local rawNum = tonumber(rawDigits) or 0
         local num = tonumber(string.match(upper, "[%d%.]+")) or 0
+        local effectiveNum = num
+        if string.find(upper, "M") then
+            effectiveNum = num * 1000000
+        elseif string.find(upper, "K") then
+            effectiveNum = num * 1000
+        else
+            local rawDigits = string.gsub(chanceStr, "[^%d]", "")
+            effectiveNum = tonumber(rawDigits) or num
+        end
 
-        if (string.find(upper, "M") and num >= 10) or rawNum >= 10000000 then
+        if effectiveNum >= 10000000 then
             return "FORGOTTEN"
-        elseif string.find(upper, "M") or (string.find(upper, "K") and num >= 400) or rawNum >= 400000 then
+        elseif effectiveNum >= 250000 then
             return "SECRET"
-        elseif (string.find(upper, "K") and num >= 50) or rawNum >= 50000 then
+        elseif effectiveNum >= 50000 then
             return "MYTHIC"
-        elseif (string.find(upper, "K") and num >= 5) or rawNum >= 5000 then
+        elseif effectiveNum >= 5000 then
             return "LEGENDARY"
-        elseif (string.find(upper, "K") and num >= 1) or rawNum >= 1000 then
+        elseif effectiveNum >= 1000 then
             return "RARE"
         end
     end
@@ -232,7 +263,7 @@ end
 -- ============================================================
 local function sendCatchToLocal(player, fish, variant, tier, displayName, userId)
     if not httpRequest then return end
-    if tier == "NORMAL" or tier == "RARE" then return end
+    if tier == "NORMAL" then return end
 
     local mainDisplay = tostring(displayName or player)
     local catchKey = string.format("%s_%s_%s_%s", mainDisplay, tostring(fish), tostring(variant), tostring(tier))
