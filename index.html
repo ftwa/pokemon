@@ -9584,8 +9584,10 @@
 
     function tarikPoinDariAutoSkorModal() {
       sinkronDraftDariInputModal();
-      if (typeof autoConfig === 'undefined' || !autoConfig.matrix) return;
-      const mx = autoConfig.matrix;
+      const mx = (typeof autoConfig !== 'undefined' && autoConfig.rules && autoConfig.rules.matrix)
+        ? autoConfig.rules.matrix
+        : (typeof DEFAULT_POINT_MATRIX !== 'undefined' ? DEFAULT_POINT_MATRIX : null);
+      if (!mx) return;
       const list = [];
 
       if (mx.legend && mx.legend.enabled) {
@@ -9603,9 +9605,10 @@
       if (mx.forgotten && mx.forgotten.enabled && (mx.forgotten.base || 0) > 0) {
         list.push({ label: 'FORGOTTEN', value: `+${mx.forgotten.base}`, color: 'purple' });
       }
-      if (mx.khusus && mx.khusus.enabled && autoConfig.specialFish && String(autoConfig.specialFish).trim()) {
-        const spName = String(autoConfig.specialFish).trim().toUpperCase().slice(0, 14);
-        list.push({ label: spName, value: `+${mx.khusus.base || 5}`, color: 'purple' });
+      const khususNama = String(autoConfig?.rules?.khususNama || '').trim();
+      if (mx.khusus && mx.khusus.enabled && khususNama) {
+        const spName = khususNama.split(',')[0].trim().toUpperCase().slice(0, 14);
+        if (spName) list.push({ label: spName, value: `+${mx.khusus.base || 5}`, color: 'purple' });
       }
 
       // Bonus varian diambil dari tier aktif pertama yang punya bonus
