@@ -2904,32 +2904,34 @@
     .fish-cat-name { font-size: 11px; font-weight: 800; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .fish-cat-sub { font-size: 9.5px; color: #0e7490; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    /* HYBRID MINI CATCH STACK (TENGAH-ATAS BEKAS SLOT JAM — MENGALIR KE BAWAH RAPI) */
+    /* HYBRID MINI CATCH STACK (TENGAH-ATAS — MAKS 2 KARTU BESAR & SUPER JELAS) */
     .mini-catch-stack {
       position: absolute;
       top: 4px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 235;
-      width: 336px;
+      width: 420px;
       max-width: calc(100vw - 24px);
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 8px;
       pointer-events: none;
     }
     .mini-catch-card {
       position: relative;
       display: flex;
       align-items: center;
-      gap: 9px;
-      padding: 6px 10px 6px 11px;
-      border-radius: 13px;
-      background: rgba(255, 255, 255, 0.96);
-      border: 1.5px solid #cbd5e1;
-      border-left: 5px solid var(--mc-accent, #0284c7);
-      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.22), 0 0 0 1px rgba(255, 255, 255, 0.9) inset;
-      backdrop-filter: blur(8px);
+      gap: 12px;
+      padding: 9px 13px 9px 14px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.99);
+      border: 2px solid #cbd5e1;
+      border-left: 7px solid var(--mc-accent, #0284c7);
+      box-shadow:
+        0 14px 32px rgba(15, 23, 42, 0.24),
+        0 4px 10px rgba(15, 23, 42, 0.12),
+        0 0 0 1px rgba(255, 255, 255, 0.95) inset;
       animation: miniCatchIn 0.26s cubic-bezier(0.2, 1.15, 0.35, 1) forwards;
       transition: opacity 0.22s ease, transform 0.22s ease;
     }
@@ -2950,51 +2952,51 @@
       100% { transform: scale(1); }
     }
     .mini-catch-av {
-      width: 34px;
-      height: 34px;
+      width: 46px;
+      height: 46px;
       border-radius: 50%;
       object-fit: cover;
-      border: 2px solid var(--mc-accent, #0284c7);
+      border: 2.5px solid var(--mc-accent, #0284c7);
       background: #e2e8f0;
       flex-shrink: 0;
     }
     .mini-catch-av-fb {
-      width: 34px;
-      height: 34px;
+      width: 46px;
+      height: 46px;
       border-radius: 50%;
       background: #0f172a;
       color: #ffffff;
-      border: 2px solid var(--mc-accent, #0284c7);
+      border: 2.5px solid var(--mc-accent, #0284c7);
       font-family: 'Outfit', sans-serif;
       font-weight: 900;
-      font-size: 14px;
+      font-size: 18px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
     }
     .mini-catch-fish {
-      width: 36px;
-      height: 36px;
+      width: 50px;
+      height: 50px;
       object-fit: contain;
       flex-shrink: 0;
-      filter: drop-shadow(0 3px 6px rgba(15, 23, 42, 0.32));
+      filter: drop-shadow(0 4px 7px rgba(15, 23, 42, 0.34));
     }
     .mini-catch-body {
       min-width: 0;
       flex: 1;
-      line-height: 1.2;
+      line-height: 1.22;
     }
     .mini-catch-top {
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
     }
     .mini-catch-player {
       font-family: 'Outfit', sans-serif;
-      font-size: 13px;
+      font-size: 16.5px;
       font-weight: 900;
-      color: #0f172a;
+      color: #020617;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -3002,17 +3004,17 @@
     .mini-catch-combo {
       flex-shrink: 0;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 9.5px;
+      font-size: 10.5px;
       font-weight: 900;
       color: #ffffff;
       background: linear-gradient(135deg, #f59e0b, #ea580c);
-      padding: 1px 6px;
+      padding: 1.5px 7px;
       border-radius: 99px;
       box-shadow: 0 2px 6px rgba(234, 88, 12, 0.35);
     }
     .mini-catch-fishname {
-      font-size: 11px;
-      font-weight: 800;
+      font-size: 13.5px;
+      font-weight: 900;
       color: var(--mc-accent, #0369a1);
       white-space: nowrap;
       overflow: hidden;
@@ -3021,23 +3023,25 @@
     }
     .mini-catch-sub {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 9.5px;
-      font-weight: 700;
-      color: #64748b;
+      font-size: 11.5px;
+      font-weight: 800;
+      color: #334155;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      margin-top: 1px;
     }
     .mini-catch-pts {
       flex-shrink: 0;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 16px;
+      font-size: 21px;
       font-weight: 900;
-      color: #059669;
-      background: #ecfdf5;
-      border: 1px solid #a7f3d0;
-      padding: 3px 8px;
-      border-radius: 9px;
+      color: #047857;
+      background: linear-gradient(180deg, #ecfdf5 0%, #d1fae5 100%);
+      border: 2px solid #34d399;
+      padding: 5px 12px;
+      border-radius: 12px;
+      box-shadow: 0 3px 8px rgba(16, 185, 129, 0.22);
     }
     .auto-notif-mode-row {
       display: grid;
@@ -6831,8 +6835,8 @@
       const fishImg = fishMeta && fishMeta.img ? fishMeta.img : '';
 
       // 1 tangkapan = 1 kartu individual (tanpa combo merge agar selalu jelas & tidak membingungkan penonton)
-      // Batasi maksimal 3 kartu mini aktif mengalir dari tengah-atas ke bawah agar tidak menabrak Kartu TCG di bawah
-      while (stack.children.length >= 3) {
+      // Batasi maksimal 2 kartu besar aktif dari tengah-atas ke bawah agar sangat jelas dibaca penonton live
+      while (stack.children.length >= 2) {
         const oldest = stack.lastElementChild;
         if (!oldest) break;
         const oldTimer = activeMiniTimers.get(oldest);
