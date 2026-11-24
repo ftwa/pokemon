@@ -626,7 +626,7 @@
       margin-bottom: 12px;
       border-bottom: 1.5px solid #e2e8f0;
       position: relative;
-      z-index: 80;
+      z-index: 260;
     }
 
     .top-left, .top-right {
@@ -1042,6 +1042,9 @@
     .dropdown {
       position: relative;
       display: inline-block;
+    }
+    .dropdown.show {
+      z-index: 280;
     }
 
     .dropdown-menu {
@@ -3791,26 +3794,384 @@
       gap: 10px;
       z-index: 30006;
     }
-    .btn-podium-replay {
-      background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%);
-      color: #ffffff;
-      border: 1.5px solid #fca5a5;
-      padding: 9px 20px;
-      border-radius: 99px;
-      font-family: 'Outfit', sans-serif;
-      font-size: 13px;
-      font-weight: 900;
-      letter-spacing: 0.5px;
-      cursor: pointer;
-      box-shadow: 0 6px 20px rgba(220, 38, 38, 0.45);
-      transition: transform 0.14s ease, filter 0.14s ease;
+    /* ==========================================================================
+       12. TOP THEME SWITCHER & TEMA ARENA GLOSSY 3D (TANPA DECK CONSOLE)
+       ========================================================================== */
+    .pokedex-top-right-tools {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
-    .btn-podium-replay:hover { transform: translateY(-2px); filter: brightness(1.1); }
+    .btn-theme-top {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 13px;
+      border-radius: 999px;
+      border: 1.5px solid #94a3b8;
+      background: linear-gradient(180deg, #ffffff 0%, #e2e8f0 100%);
+      color: #0f172a;
+      font-family: 'Outfit', sans-serif;
+      font-size: 11.5px;
+      font-weight: 900;
+      letter-spacing: 0.3px;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12), inset 0 1px 0 #ffffff;
+      transition: all 0.16s ease;
+      white-space: nowrap;
+    }
+    .btn-theme-top:hover {
+      border-color: #0284c7;
+      color: #0369a1;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(2, 132, 199, 0.22), inset 0 1px 0 #ffffff;
+    }
+
+    /* --- TEMA: ARENA GLOSSY 3D (CERAH, BERSIH, PILL 3D EMAS-BIRU-CORAL) --- */
+    body.theme-arena-glossy {
+      background:
+        radial-gradient(circle at 18% 12%, rgba(125, 211, 252, 0.38), transparent 46%),
+        radial-gradient(circle at 84% 16%, rgba(186, 230, 253, 0.45), transparent 48%),
+        linear-gradient(180deg, #dff3ff 0%, #eff9ff 52%, #f8fcff 100%);
+    }
+    body.theme-arena-glossy .container {
+      background: linear-gradient(180deg, #f5fbff 0%, #e8f6ff 100%);
+      border: 2px solid #bae6fd;
+      border-radius: 22px;
+      box-shadow:
+        0 20px 44px -14px rgba(14, 165, 233, 0.24),
+        inset 0 2px 1px #ffffff;
+    }
+    body.theme-arena-glossy .pokedex-accent-strip {
+      background: linear-gradient(180deg, #ffffff 0%, #eef8ff 100%);
+      border-bottom: 1.5px solid #cbe8ff;
+      border-radius: 20px 20px 0 0;
+      padding: 9px 18px;
+    }
+    body.theme-arena-glossy .pokedex-accent-strip::after,
+    body.theme-arena-glossy .pokedex-dots,
+    body.theme-arena-glossy .pokedex-lens-wrap {
+      display: none !important;
+    }
+    body.theme-arena-glossy .pokedex-brand-title {
+      font-size: 16px;
+      letter-spacing: 0.6px;
+      color: #0f172a;
+      gap: 9px;
+    }
+    body.theme-arena-glossy .pokedex-brand-tag {
+      background: linear-gradient(180deg, #7dd3fc 0%, #0284c7 100%);
+      color: #ffffff;
+      border: 1.5px solid #bae6fd;
+      padding: 2px 10px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65), 0 2px 6px rgba(2, 132, 199, 0.25);
+    }
+    body.theme-arena-glossy .btn-theme-top {
+      background: linear-gradient(180deg, #60a5fa 0%, #2563eb 60%, #1d4ed8 100%);
+      border-color: #93c5fd;
+      color: #ffffff;
+      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.55), 0 3px 10px rgba(37, 99, 235, 0.30);
+    }
+    body.theme-arena-glossy .btn-theme-top:hover {
+      filter: brightness(1.06);
+      color: #ffffff;
+    }
+
+    /* Action Bar Glossy Pills */
+    body.theme-arena-glossy .top-bar {
+      border-bottom: 1.5px solid #cbe8ff;
+    }
+    body.theme-arena-glossy .btn-px {
+      background: linear-gradient(180deg, #ffffff 0%, #e8f5ff 100%);
+      border: 1.5px solid #bae6fd;
+      color: #0f172a;
+      box-shadow: inset 0 2px 1px #ffffff, 0 3px 7px rgba(14, 165, 233, 0.14);
+    }
+    body.theme-arena-glossy .btn-px:hover {
+      border-color: #38bdf8;
+      background: linear-gradient(180deg, #ffffff 0%, #d7efff 100%);
+    }
+    body.theme-arena-glossy .btn-px-sort {
+      background: linear-gradient(180deg, #fb7185 0%, #e11d48 100%);
+      border-color: #fecdd3;
+      color: #ffffff;
+      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.45), 0 4px 10px rgba(225, 29, 72, 0.28);
+    }
+    body.theme-arena-glossy .btn-px-podium {
+      background: linear-gradient(180deg, #fde047 0%, #f59e0b 100%);
+      border-color: #fef08a;
+      color: #451a03;
+      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.65), 0 4px 10px rgba(245, 158, 11, 0.32);
+    }
+    body.theme-arena-glossy .btn-px-notif {
+      background: linear-gradient(180deg, #4ade80 0%, #16a34a 100%);
+      border-color: #bbf7d0;
+      color: #ffffff;
+      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.45), 0 4px 10px rgba(22, 163, 74, 0.28);
+    }
+
+    /* Match Timer Bar — Glossy 3D Capsule */
+    body.theme-arena-glossy .rotom-timer-capsule {
+      background: linear-gradient(180deg, #ffffff 0%, #f0f9ff 100%);
+      border: 2px solid #bae6fd;
+      border-radius: 999px;
+      padding: 8px 18px 10px;
+      box-shadow: 0 8px 20px -4px rgba(14, 165, 233, 0.20), inset 0 2px 1px #ffffff;
+    }
+    body.theme-arena-glossy .rotom-timer-capsule::before,
+    body.theme-arena-glossy .px-pokeball-mini {
+      display: none !important;
+    }
+    body.theme-arena-glossy .rotom-timer-readout {
+      background: linear-gradient(180deg, #e0f4ff 0%, #bae6fd 100%);
+      border: 2px solid #7dd3fc;
+      border-radius: 999px;
+      padding: 2px 22px;
+      color: #0f172a;
+      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.88), 0 4px 10px rgba(14, 165, 233, 0.18);
+    }
+    body.theme-arena-glossy .rotom-timer-capsule.is-double-point .rotom-timer-readout {
+      background: linear-gradient(180deg, #fef08a 0%, #fbbf24 100%);
+      border-color: #f59e0b;
+      color: #451a03;
+    }
+    body.theme-arena-glossy .special-fish-pill {
+      background: linear-gradient(180deg, #ffeb7a 0%, #fbbf24 55%, #f59e0b 100%) !important;
+      border: 1.5px solid #fef08a !important;
+      color: #451a03 !important;
+      border-radius: 999px;
+      padding: 4px 13px;
+      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.78), inset 0 -2px 0 rgba(180, 83, 9, 0.25), 0 4px 10px rgba(245, 158, 11, 0.34);
+    }
+    body.theme-arena-glossy .rotom-tbtn {
+      border-radius: 999px;
+      background: linear-gradient(180deg, #ffffff 0%, #e6f4ff 100%);
+      border: 1.5px solid #bae6fd;
+      color: #0f172a;
+      box-shadow: inset 0 2px 1px #ffffff, 0 3px 7px rgba(14, 165, 233, 0.15);
+    }
+    body.theme-arena-glossy .rotom-tbtn.btn-2x {
+      background: linear-gradient(180deg, #60a5fa 0%, #2563eb 58%, #1d4ed8 100%);
+      border-color: #93c5fd;
+      color: #ffffff;
+      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.55), inset 0 -2px 0 rgba(30, 58, 138, 0.3), 0 4px 10px rgba(37, 99, 235, 0.34);
+    }
+    body.theme-arena-glossy .rotom-tbtn.btn-2x.active {
+      background: linear-gradient(180deg, #fde047 0%, #f59e0b 58%, #ea580c 100%);
+      border-color: #fef08a;
+      color: #451a03;
+      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.75), 0 4px 14px rgba(234, 88, 12, 0.45);
+    }
+    body.theme-arena-glossy .rotom-tbtn.play {
+      background: linear-gradient(180deg, #4ade80 0%, #22c55e 58%, #16a34a 100%);
+      border-color: #bbf7d0;
+      color: #ffffff;
+      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.55), inset 0 -2px 0 rgba(21, 128, 61, 0.3), 0 4px 10px rgba(22, 163, 74, 0.34);
+    }
+    body.theme-arena-glossy .rotom-tbtn.play.paused-active {
+      background: linear-gradient(180deg, #fb923c 0%, #ea580c 100%);
+      border-color: #fed7aa;
+    }
+    body.theme-arena-glossy .rotom-timer-bar-track {
+      left: 24px;
+      right: 24px;
+      bottom: 2px;
+      border-radius: 99px;
+      background: #dbeafe;
+    }
+    body.theme-arena-glossy .rotom-timer-bar-fill {
+      background: linear-gradient(90deg, #38bdf8, #2563eb);
+    }
+
+    /* Two White Rounded Glossy Tables + Separated 3D Pill Rows */
+    body.theme-arena-glossy .table-container {
+      background: #ffffff;
+      border-radius: 22px;
+      border: 2px solid #d2ecff;
+      padding: 8px 10px 6px;
+      box-shadow: 0 12px 28px -8px rgba(14, 165, 233, 0.20), inset 0 2px 1px #ffffff;
+    }
+    body.theme-arena-glossy table {
+      border-collapse: separate;
+      border-spacing: 0 5px;
+    }
+    body.theme-arena-glossy th {
+      background: transparent !important;
+      color: #0f172a !important;
+      font-size: 11.5px;
+      font-weight: 900;
+      letter-spacing: 0.7px;
+      border: none !important;
+      border-bottom: 1.5px solid #e2f1fc !important;
+      text-shadow: none !important;
+      padding: 5px 6px 8px;
+    }
+    body.theme-arena-glossy tbody tr td {
+      height: 44px;
+      padding: 4px 7px;
+      border: none !important;
+      border-top: 1px solid rgba(186, 230, 253, 0.85) !important;
+      border-bottom: 1px solid rgba(125, 211, 252, 0.55) !important;
+      background: linear-gradient(180deg, #f6fbff 0%, #e5f3ff 100%);
+    }
+    body.theme-arena-glossy tbody tr:nth-child(even) td {
+      background: linear-gradient(180deg, #f2f9ff 0%, #e0f1ff 100%);
+    }
+    body.theme-arena-glossy tbody tr:hover td {
+      background: linear-gradient(180deg, #e8f6ff 0%, #d3ecff 100%);
+    }
+    body.theme-arena-glossy tbody tr td:first-child {
+      border-radius: 999px 0 0 999px;
+      border-left: 1px solid rgba(186, 230, 253, 0.9) !important;
+      background: linear-gradient(180deg, #f6fbff 0%, #e5f3ff 100%) !important;
+      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.85);
+    }
+    body.theme-arena-glossy tbody tr:nth-child(even) td:first-child {
+      background: linear-gradient(180deg, #f2f9ff 0%, #e0f1ff 100%) !important;
+    }
+    body.theme-arena-glossy tbody tr td:last-child {
+      border-radius: 0 999px 999px 0;
+      border-right: 1px solid rgba(186, 230, 253, 0.9) !important;
+    }
+    body.theme-arena-glossy .rank-num-pill {
+      background: transparent;
+      border: none;
+      color: #0f172a;
+      font-weight: 900;
+      box-shadow: none;
+    }
+
+    /* TOP 3 GLOSSY 3D CAPSULE ROWS (EMAS #1 • BIRU LANGIT #2 • CORAL #3) */
+    body.theme-arena-glossy tr.is-rank-1:not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td,
+    body.theme-arena-glossy tr.is-rank-1:not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td:first-child {
+      background: linear-gradient(180deg, #ffed8a 0%, #fbbf24 55%, #f59e0b 100%) !important;
+      border-top: 1.5px solid #fef9c3 !important;
+      border-bottom: 1.5px solid #d97706 !important;
+      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.7) !important;
+    }
+    body.theme-arena-glossy tr.is-rank-1 td:first-child {
+      border-left: 1.5px solid #fde047 !important;
+    }
+    body.theme-arena-glossy tr.is-rank-1 td:last-child {
+      border-right: 1.5px solid #fde047 !important;
+    }
+    body.theme-arena-glossy tr.is-rank-1 .rank-num-pill {
+      background: rgba(255, 255, 255, 0.55);
+      color: #422006;
+      border-radius: 999px;
+    }
+    body.theme-arena-glossy tr.is-rank-1 .name-player,
+    body.theme-arena-glossy tr.is-rank-1 .name-display {
+      color: #422006 !important;
+    }
+    body.theme-arena-glossy tr.is-rank-1 .sub-handle {
+      color: #78350f !important;
+    }
+    body.theme-arena-glossy tr.is-rank-1 .score-val {
+      background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%) !important;
+      border: 1.5px solid #fef08a !important;
+      color: #ffffff !important;
+      border-radius: 999px !important;
+      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.55), 0 3px 8px rgba(180, 83, 9, 0.38) !important;
+    }
+
+    body.theme-arena-glossy tr.is-rank-2:not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td,
+    body.theme-arena-glossy tr.is-rank-2:not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td:first-child {
+      background: linear-gradient(180deg, #b8edff 0%, #56ccf2 55%, #2f9ce6 100%) !important;
+      border-top: 1.5px solid #e0f7ff !important;
+      border-bottom: 1.5px solid #0284c7 !important;
+      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.7) !important;
+    }
+    body.theme-arena-glossy tr.is-rank-2 td:first-child {
+      border-left: 1.5px solid #7dd3fc !important;
+    }
+    body.theme-arena-glossy tr.is-rank-2 td:last-child {
+      border-right: 1.5px solid #7dd3fc !important;
+    }
+    body.theme-arena-glossy tr.is-rank-2 .rank-num-pill {
+      background: rgba(255, 255, 255, 0.55);
+      color: #082f49;
+      border-radius: 999px;
+    }
+    body.theme-arena-glossy tr.is-rank-2 .name-player,
+    body.theme-arena-glossy tr.is-rank-2 .name-display {
+      color: #082f49 !important;
+    }
+    body.theme-arena-glossy tr.is-rank-2 .sub-handle {
+      color: #0c4a6e !important;
+    }
+    body.theme-arena-glossy tr.is-rank-2 .score-val {
+      background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%) !important;
+      border: 1.5px solid #bae6fd !important;
+      color: #ffffff !important;
+      border-radius: 999px !important;
+      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.55), 0 3px 8px rgba(29, 78, 216, 0.38) !important;
+    }
+
+    body.theme-arena-glossy tr.is-rank-3:not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td,
+    body.theme-arena-glossy tr.is-rank-3:not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td:first-child {
+      background: linear-gradient(180deg, #ffc2cb 0%, #fb7185 55%, #f43f5e 100%) !important;
+      border-top: 1.5px solid #ffe4e6 !important;
+      border-bottom: 1.5px solid #be123c !important;
+      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.65) !important;
+    }
+    body.theme-arena-glossy tr.is-rank-3 td:first-child {
+      border-left: 1.5px solid #fda4af !important;
+    }
+    body.theme-arena-glossy tr.is-rank-3 td:last-child {
+      border-right: 1.5px solid #fda4af !important;
+    }
+    body.theme-arena-glossy tr.is-rank-3 .rank-num-pill {
+      background: rgba(255, 255, 255, 0.55);
+      color: #4c0519;
+      border-radius: 999px;
+    }
+    body.theme-arena-glossy tr.is-rank-3 .name-player,
+    body.theme-arena-glossy tr.is-rank-3 .name-display {
+      color: #4c0519 !important;
+    }
+    body.theme-arena-glossy tr.is-rank-3 .sub-handle {
+      color: #881337 !important;
+    }
+    body.theme-arena-glossy tr.is-rank-3 .score-val {
+      background: linear-gradient(180deg, #f43f5e 0%, #be123c 100%) !important;
+      border: 1.5px solid #fecdd3 !important;
+      color: #ffffff !important;
+      border-radius: 999px !important;
+      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.55), 0 3px 8px rgba(190, 18, 60, 0.38) !important;
+    }
+
+    /* Regular Rows Score Pill (#4 - #20) */
+    body.theme-arena-glossy .score-val {
+      min-width: 62px;
+      padding: 3px 12px;
+      border-radius: 999px;
+      font-size: 17.5px;
+      background: linear-gradient(180deg, #4f9cf9 0%, #2563eb 58%, #1d4ed8 100%);
+      border: 1.5px solid #93c5fd;
+      color: #ffffff;
+      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.55), inset 0 -2px 0 rgba(30, 58, 138, 0.28), 0 3px 8px rgba(37, 99, 235, 0.28);
+    }
+    body.theme-arena-glossy tr.is-empty-row .score-val {
+      background: linear-gradient(180deg, #e8f4ff 0%, #cfe7fc 100%);
+      border-color: #bae6fd;
+      color: #64748b;
+      box-shadow: inset 0 1px 0 #ffffff;
+    }
+    body.theme-arena-glossy .team-divider-row td {
+      border-radius: 12px !important;
+    }
+    body.theme-arena-glossy .log-panel {
+      background: #ffffff;
+      border: 2px solid #d2ecff;
+      border-radius: 18px;
+      box-shadow: 0 8px 20px -8px rgba(14, 165, 233, 0.16);
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <!-- POKÉDEX TOP ACCENT BAR (3 INDICATOR DOTS + BLUE CAMERA LENS) -->
+    <!-- TOP ACCENT BAR (BRAND + TOMBOL UBAH TEMA PALING ATAS + OPTICAL LENS) -->
     <div class="pokedex-accent-strip">
       <div class="pokedex-lights-group">
         <div class="pokedex-dots" aria-hidden="true">
@@ -3819,14 +4180,19 @@
           <span class="px-dot green"></span>
         </div>
         <div class="pokedex-brand-title">
-          <span>POKÉDEX SCOREBOARD</span>
-          <span class="pokedex-brand-tag">ROTOM UI • LIVE</span>
+          <span id="brandTitleMain">POKÉDEX SCOREBOARD</span>
+          <span id="brandTagMain" class="pokedex-brand-tag">ROTOM UI • LIVE</span>
         </div>
       </div>
 
-      <div class="pokedex-lens-wrap" title="Pokédex Optical Sensor">
-        <div class="pokedex-lens">
-          <div class="pokedex-lens-core"></div>
+      <div class="pokedex-top-right-tools">
+        <button type="button" id="btnThemeSwitch" class="btn-theme-top" onclick="toggleUiTheme()" title="Ganti tema tampilan (Pokédex ↔ Arena Glossy 3D)">
+          🎨 <span id="themeSwitchLabel">Tema: Pokédex</span>
+        </button>
+        <div class="pokedex-lens-wrap" title="Pokédex Optical Sensor">
+          <div class="pokedex-lens">
+            <div class="pokedex-lens-core"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -3847,16 +4213,16 @@
 
         <!-- Dropdown RESET -->
         <div class="dropdown" id="dropdownReset">
-          <button class="btn-px" onclick="toggleDropdown('dropdownReset', event)">RESET ▾</button>
-          <div class="dropdown-menu dropdown-reset-menu">
-            <button class="dropdown-action-btn" onclick="bukaModalKonfirmasiReset('POIN')">
+          <button type="button" class="btn-px" onclick="toggleDropdown('dropdownReset', event)">RESET ▾</button>
+          <div class="dropdown-menu dropdown-reset-menu" onclick="event.stopPropagation()">
+            <button type="button" class="dropdown-action-btn" onclick="bukaModalKonfirmasiReset('POIN')">
               <span style="font-size:16px;">🔄</span>
               <div>
                 <span class="dd-title">Reset Poin Saja</span>
                 <span class="dd-desc">Nol-kan skor semua kursi</span>
               </div>
             </button>
-            <button class="dropdown-action-btn danger" onclick="bukaModalKonfirmasiReset('MEJA')">
+            <button type="button" class="dropdown-action-btn danger" onclick="bukaModalKonfirmasiReset('MEJA')">
               <span style="font-size:16px;">🗑️</span>
               <div>
                 <span class="dd-title">Kosongkan Meja</span>
@@ -3868,12 +4234,12 @@
 
         <!-- Dropdown SESI -->
         <div class="dropdown" id="dropdownSesi">
-          <button class="btn-px" onclick="toggleDropdown('dropdownSesi', event)">
+          <button type="button" class="btn-px" id="btnSesiToggle" onclick="toggleDropdown('dropdownSesi', event)">
             <span id="labelSesiAktif">Sesi 1</span> ▾
           </button>
-          <div class="dropdown-menu">
+          <div class="dropdown-menu" onclick="event.stopPropagation()">
             <div class="session-scroll-list" id="sessionListContainer"></div>
-            <button type="button" class="btn-add-session" onclick="tambahSesiBaru(event)">+Tambah</button>
+            <button type="button" class="btn-add-session" onclick="tambahSesiBaru(event)">+ Tambah Sesi</button>
           </div>
         </div>
       </div>
@@ -4405,9 +4771,6 @@
           </div>
         </div>
       </div>
-      <div class="podium-controls-bar">
-        <button type="button" class="btn-podium-replay" onclick="putarUlangPokeballPodium()">↻ Lempar Ulang Pokéball</button>
-      </div>
     </div>
   </div>
 
@@ -4426,6 +4789,38 @@
     const COL_WIDTHS_KEY = 'pokedex_col_widths_v1';
     const COOKIE_KEY = 'roblox_cookie';
     const LOG_FOLD_KEY = 'pokedex_log_folded_v1';
+    const UI_THEME_KEY = 'pokedex_ui_theme_v1';
+
+    let currentUiTheme = 'pokedex'; // 'pokedex' | 'arena-glossy'
+    function terapkanTemaUI(themeName, save = false) {
+      currentUiTheme = themeName === 'arena-glossy' ? 'arena-glossy' : 'pokedex';
+      const isGlossy = currentUiTheme === 'arena-glossy';
+      document.body.classList.toggle('theme-arena-glossy', isGlossy);
+      const lbl = document.getElementById('themeSwitchLabel');
+      const brand = document.getElementById('brandTitleMain');
+      const tag = document.getElementById('brandTagMain');
+      if (lbl) lbl.textContent = isGlossy ? 'Tema: Arena 3D' : 'Tema: Pokédex';
+      if (brand) brand.textContent = isGlossy ? 'ARENA SCOREBOARD' : 'POKÉDEX SCOREBOARD';
+      if (tag) tag.textContent = isGlossy ? 'GLOSSY 3D • LIVE' : 'ROTOM UI • LIVE';
+      if (save) {
+        try { localStorage.setItem(UI_THEME_KEY, currentUiTheme); } catch (_) {}
+      }
+    }
+
+    function toggleUiTheme() {
+      const next = currentUiTheme === 'arena-glossy' ? 'pokedex' : 'arena-glossy';
+      terapkanTemaUI(next, true);
+      tambahLog('TEMA 🎨', `Tampilan diubah ke ${next === 'arena-glossy' ? 'Arena Glossy 3D' : 'Pokédex Classic'}`);
+    }
+
+    function muatTemaUI() {
+      try {
+        const saved = localStorage.getItem(UI_THEME_KEY);
+        terapkanTemaUI(saved || 'pokedex', false);
+      } catch (_) {
+        terapkanTemaUI('pokedex', false);
+      }
+    }
 
     const MIN_COL_WIDTHS = { no: 40, nama: 110, display: 110, point: 80 };
 
@@ -4627,18 +5022,29 @@
     }
 
     function jalankanUndoTerakhir() {
-      if (undoHistory.length === 0) return;
+      while (undoHistory.length > 0 && !db.sessions[undoHistory[undoHistory.length - 1].activeSession]) {
+        undoHistory.pop();
+      }
+      if (undoHistory.length === 0) {
+        updateUndoButtonUI();
+        return;
+      }
       const last = undoHistory.pop();
       try {
         if (db.sessions[last.activeSession]) {
           db.sessions[last.activeSession] = JSON.parse(last.snapshot);
+          if (db.activeSession !== last.activeSession) {
+            db.activeSession = last.activeSession;
+          }
         }
         if (last.duoTeams) {
           db.duoTeams = JSON.parse(last.duoTeams);
         }
+        inlineEditingSeatIdx = null;
+        inlineSavingLock = false;
         simpanDB();
         renderPokedexTables();
-        tambahLog('UNDO ↩', `Mengembalikan: ${last.label}`);
+        tambahLog('UNDO ↩', `Mengembalikan (${last.activeSession}): ${last.label}`);
       } catch (_) {}
       updateUndoButtonUI();
     }
@@ -5956,8 +6362,12 @@
        9. SESSIONS, MODE, RESET, PRESET, AUDIO, COOKIE & TEAM MODALS
        ========================================================================= */
     function toggleDropdown(id, ev) {
-      ev.stopPropagation();
+      if (ev) {
+        ev.stopPropagation();
+        ev.preventDefault();
+      }
       const target = document.getElementById(id);
+      if (!target) return;
       const wasOpen = target.classList.contains('show');
       tutupSemuaPopupKecil();
       if (!wasOpen) {
@@ -5973,48 +6383,113 @@
       if (typeof tutupTimerPopover === 'function') tutupTimerPopover();
     }
 
+    function getSessionKeysSafe() {
+      if (!db.sessions || typeof db.sessions !== 'object' || Object.keys(db.sessions).length === 0) {
+        db.sessions = { 'Sesi 1': buatSesiBaru(false) };
+      }
+      const keys = Object.keys(db.sessions).filter(k => k && db.sessions[k] && typeof db.sessions[k] === 'object');
+      if (keys.length === 0) {
+        db.sessions = { 'Sesi 1': buatSesiBaru(false) };
+        return ['Sesi 1'];
+      }
+      if (!db.activeSession || !db.sessions[db.activeSession]) {
+        db.activeSession = keys[0];
+      }
+      return keys;
+    }
+
     function renderDropdownSesi() {
       const container = document.getElementById('sessionListContainer');
-      const keys = Object.keys(db.sessions);
-      container.innerHTML = keys.map(name => `
-        <div class="session-item ${name === db.activeSession ? 'active' : ''}" onclick="pilihSesi('${name.replace(/'/g, "\\'")}', event)">
-          <span>${name} ${name === db.activeSession ? '✔' : ''}</span>
-          ${keys.length > 1 ? `<button type="button" class="session-del-btn" onclick="hapusSesi('${name.replace(/'/g, "\\'")}', event)" title="Hapus sesi">×</button>` : ''}
-        </div>
-      `).join('');
+      if (!container) return;
+      const keys = getSessionKeysSafe();
+      container.innerHTML = '';
+
+      keys.forEach(name => {
+        const isActive = name === db.activeSession;
+        const item = document.createElement('div');
+        item.className = `session-item${isActive ? ' active' : ''}`;
+        item.addEventListener('click', (ev) => pilihSesi(name, ev));
+
+        const lbl = document.createElement('span');
+        lbl.textContent = isActive ? `${name} ✔` : name;
+        item.appendChild(lbl);
+
+        if (keys.length > 1) {
+          const delBtn = document.createElement('button');
+          delBtn.type = 'button';
+          delBtn.className = 'session-del-btn';
+          delBtn.title = `Hapus ${name}`;
+          delBtn.textContent = '×';
+          delBtn.addEventListener('click', (ev) => hapusSesi(name, ev));
+          item.appendChild(delBtn);
+        }
+        container.appendChild(item);
+      });
     }
 
     function pilihSesi(name, ev) {
-      if (ev) ev.stopPropagation();
+      if (ev) {
+        ev.stopPropagation();
+        ev.preventDefault();
+      }
+      if (!name || !db.sessions || !db.sessions[name]) return;
+      inlineEditingSeatIdx = null;
+      inlineSavingLock = false;
       db.activeSession = name;
       simpanDB();
       renderPokedexTables();
       tutupSemuaPopupKecil();
+      pulihkanAvatar3dPemainAktif();
       tambahLog('SESI', `Beralih ke ${name}`);
     }
 
     function tambahSesiBaru(ev) {
-      if (ev) ev.stopPropagation();
-      let num = Object.keys(db.sessions).length + 1;
+      if (ev) {
+        ev.stopPropagation();
+        ev.preventDefault();
+      }
+      const keys = getSessionKeysSafe();
+      let maxNum = 0;
+      keys.forEach(k => {
+        const m = /^Sesi\s+(\d+)$/i.exec(k.trim());
+        if (m) maxNum = Math.max(maxNum, parseInt(m[1], 10) || 0);
+      });
+      let num = Math.max(maxNum + 1, keys.length + 1);
       while (db.sessions[`Sesi ${num}`]) num++;
       const newName = `Sesi ${num}`;
+      inlineEditingSeatIdx = null;
+      inlineSavingLock = false;
       db.sessions[newName] = buatSesiBaru(false);
       db.activeSession = newName;
       simpanDB();
       renderDropdownSesi();
       renderPokedexTables();
+      tutupSemuaPopupKecil();
       tambahLog('SESI', `Sesi baru "${newName}" dibuat`);
     }
 
     function hapusSesi(name, ev) {
-      if (ev) ev.stopPropagation();
-      const keys = Object.keys(db.sessions);
-      if (keys.length <= 1) return;
+      if (ev) {
+        ev.stopPropagation();
+        ev.preventDefault();
+      }
+      const keys = getSessionKeysSafe();
+      if (keys.length <= 1 || !db.sessions[name]) return;
+      inlineEditingSeatIdx = null;
+      inlineSavingLock = false;
       delete db.sessions[name];
-      if (db.activeSession === name) db.activeSession = Object.keys(db.sessions)[0];
+      // Bersihkan snapshot Undo milik sesi yang dihapus
+      for (let i = undoHistory.length - 1; i >= 0; i--) {
+        if (undoHistory[i].activeSession === name) undoHistory.splice(i, 1);
+      }
+      updateUndoButtonUI();
+      if (db.activeSession === name) {
+        db.activeSession = getSessionKeysSafe()[0];
+      }
       simpanDB();
       renderDropdownSesi();
       renderPokedexTables();
+      pulihkanAvatar3dPemainAktif();
       tambahLog('SESI', `Sesi "${name}" dihapus`);
     }
 
@@ -8046,6 +8521,7 @@
     });
 
     window.addEventListener('DOMContentLoaded', () => {
+      muatTemaUI();
       inisialisasiMiniColorPicker();
       inisialisasiResizeKolom();
       updateCookieDot();
