@@ -4580,6 +4580,48 @@
     .bento-b5-footer-item:nth-child(3) { color: #fde047; }
     .bento-b5-footer-item:nth-child(n+4) { color: #7dd3fc; }
 
+    /* Auto-Compact Modes when some rows on that side are occupied by players */
+    .bento-b5-shell.is-compact {
+      padding: 6px;
+      gap: 5px;
+    }
+    .bento-b5-shell.is-compact .bento-b5-header {
+      padding: 5px 10px;
+      border-radius: 9px;
+    }
+    .bento-b5-shell.is-compact .bento-b5-title { font-size: 13.5px; }
+    .bento-b5-shell.is-compact .bento-b5-subtitle { font-size: 10px; margin-top: 1px; }
+    .bento-b5-shell.is-compact .bento-b5-badge { padding: 2px 8px; font-size: 9.5px; }
+    .bento-b5-shell.is-compact .bento-b5-card { padding: 5px 7px; gap: 4px; border-radius: 9px; }
+    .bento-b5-shell.is-compact .bento-b5-sec-title { font-size: 9.5px; padding-bottom: 2px; }
+    .bento-b5-shell.is-compact .bento-b5-prizes { gap: 3px; }
+    .bento-b5-shell.is-compact .bento-prize-row { padding: 3px 6px; font-size: 11px; gap: 5px; border-radius: 6px; }
+    .bento-b5-shell.is-compact .bento-prize-rank { font-size: 10px; padding: 1px 5px; }
+    .bento-b5-shell.is-compact .bento-bin-chip { padding: 3px 6px; font-size: 10.5px; }
+    .bento-b5-shell.is-compact .bento-b5-points { gap: 2px; }
+    .bento-b5-shell.is-compact .bento-pt-row { padding: 2px 6px; font-size: 10.8px; }
+    .bento-b5-shell.is-compact .bento-pt-val { font-size: 11.2px; }
+    .bento-b5-shell.is-compact .bento-b5-footer { padding: 4px 10px; font-size: 10px; border-radius: 8px; }
+
+    .bento-b5-shell.is-ultra-compact {
+      padding: 5px;
+      gap: 4px;
+    }
+    .bento-b5-shell.is-ultra-compact .bento-b5-header { padding: 4px 8px; border-radius: 8px; }
+    .bento-b5-shell.is-ultra-compact .bento-b5-title { font-size: 12px; }
+    .bento-b5-shell.is-ultra-compact .bento-b5-subtitle { font-size: 9px; margin-top: 0; }
+    .bento-b5-shell.is-ultra-compact .bento-b5-badge { display: none; }
+    .bento-b5-shell.is-ultra-compact .bento-b5-card { padding: 4px 6px; gap: 2px; border-radius: 8px; }
+    .bento-b5-shell.is-ultra-compact .bento-b5-sec-title { display: none; }
+    .bento-b5-shell.is-ultra-compact .bento-b5-prizes { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; }
+    .bento-b5-shell.is-ultra-compact .bento-prize-row { padding: 2.5px 5px; font-size: 9.8px; gap: 4px; border-left-width: 3px; }
+    .bento-b5-shell.is-ultra-compact .bento-prize-rank { font-size: 9px; padding: 1px 4px; }
+    .bento-b5-shell.is-ultra-compact .bento-bin-chip { padding: 2px 5px; font-size: 9.5px; }
+    .bento-b5-shell.is-ultra-compact .bento-b5-points { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+    .bento-b5-shell.is-ultra-compact .bento-pt-row { padding: 2px 4px; font-size: 9.5px; }
+    .bento-b5-shell.is-ultra-compact .bento-pt-val { font-size: 9.8px; }
+    .bento-b5-shell.is-ultra-compact .bento-b5-footer { padding: 3px 8px; font-size: 9px; }
+
     /* Toolbar Dropdown & Active Check Styling for Panel Info */
     .dropdown-panel-menu {
       min-width: 245px !important;
@@ -5448,6 +5490,9 @@
       if (tag) tag.textContent = isGlossy ? 'GLOSSY 3D • LIVE' : 'ROTOM UI • LIVE';
       if (save) {
         try { localStorage.setItem(UI_THEME_KEY, currentUiTheme); } catch (_) {}
+      }
+      if (typeof renderInfoPanelBento === 'function') {
+        requestAnimationFrame(renderInfoPanelBento);
       }
     }
 
@@ -9334,6 +9379,67 @@
       });
     }
 
+    function cariBlokKosongTerbesar(side) {
+      const startIdx = side === 'left' ? 0 : 10;
+      const endIdx = side === 'left' ? 9 : 18; // kursi 19 = HOST selalu aman di bawah
+      let bestStart = -1, bestEnd = -1, bestLen = 0;
+      let curStart = -1;
+
+      for (let i = startIdx; i <= endIdx; i++) {
+        if (!hasPlayerContent(getSeat(i))) {
+          if (curStart < 0) curStart = i;
+          const curLen = i - curStart + 1;
+          if (curLen >= bestLen) {
+            bestLen = curLen;
+            bestStart = curStart;
+            bestEnd = i;
+          }
+        } else {
+          curStart = -1;
+        }
+      }
+      return { bestStart, bestEnd, bestLen };
+    }
+
+    function sesuaikanPosisiPanelBento(containerEl, panelEl, side) {
+      if (!containerEl || !panelEl) return true;
+      const { bestStart, bestEnd, bestLen } = cariBlokKosongTerbesar(side);
+
+      // Reset inline posisi terlebih dahulu
+      panelEl.style.top = '';
+      panelEl.style.bottom = '';
+
+      if (bestLen < 2) {
+        // Jika kurang dari 2 baris kosong berurutan, sembunyikan saat mode auto agar tidak mengintip di balik pemain
+        if ((infoPanelConfig.mode || 'auto') === 'auto') return false;
+        return true;
+      }
+
+      const firstEl = document.getElementById(`row-kursi-${bestStart}`);
+      const lastEl = document.getElementById(`row-kursi-${bestEnd}`);
+      if (!firstEl || !lastEl) return true;
+
+      const cRect = containerEl.getBoundingClientRect();
+      const fRect = firstEl.getBoundingClientRect();
+      const lRect = lastEl.getBoundingClientRect();
+      if (cRect.height <= 0 || fRect.height <= 0 || lRect.height <= 0) return true;
+
+      const topPx = Math.max(4, Math.round(fRect.top - cRect.top));
+      const bottomPx = Math.max(8, Math.round(cRect.bottom - lRect.bottom));
+      const availH = Math.round(cRect.height - topPx - bottomPx);
+
+      panelEl.style.top = `${topPx}px`;
+      panelEl.style.bottom = `${bottomPx}px`;
+
+      const shell = panelEl.querySelector('.bento-b5-shell');
+      if (shell) {
+        shell.classList.remove('is-compact', 'is-ultra-compact');
+        if (availH < 215) shell.classList.add('is-ultra-compact');
+        else if (availH < 345) shell.classList.add('is-compact');
+      }
+      return true;
+    }
+
     function renderInfoPanelBento() {
       const cLeft = document.getElementById('tableContainerLeft');
       const cRight = document.getElementById('tableContainerRight');
@@ -9342,20 +9448,26 @@
       if (!cLeft || !cRight || !pLeft || !pRight) return;
 
       const side = tentukanSisiPanelBento();
-      cLeft.classList.toggle('has-bento-behind', side === 'left');
-      cRight.classList.toggle('has-bento-behind', side === 'right');
-      pLeft.classList.toggle('is-active', side === 'left');
-      pRight.classList.toggle('is-active', side === 'right');
+      cLeft.classList.remove('has-bento-behind');
+      cRight.classList.remove('has-bento-behind');
+      pLeft.classList.remove('is-active');
+      pRight.classList.remove('is-active');
+      pLeft.innerHTML = '';
+      pRight.innerHTML = '';
 
-      if (side === 'left') {
-        pLeft.innerHTML = bangunHtmlBentoB5();
-        pRight.innerHTML = '';
-      } else if (side === 'right') {
-        pRight.innerHTML = bangunHtmlBentoB5();
-        pLeft.innerHTML = '';
-      } else {
-        pLeft.innerHTML = '';
-        pRight.innerHTML = '';
+      if (side === 'left' || side === 'right') {
+        const targetContainer = side === 'left' ? cLeft : cRight;
+        const targetPanel = side === 'left' ? pLeft : pRight;
+        targetPanel.innerHTML = bangunHtmlBentoB5();
+        targetContainer.classList.add('has-bento-behind');
+        targetPanel.classList.add('is-active');
+
+        const ok = sesuaikanPosisiPanelBento(targetContainer, targetPanel, side);
+        if (!ok) {
+          targetContainer.classList.remove('has-bento-behind');
+          targetPanel.classList.remove('is-active');
+          targetPanel.innerHTML = '';
+        }
       }
 
       updatePanelInfoToolbarUI();
@@ -9381,12 +9493,12 @@
       document.getElementById('inpPanelFooter').value = draftPanelModal.footerText || '';
       pilihModeModalPanel(draftPanelModal.mode || 'auto');
       renderModalPanelEditors();
-      document.getElementById('modalPanelInfo').classList.add('active');
+      document.getElementById('modalPanelInfo').classList.add('show');
     }
 
     function tutupModalPanelInfo() {
       const m = document.getElementById('modalPanelInfo');
-      if (m) m.classList.remove('active');
+      if (m) m.classList.remove('show');
     }
 
     function pilihModeModalPanel(mode) {
@@ -9539,6 +9651,9 @@
     function inisialisasiPanelInfoBento() {
       muatPanelInfoBento();
       updatePanelInfoToolbarUI();
+      window.addEventListener('resize', () => {
+        if (typeof renderInfoPanelBento === 'function') renderInfoPanelBento();
+      });
     }
 
     window.addEventListener('click', () => tutupSemuaPopupKecil());
