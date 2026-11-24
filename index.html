@@ -4017,17 +4017,20 @@
     body.theme-arena-glossy tbody tr:nth-child(even) td {
       background: linear-gradient(180deg, #f2f9ff 0%, #e0f1ff 100%);
     }
-    body.theme-arena-glossy tbody tr:hover td {
-      background: linear-gradient(180deg, #e8f6ff 0%, #d3ecff 100%);
+    body.theme-arena-glossy tbody tr:not([class*="tag-"]) td.td-no {
+      background: linear-gradient(180deg, #f6fbff 0%, #e5f3ff 100%) !important;
+    }
+    body.theme-arena-glossy tbody tr:nth-child(even):not([class*="tag-"]) td.td-no {
+      background: linear-gradient(180deg, #f2f9ff 0%, #e0f1ff 100%) !important;
+    }
+    body.theme-arena-glossy tbody tr:hover:not([class*="tag-"]):not(.is-rank-1):not(.is-rank-2):not(.is-rank-3) td,
+    body.theme-arena-glossy tbody tr:hover:not([class*="tag-"]):not(.is-rank-1):not(.is-rank-2):not(.is-rank-3) td.td-no {
+      background: linear-gradient(180deg, #e8f6ff 0%, #d3ecff 100%) !important;
     }
     body.theme-arena-glossy tbody tr td:first-child {
       border-radius: 999px 0 0 999px;
       border-left: 1px solid rgba(186, 230, 253, 0.9) !important;
-      background: linear-gradient(180deg, #f6fbff 0%, #e5f3ff 100%) !important;
-      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.85);
-    }
-    body.theme-arena-glossy tbody tr:nth-child(even) td:first-child {
-      background: linear-gradient(180deg, #f2f9ff 0%, #e0f1ff 100%) !important;
+      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.65);
     }
     body.theme-arena-glossy tbody tr td:last-child {
       border-radius: 0 999px 999px 0;
@@ -4043,7 +4046,7 @@
 
     /* TOP 3 GLOSSY 3D CAPSULE ROWS (EMAS #1 • BIRU LANGIT #2 • CORAL #3) */
     body.theme-arena-glossy tr.is-rank-1:not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td,
-    body.theme-arena-glossy tr.is-rank-1:not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td:first-child {
+    body.theme-arena-glossy tr.is-rank-1:not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td.td-no {
       background: linear-gradient(180deg, #ffed8a 0%, #fbbf24 55%, #f59e0b 100%) !important;
       border-top: 1.5px solid #fef9c3 !important;
       border-bottom: 1.5px solid #d97706 !important;
@@ -4076,7 +4079,7 @@
     }
 
     body.theme-arena-glossy tr.is-rank-2:not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td,
-    body.theme-arena-glossy tr.is-rank-2:not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td:first-child {
+    body.theme-arena-glossy tr.is-rank-2:not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td.td-no {
       background: linear-gradient(180deg, #b8edff 0%, #56ccf2 55%, #2f9ce6 100%) !important;
       border-top: 1.5px solid #e0f7ff !important;
       border-bottom: 1.5px solid #0284c7 !important;
@@ -4109,7 +4112,7 @@
     }
 
     body.theme-arena-glossy tr.is-rank-3:not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td,
-    body.theme-arena-glossy tr.is-rank-3:not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td:first-child {
+    body.theme-arena-glossy tr.is-rank-3:not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td.td-no {
       background: linear-gradient(180deg, #ffc2cb 0%, #fb7185 55%, #f43f5e 100%) !important;
       border-top: 1.5px solid #ffe4e6 !important;
       border-bottom: 1.5px solid #be123c !important;
@@ -4140,6 +4143,63 @@
       border-radius: 999px !important;
       box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.55), 0 3px 8px rgba(190, 18, 60, 0.38) !important;
     }
+
+    /* SEAMLESS GLOSSY 3D RANK-OVERTAKE ANIMATIONS (ANTI WARNA TERBELAH DI KOLOM NO!) */
+    body.theme-arena-glossy tbody tr.row-rank-up td,
+    body.theme-arena-glossy tbody tr.row-rank-up td.td-no {
+      background: linear-gradient(180deg, #bbf7d0 0%, #4ade80 58%, #22c55e 100%) !important;
+      border-top: 1.5px solid #dcfce7 !important;
+      border-bottom: 1.5px solid #16a34a !important;
+      color: #052e16 !important;
+      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.65) !important;
+    }
+    body.theme-arena-glossy tbody tr.row-rank-up td:first-child { border-left: 1.5px solid #86efac !important; }
+    body.theme-arena-glossy tbody tr.row-rank-up td:last-child  { border-right: 1.5px solid #86efac !important; }
+    body.theme-arena-glossy tbody tr.row-rank-up .name-player,
+    body.theme-arena-glossy tbody tr.row-rank-up .name-display  { color: #052e16 !important; }
+    body.theme-arena-glossy tbody tr.row-rank-up .sub-handle    { color: #166534 !important; }
+
+    body.theme-arena-glossy tbody tr.row-rank-crown td,
+    body.theme-arena-glossy tbody tr.row-rank-crown td.td-no {
+      background: linear-gradient(180deg, #fef08a 0%, #facc15 55%, #eab308 100%) !important;
+      border-top: 1.5px solid #fef9c3 !important;
+      border-bottom: 1.5px solid #ca8a04 !important;
+      color: #422006 !important;
+      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.72) !important;
+    }
+    body.theme-arena-glossy tbody tr.row-rank-crown td:first-child { border-left: 1.5px solid #fde047 !important; }
+    body.theme-arena-glossy tbody tr.row-rank-crown td:last-child  { border-right: 1.5px solid #fde047 !important; }
+    body.theme-arena-glossy tbody tr.row-rank-crown .name-player,
+    body.theme-arena-glossy tbody tr.row-rank-crown .name-display  { color: #422006 !important; }
+    body.theme-arena-glossy tbody tr.row-rank-crown .sub-handle    { color: #78350f !important; }
+
+    body.theme-arena-glossy tbody tr.row-rank-down td,
+    body.theme-arena-glossy tbody tr.row-rank-down td.td-no {
+      background: linear-gradient(180deg, #ffe4e6 0%, #fecdd3 58%, #fda4af 100%) !important;
+      border-top: 1.5px solid #fff1f2 !important;
+      border-bottom: 1.5px solid #f43f5e !important;
+      color: #4c0519 !important;
+      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.65) !important;
+    }
+    body.theme-arena-glossy tbody tr.row-rank-down td:first-child { border-left: 1.5px solid #fda4af !important; }
+    body.theme-arena-glossy tbody tr.row-rank-down td:last-child  { border-right: 1.5px solid #fda4af !important; }
+    body.theme-arena-glossy tbody tr.row-rank-down .name-player,
+    body.theme-arena-glossy tbody tr.row-rank-down .name-display  { color: #4c0519 !important; }
+    body.theme-arena-glossy tbody tr.row-rank-down .sub-handle    { color: #881337 !important; }
+
+    body.theme-arena-glossy tbody tr.row-score-pop td,
+    body.theme-arena-glossy tbody tr.row-score-pop td.td-no {
+      background: linear-gradient(180deg, #cffafe 0%, #7dd3fc 58%, #38bdf8 100%) !important;
+      border-top: 1.5px solid #e0f2fe !important;
+      border-bottom: 1.5px solid #0284c7 !important;
+      color: #082f49 !important;
+      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.7) !important;
+    }
+    body.theme-arena-glossy tbody tr.row-score-pop td:first-child { border-left: 1.5px solid #7dd3fc !important; }
+    body.theme-arena-glossy tbody tr.row-score-pop td:last-child  { border-right: 1.5px solid #7dd3fc !important; }
+    body.theme-arena-glossy tbody tr.row-score-pop .name-player,
+    body.theme-arena-glossy tbody tr.row-score-pop .name-display  { color: #082f49 !important; }
+    body.theme-arena-glossy tbody tr.row-score-pop .sub-handle    { color: #0c4a6e !important; }
 
     /* Regular Rows Score Pill (#4 - #20) */
     body.theme-arena-glossy .score-val {
