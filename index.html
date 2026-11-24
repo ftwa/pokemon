@@ -6392,6 +6392,14 @@
         db.sessions = { 'Sesi 1': buatSesiBaru(false) };
         return ['Sesi 1'];
       }
+      keys.sort((a, b) => {
+        const ma = /^Sesi\s+(\d+)$/i.exec(a.trim());
+        const mb = /^Sesi\s+(\d+)$/i.exec(b.trim());
+        if (ma && mb) return parseInt(ma[1], 10) - parseInt(mb[1], 10);
+        if (ma) return -1;
+        if (mb) return 1;
+        return a.localeCompare(b, 'id');
+      });
       if (!db.activeSession || !db.sessions[db.activeSession]) {
         db.activeSession = keys[0];
       }
@@ -6448,13 +6456,9 @@
         ev.stopPropagation();
         ev.preventDefault();
       }
-      const keys = getSessionKeysSafe();
-      let maxNum = 0;
-      keys.forEach(k => {
-        const m = /^Sesi\s+(\d+)$/i.exec(k.trim());
-        if (m) maxNum = Math.max(maxNum, parseInt(m[1], 10) || 0);
-      });
-      let num = Math.max(maxNum + 1, keys.length + 1);
+      getSessionKeysSafe();
+      // Cari nomor sesi terkecil yang kosong mulai dari Sesi 1 (jika Sesi 1 dihapus, bisa ditambah lagi!)
+      let num = 1;
       while (db.sessions[`Sesi ${num}`]) num++;
       const newName = `Sesi ${num}`;
       inlineEditingSeatIdx = null;
