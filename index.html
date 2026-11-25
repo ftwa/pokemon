@@ -5176,7 +5176,7 @@
     }
 
     /* ==========================================================================
-       18. START MATCH COUNTDOWN OVERLAY (3 -> 2 -> 1 -> GO! — TANPA BLUR LAYAR)
+       18. START MATCH COUNTDOWN OVERLAY — ESPORTS KINETIC SLASH (TANPA BOLA/BLUR)
        ========================================================================== */
     .start-cd-overlay {
       position: fixed;
@@ -5187,6 +5187,7 @@
       align-items: center;
       justify-content: center;
       background: transparent;
+      overflow: hidden;
     }
     .start-cd-overlay.show {
       display: flex;
@@ -5197,130 +5198,118 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 12px;
-      animation: startCdPop 0.42s cubic-bezier(0.22, 1.38, 0.36, 1) forwards;
+      animation: startCdSlashSlam 0.34s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
     .start-cd-overlay.is-exit .start-cd-stage {
-      animation: startCdExit 0.28s ease-in forwards;
+      animation: startCdExit 0.26s ease-in forwards;
     }
-    .start-cd-ring {
+    .start-cd-slash-main,
+    .start-cd-slash-sub {
       position: absolute;
-      width: 196px;
-      height: 196px;
       border-radius: 999px;
-      border: 6px solid var(--cd-ring, rgba(245, 158, 11, 0.85));
-      opacity: 0;
-      animation: startCdRingWave 0.78s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-    .start-cd-stage.step-go .start-cd-ring {
-      width: 266px;
-      height: 172px;
-      border-radius: 56px;
-    }
-    .start-cd-badge {
-      position: relative;
-      width: 176px;
-      height: 176px;
-      border-radius: 999px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--cd-bg, linear-gradient(180deg, #fbbf24 0%, #d97706 100%));
-      border: 6px solid #ffffff;
-      box-shadow:
-        0 0 0 4px var(--cd-outline, rgba(217, 119, 6, 0.45)),
-        0 24px 52px -10px rgba(15, 23, 42, 0.48),
-        0 10px 24px -6px var(--cd-glow, rgba(245, 158, 11, 0.55)),
-        inset 0 4px 2px rgba(255, 255, 255, 0.55),
-        inset 0 -8px 16px rgba(0, 0, 0, 0.18);
-      overflow: hidden;
-    }
-    .start-cd-badge::before {
-      content: '';
-      position: absolute;
-      top: 6px;
-      left: 16%;
-      right: 16%;
-      height: 40%;
-      border-radius: 999px;
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.48) 0%, rgba(255, 255, 255, 0.02) 100%);
       pointer-events: none;
     }
-    .start-cd-stage.step-go .start-cd-badge {
-      width: 254px;
-      height: 156px;
-      border-radius: 44px;
+    .start-cd-slash-main {
+      width: 580px;
+      height: 8px;
+      top: 44%;
+      background: linear-gradient(90deg, transparent 0%, var(--cd-accent, #38bdf8) 30%, #ffffff 50%, var(--cd-accent, #38bdf8) 70%, transparent 100%);
+      box-shadow: 0 0 24px var(--cd-accent, #38bdf8), 0 0 46px var(--cd-accent, #38bdf8);
+      animation: startCdStreakMain 0.62s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .start-cd-slash-sub {
+      width: 420px;
+      height: 3.5px;
+      top: 56%;
+      background: linear-gradient(90deg, transparent 0%, #ffffff 42%, var(--cd-accent, #38bdf8) 65%, transparent 100%);
+      box-shadow: 0 0 14px var(--cd-accent, #38bdf8);
+      animation: startCdStreakSub 0.68s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
     .start-cd-num {
       position: relative;
       z-index: 2;
       font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
-      font-size: 98px;
+      font-size: 156px;
       font-weight: 900;
-      line-height: 1;
-      letter-spacing: -1px;
-      color: #ffffff;
-      text-shadow: 0 6px 0 rgba(0, 0, 0, 0.24), 0 12px 24px rgba(0, 0, 0, 0.30);
+      font-style: italic;
+      line-height: 0.90;
+      letter-spacing: -4px;
+      padding: 0 24px;
+      color: var(--cd-ink, #0f172a);
+      -webkit-text-stroke: 6px #ffffff;
+      paint-order: stroke fill;
+      filter: drop-shadow(0 10px 0 rgba(15, 23, 42, 0.24)) drop-shadow(0 22px 36px rgba(15, 23, 42, 0.34));
       user-select: none;
     }
     .start-cd-stage.step-go .start-cd-num {
-      font-size: 86px;
-      letter-spacing: 2px;
+      font-size: 138px;
+      letter-spacing: 3px;
+      background: linear-gradient(180deg, #10b981 0%, #047857 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      -webkit-text-stroke: 7px #ffffff;
+      filter: drop-shadow(0 10px 0 rgba(6, 78, 59, 0.30)) drop-shadow(0 20px 38px rgba(16, 185, 129, 0.42));
     }
     .start-cd-sub {
-      padding: 5px 18px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.90);
-      border: 2px solid #ffffff;
-      color: #ffffff;
+      position: relative;
+      z-index: 2;
+      margin-top: 10px;
+      padding: 6px 26px;
+      background: #0f172a;
+      color: #f8fafc;
+      border-left: 6px solid var(--cd-accent, #38bdf8);
+      border-right: 2px solid rgba(255, 255, 255, 0.22);
+      transform: skewX(-14deg);
       font-family: 'Outfit', sans-serif;
-      font-size: 13.5px;
+      font-size: 14.5px;
       font-weight: 900;
-      letter-spacing: 1.6px;
+      letter-spacing: 3px;
       text-transform: uppercase;
-      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.32);
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.34);
+    }
+    .start-cd-sub span {
+      display: inline-block;
+      transform: skewX(14deg);
     }
     .start-cd-stage.step-3 {
-      --cd-bg: linear-gradient(180deg, #fbbf24 0%, #ea580c 100%);
-      --cd-outline: rgba(234, 88, 12, 0.48);
-      --cd-ring: rgba(245, 158, 11, 0.92);
-      --cd-glow: rgba(234, 88, 12, 0.58);
+      --cd-ink: #0f172a;
+      --cd-accent: #f59e0b;
     }
     .start-cd-stage.step-2 {
-      --cd-bg: linear-gradient(180deg, #38bdf8 0%, #1d4ed8 100%);
-      --cd-outline: rgba(29, 78, 216, 0.48);
-      --cd-ring: rgba(56, 189, 248, 0.92);
-      --cd-glow: rgba(37, 99, 235, 0.58);
+      --cd-ink: #0c4a6e;
+      --cd-accent: #0ea5e9;
     }
     .start-cd-stage.step-1 {
-      --cd-bg: linear-gradient(180deg, #fb7185 0%, #dc2626 100%);
-      --cd-outline: rgba(220, 38, 38, 0.50);
-      --cd-ring: rgba(244, 63, 94, 0.92);
-      --cd-glow: rgba(220, 38, 38, 0.60);
+      --cd-ink: #881337;
+      --cd-accent: #f43f5e;
     }
     .start-cd-stage.step-go {
-      --cd-bg: linear-gradient(180deg, #34d399 0%, #059669 100%);
-      --cd-outline: rgba(250, 204, 21, 0.72);
-      --cd-ring: rgba(16, 185, 129, 0.95);
-      --cd-glow: rgba(5, 150, 105, 0.62);
+      --cd-ink: #047857;
+      --cd-accent: #10b981;
     }
     .start-cd-stage.step-go .start-cd-sub {
-      background: linear-gradient(90deg, #065f46 0%, #047857 100%);
-      border-color: #fef08a;
+      background: linear-gradient(90deg, #064e3b 0%, #047857 100%);
+      border-left-color: #fde047;
       color: #fef9c3;
     }
-    @keyframes startCdPop {
-      0% { transform: scale(0.36); opacity: 0; }
-      58% { transform: scale(1.10); opacity: 1; }
-      100% { transform: scale(1); opacity: 1; }
+    @keyframes startCdSlashSlam {
+      0% { transform: scale(2.2) skewX(-6deg); opacity: 0; }
+      68% { transform: scale(0.95) skewX(0deg); opacity: 1; }
+      100% { transform: scale(1) skewX(0deg); opacity: 1; }
     }
-    @keyframes startCdRingWave {
-      0% { transform: scale(0.75); opacity: 0.92; }
-      100% { transform: scale(1.68); opacity: 0; }
+    @keyframes startCdStreakMain {
+      0% { transform: translateX(-260px) scaleX(0.35) skewX(-18deg); opacity: 0; }
+      35% { opacity: 1; }
+      100% { transform: translateX(260px) scaleX(1.35) skewX(-18deg); opacity: 0; }
+    }
+    @keyframes startCdStreakSub {
+      0% { transform: translateX(220px) scaleX(0.4) skewX(-18deg); opacity: 0; }
+      35% { opacity: 0.9; }
+      100% { transform: translateX(-220px) scaleX(1.25) skewX(-18deg); opacity: 0; }
     }
     @keyframes startCdExit {
       0% { transform: scale(1); opacity: 1; }
-      100% { transform: scale(1.22); opacity: 0; }
+      100% { transform: scale(1.18); opacity: 0; }
     }
   </style>
 </head>
@@ -5508,6 +5497,9 @@
           <span>🔊 Suara Countdown &amp; Bel Habis</span>
           <input type="checkbox" id="chkTimerSound" checked onchange="simpanPengaturanTimer()" />
         </label>
+        <button type="button" class="btn-px" style="width:100%; justify-content:center; padding:5px 8px; font-size:11px; margin-top:2px;" onclick="tutupTimerPopover(); bukaModalAudio();">
+          🎵 Atur Sound Countdown...
+        </button>
       </div>
     </div>
 
@@ -5688,7 +5680,7 @@
 
   <!-- MODAL SETTINGS AUDIO -->
   <div class="modal-overlay" id="modalAudio" onclick="if(event.target.id==='modalAudio')tutupModalAudio()">
-    <div class="modal-box-px" style="width: 390px;">
+    <div class="modal-box-px" style="width: 425px; max-height: 90vh; overflow-y: auto;">
       <button class="btn-close-hud" onclick="tutupModalAudio()">✕</button>
       <div class="modal-head-px">
         <span class="modal-sub-px">AUDIO MODULE</span>
@@ -5704,6 +5696,33 @@
         <div style="display:flex; gap:6px;">
           <button type="button" class="btn-px" style="flex:1; justify-content:center;" onclick="putarSuaraNotifPoin()">🔊 Tes Audio</button>
           <button type="button" class="btn-px" style="flex:1; justify-content:center;" onclick="resetAudio('poin')">Reset</button>
+        </div>
+      </div>
+
+      <div style="background:#f8fafc; border:1px solid #cbd5e1; border-left:4px solid #0ea5e9; border-radius:10px; padding:10px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:7px;">
+          <span style="font-size:12.5px; font-weight:800; color:#0369a1;">⏱️ Sound Countdown Mulai (3-2-1-GO!)</span>
+          <span id="statusAudioCountdown" style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:800; color:#0284c7;">Esports Bass</span>
+        </div>
+        <div style="display:flex; gap:6px; align-items:center; margin-bottom:7px;">
+          <select id="selectCountdownSoundPreset" class="px-input" style="flex:1; padding:5px 8px; font-size:11.5px; font-weight:700;" onchange="ubahPresetSuaraCountdown()">
+            <option value="esports">⚡ Esports Bass Hit (Default)</option>
+            <option value="racing">🏎️ Racing F1 Start</option>
+            <option value="arcade">🕹️ Arcade Synth</option>
+            <option value="beep">🔔 Studio Beep Klasik</option>
+            <option value="mute">🔇 Senyap (Tanpa Suara)</option>
+          </select>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <span style="font-size:11px; font-weight:800; color:#334155; white-space:nowrap;">Volume:</span>
+          <input type="range" id="rangeCountdownVol" min="0" max="100" value="85" style="flex:1; accent-color:#0284c7; cursor:pointer;" oninput="ubahVolumeSuaraCountdown(this.value)" />
+          <span id="labelCountdownVol" style="font-family:'JetBrains Mono',monospace; font-size:10.5px; font-weight:900; color:#0f172a; min-width:34px; text-align:right;">85%</span>
+        </div>
+        <div style="font-size:10px; font-weight:700; color:#64748b; margin-bottom:4px;">Atau upload MP3/WAV custom (diputar penuh saat Mulai):</div>
+        <input type="file" id="fileAudioCountdown" accept="audio/*" style="font-size:11px; color:#475569; width:100%; margin-bottom:7px;" onchange="unggahAudio('countdown', event)" />
+        <div style="display:flex; gap:6px;">
+          <button type="button" class="btn-px" style="flex:1; justify-content:center;" id="btnTesCountdownAudio" onclick="tesSuaraCountdown()">🔊 Tes Countdown</button>
+          <button type="button" class="btn-px" style="flex:1; justify-content:center;" onclick="resetAudio('countdown')">Reset</button>
         </div>
       </div>
 
@@ -6060,6 +6079,7 @@
     const DB_KEY = 'pokedex_light_combo_tcg_v1';
     const AUDIO_POIN_KEY = 'pokedex_audio_poin_v1';
     const AUDIO_PODIUM_KEY = 'pokedex_audio_podium_v1';
+    const AUDIO_COUNTDOWN_KEY = 'pokedex_audio_countdown_v1';
     const COL_WIDTHS_KEY = 'pokedex_col_widths_v1';
     const COOKIE_KEY = 'roblox_cookie';
     const LOG_FOLD_KEY = 'pokedex_log_folded_v1';
@@ -6257,6 +6277,9 @@
     let db = muatDB();
     let customAudioPoin = null;
     let customAudioPodium = null;
+    let customAudioCountdown = null;
+    let activeCountdownAudioObj = null;
+    let previewCountdownTimers = [];
     let cookieRoblox = '';
     let isLogFolded = true;
     let savedColWidths = { no: '44px', nama: '215px', display: '185px', point: '92px' };
@@ -6264,6 +6287,7 @@
     try {
       customAudioPoin = localStorage.getItem(AUDIO_POIN_KEY) || null;
       customAudioPodium = localStorage.getItem(AUDIO_PODIUM_KEY) || null;
+      customAudioCountdown = localStorage.getItem(AUDIO_COUNTDOWN_KEY) || null;
       cookieRoblox = localStorage.getItem(COOKIE_KEY) || '';
       const rawLogFold = localStorage.getItem(LOG_FOLD_KEY);
       isLogFolded = rawLogFold === null ? true : Boolean(JSON.parse(rawLogFold));
@@ -7918,9 +7942,42 @@
     }
 
     /* Audio Settings */
+    const COUNTDOWN_PRESET_LABELS = {
+      esports: 'Esports Bass',
+      racing: 'Racing F1',
+      arcade: 'Arcade Synth',
+      beep: 'Beep Klasik',
+      mute: 'Senyap (Mute)'
+    };
+
+    function hentikanAudioCountdownAktif() {
+      previewCountdownTimers.forEach(t => clearTimeout(t));
+      previewCountdownTimers = [];
+      if (activeCountdownAudioObj) {
+        try { activeCountdownAudioObj.pause(); activeCountdownAudioObj.currentTime = 0; } catch (_) {}
+        activeCountdownAudioObj = null;
+      }
+      const btn = document.getElementById('btnTesCountdownAudio');
+      if (btn) btn.textContent = '🔊 Tes Countdown';
+    }
+
     function updateAudioStatusUI() {
-      document.getElementById('statusAudioPoin').textContent = customAudioPoin ? 'Audio Custom ✔' : 'Synth Bawaan';
-      document.getElementById('statusAudioPodium').textContent = customAudioPodium ? 'Audio Custom ✔' : 'Fanfare Bawaan';
+      const elPoin = document.getElementById('statusAudioPoin');
+      const elPod = document.getElementById('statusAudioPodium');
+      const elCd = document.getElementById('statusAudioCountdown');
+      if (elPoin) elPoin.textContent = customAudioPoin ? 'Audio Custom ✔' : 'Synth Bawaan';
+      if (elPod) elPod.textContent = customAudioPodium ? 'Audio Custom ✔' : 'Fanfare Bawaan';
+      const preset = (typeof timerConfig !== 'undefined' && timerConfig.countdownSoundPreset) ? timerConfig.countdownSoundPreset : 'esports';
+      const vol = (typeof timerConfig !== 'undefined' && Number.isFinite(timerConfig.countdownVolume)) ? timerConfig.countdownVolume : 85;
+      if (elCd) {
+        elCd.textContent = customAudioCountdown ? 'Audio Custom ✔' : (COUNTDOWN_PRESET_LABELS[preset] || 'Esports Bass');
+      }
+      const sel = document.getElementById('selectCountdownSoundPreset');
+      if (sel) sel.value = preset;
+      const rng = document.getElementById('rangeCountdownVol');
+      if (rng) rng.value = vol;
+      const lblVol = document.getElementById('labelCountdownVol');
+      if (lblVol) lblVol.textContent = `${vol}%`;
     }
     function bukaModalAudio() {
       tutupSemuaPopupKecil();
@@ -7928,7 +7985,82 @@
       document.getElementById('audioStatusMsg').textContent = '';
       document.getElementById('modalAudio').classList.add('show');
     }
-    function tutupModalAudio() { document.getElementById('modalAudio').classList.remove('show'); }
+    function tutupModalAudio() {
+      hentikanAudioCountdownAktif();
+      document.getElementById('modalAudio').classList.remove('show');
+    }
+
+    function ubahPresetSuaraCountdown() {
+      const sel = document.getElementById('selectCountdownSoundPreset');
+      if (!sel) return;
+      timerConfig.countdownSoundPreset = sel.value;
+      if (customAudioCountdown) {
+        customAudioCountdown = null;
+        try { localStorage.removeItem(AUDIO_COUNTDOWN_KEY); } catch (_) {}
+        const inp = document.getElementById('fileAudioCountdown');
+        if (inp) inp.value = '';
+      }
+      simpanPengaturanTimer();
+      updateAudioStatusUI();
+      hentikanAudioCountdownAktif();
+      const msg = document.getElementById('audioStatusMsg');
+      if (msg) {
+        msg.style.color = '#0284c7';
+        msg.textContent = `Preset suara countdown: ${COUNTDOWN_PRESET_LABELS[sel.value] || sel.value} ✔`;
+      }
+      if (sel.value !== 'mute' && typeof putarSuaraStartCountdown === 'function') {
+        putarSuaraStartCountdown('3', true);
+      }
+    }
+
+    function ubahVolumeSuaraCountdown(val) {
+      const num = Math.max(0, Math.min(100, parseInt(val, 10) || 0));
+      timerConfig.countdownVolume = num;
+      const lbl = document.getElementById('labelCountdownVol');
+      if (lbl) lbl.textContent = `${num}%`;
+      if (activeCountdownAudioObj) {
+        try { activeCountdownAudioObj.volume = num / 100; } catch (_) {}
+      }
+      simpanPengaturanTimer();
+    }
+
+    function tesSuaraCountdown() {
+      const btn = document.getElementById('btnTesCountdownAudio');
+      if (previewCountdownTimers.length > 0 || (activeCountdownAudioObj && !activeCountdownAudioObj.paused)) {
+        hentikanAudioCountdownAktif();
+        return;
+      }
+      const msg = document.getElementById('audioStatusMsg');
+      const vol = Math.max(0, Math.min(1, (timerConfig.countdownVolume ?? 85) / 100));
+      if (customAudioCountdown) {
+        try {
+          activeCountdownAudioObj = new Audio(customAudioCountdown);
+          activeCountdownAudioObj.volume = vol;
+          if (btn) btn.textContent = '⏹ Stop Tes';
+          activeCountdownAudioObj.onended = () => hentikanAudioCountdownAktif();
+          activeCountdownAudioObj.play().catch(() => hentikanAudioCountdownAktif());
+          if (msg) { msg.style.color = '#0284c7'; msg.textContent = 'Memutar audio countdown custom...'; }
+          return;
+        } catch (_) {}
+      }
+      if ((timerConfig.countdownSoundPreset || 'esports') === 'mute' || vol <= 0) {
+        if (msg) { msg.style.color = '#d97706'; msg.textContent = 'Suara countdown sedang Senyap / Volume 0%.'; }
+        return;
+      }
+      if (btn) btn.textContent = '⏹ Stop Tes';
+      if (msg) { msg.style.color = '#0284c7'; msg.textContent = 'Memutar tes suara 3 - 2 - 1 - GO!...'; }
+      [
+        { d: 0, s: '3' },
+        { d: 520, s: '2' },
+        { d: 1040, s: '1' },
+        { d: 1560, s: 'GO' }
+      ].forEach(item => {
+        previewCountdownTimers.push(setTimeout(() => {
+          if (typeof putarSuaraStartCountdown === 'function') putarSuaraStartCountdown(item.s, true);
+        }, item.d));
+      });
+      previewCountdownTimers.push(setTimeout(() => hentikanAudioCountdownAktif(), 2200));
+    }
 
     function unggahAudio(tipe, ev) {
       const file = ev.target.files[0];
@@ -7948,6 +8080,12 @@
             customAudioPoin = e.target.result;
             localStorage.setItem(AUDIO_POIN_KEY, customAudioPoin);
             putarSuaraNotifPoin();
+          } else if (tipe === 'countdown') {
+            hentikanAudioCountdownAktif();
+            customAudioCountdown = e.target.result;
+            localStorage.setItem(AUDIO_COUNTDOWN_KEY, customAudioCountdown);
+            updateAudioStatusUI();
+            tesSuaraCountdown();
           } else {
             customAudioPodium = e.target.result;
             localStorage.setItem(AUDIO_PODIUM_KEY, customAudioPodium);
@@ -7970,6 +8108,17 @@
         try { localStorage.removeItem(AUDIO_POIN_KEY); } catch (_) {}
         document.getElementById('fileAudioPoin').value = '';
         putarSuaraNotifPoin();
+      } else if (tipe === 'countdown') {
+        hentikanAudioCountdownAktif();
+        customAudioCountdown = null;
+        try { localStorage.removeItem(AUDIO_COUNTDOWN_KEY); } catch (_) {}
+        const inp = document.getElementById('fileAudioCountdown');
+        if (inp) inp.value = '';
+        timerConfig.countdownSoundPreset = 'esports';
+        timerConfig.countdownVolume = 85;
+        simpanPengaturanTimer();
+        updateAudioStatusUI();
+        if (typeof putarSuaraStartCountdown === 'function') putarSuaraStartCountdown('GO', true);
       } else {
         customAudioPodium = null;
         try { localStorage.removeItem(AUDIO_PODIUM_KEY); } catch (_) {}
@@ -9600,6 +9749,8 @@
     let timerConfig = {
       durationSec: 15 * 60, // default 15:00
       soundEnabled: true,
+      countdownSoundPreset: 'esports', // 'esports' | 'racing' | 'arcade' | 'beep' | 'mute'
+      countdownVolume: 85,
       autoDoubleLast2Min: false,
       autoPodiumOnEnd: false
     };
@@ -9625,6 +9776,12 @@
           }
           if (typeof parsed.soundEnabled === 'boolean') {
             timerConfig.soundEnabled = parsed.soundEnabled;
+          }
+          if (typeof parsed.countdownSoundPreset === 'string' && ['esports', 'racing', 'arcade', 'beep', 'mute'].includes(parsed.countdownSoundPreset)) {
+            timerConfig.countdownSoundPreset = parsed.countdownSoundPreset;
+          }
+          if (Number.isFinite(parsed.countdownVolume)) {
+            timerConfig.countdownVolume = Math.max(0, Math.min(100, Math.round(parsed.countdownVolume)));
           }
           if (typeof parsed.autoDoubleLast2Min === 'boolean') {
             timerConfig.autoDoubleLast2Min = parsed.autoDoubleLast2Min;
@@ -9700,16 +9857,63 @@
       playSynthTone(523.25, 0.50, 0.70, 'triangle', 0.24);
     }
 
-    function putarSuaraStartCountdown(step) {
-      if (!timerConfig.soundEnabled) return;
+    function putarSuaraStartCountdown(step, forcePreview = false) {
+      if (!forcePreview && !timerConfig.soundEnabled) return;
+      const preset = timerConfig.countdownSoundPreset || 'esports';
+      if (preset === 'mute') return;
+      const v = Math.max(0, Math.min(1, (timerConfig.countdownVolume ?? 85) / 100));
+      if (v <= 0) return;
+
+      if (preset === 'racing') {
+        if (step === 'GO') {
+          playSynthTone(880, 0, 0.48, 'square', 0.24 * v);
+          playSynthTone(1318.5, 0, 0.48, 'triangle', 0.28 * v);
+        } else {
+          playSynthTone(440, 0, 0.14, 'square', 0.22 * v);
+          playSynthTone(880, 0, 0.12, 'sine', 0.16 * v);
+        }
+        return;
+      }
+
+      if (preset === 'arcade') {
+        if (step === 'GO') {
+          playSynthTone(523.25, 0.00, 0.09, 'square', 0.18 * v);
+          playSynthTone(659.25, 0.06, 0.09, 'square', 0.18 * v);
+          playSynthTone(783.99, 0.12, 0.10, 'square', 0.20 * v);
+          playSynthTone(1046.5, 0.18, 0.26, 'sawtooth', 0.22 * v);
+          playSynthTone(1318.5, 0.20, 0.28, 'triangle', 0.24 * v);
+        } else {
+          const pairs = { '3': [523.25, 659.25], '2': [659.25, 783.99], '1': [783.99, 987.77] };
+          const [f1, f2] = pairs[String(step)] || [659.25, 783.99];
+          playSynthTone(f1, 0, 0.08, 'square', 0.18 * v);
+          playSynthTone(f2, 0.07, 0.13, 'triangle', 0.24 * v);
+        }
+        return;
+      }
+
+      if (preset === 'beep') {
+        if (step === 'GO') {
+          playSynthTone(1046.5, 0, 0.26, 'sine', 0.30 * v);
+          playSynthTone(1318.5, 0.06, 0.30, 'triangle', 0.26 * v);
+        } else {
+          const fm = { '3': 659.25, '2': 783.99, '1': 987.77 };
+          playSynthTone(fm[String(step)] || 783.99, 0, 0.15, 'sine', 0.28 * v);
+        }
+        return;
+      }
+
+      // Default: 'esports' (Bass Hit + Crisp Metallic Slash)
       if (step === 'GO') {
-        // Fanfare mulai lomba (cerah & tegas)
-        playSynthTone(1046.5, 0, 0.22, 'triangle', 0.30);
-        playSynthTone(1318.5, 0.05, 0.24, 'triangle', 0.26);
-        playSynthTone(1567.98, 0.10, 0.36, 'sawtooth', 0.20);
+        playSynthTone(130.81, 0, 0.34, 'sine', 0.38 * v);
+        playSynthTone(523.25, 0, 0.26, 'triangle', 0.26 * v);
+        playSynthTone(1046.5, 0.03, 0.32, 'triangle', 0.30 * v);
+        playSynthTone(1318.5, 0.07, 0.34, 'triangle', 0.26 * v);
+        playSynthTone(1567.98, 0.11, 0.42, 'sawtooth', 0.20 * v);
       } else {
-        const freqMap = { '3': 659.25, '2': 783.99, '1': 987.77 };
-        playSynthTone(freqMap[String(step)] || 783.99, 0, 0.16, 'triangle', 0.28);
+        const bassMap = { '3': 110, '2': 123.47, '1': 146.83 };
+        const chimeMap = { '3': 659.25, '2': 783.99, '1': 987.77 };
+        playSynthTone(bassMap[String(step)] || 120, 0, 0.20, 'sine', 0.34 * v);
+        playSynthTone(chimeMap[String(step)] || 783.99, 0, 0.15, 'triangle', 0.28 * v);
       }
     }
 
@@ -9717,6 +9921,7 @@
       startCountdownTimers.forEach(id => clearTimeout(id));
       startCountdownTimers = [];
       startCountdownActive = false;
+      hentikanAudioCountdownAktif();
       const ov = document.getElementById('startCountdownOverlay');
       if (ov) {
         ov.classList.remove('show', 'is-exit');
@@ -9733,11 +9938,10 @@
       ov.setAttribute('aria-hidden', 'false');
       ov.innerHTML = `
         <div class="start-cd-stage step-${stepKey}">
-          <div class="start-cd-ring"></div>
-          <div class="start-cd-badge">
-            <span class="start-cd-num">${labelNum}</span>
-          </div>
-          <div class="start-cd-sub">${subText}</div>
+          <div class="start-cd-slash-main"></div>
+          <div class="start-cd-slash-sub"></div>
+          <div class="start-cd-num">${labelNum}</div>
+          <div class="start-cd-sub"><span>${subText}</span></div>
         </div>
       `;
     }
@@ -9762,18 +9966,34 @@
       startCountdownActive = true;
       renderTimerUI();
 
+      // Jika user upload audio countdown custom, putar langsung sejak awal 3-2-1-GO!
+      let pakaiCustomAudio = false;
+      const vol = Math.max(0, Math.min(1, (timerConfig.countdownVolume ?? 85) / 100));
+      if (timerConfig.soundEnabled && customAudioCountdown && vol > 0) {
+        try {
+          activeCountdownAudioObj = new Audio(customAudioCountdown);
+          activeCountdownAudioObj.volume = vol;
+          activeCountdownAudioObj.play().catch(() => { pakaiCustomAudio = false; });
+          pakaiCustomAudio = true;
+        } catch (_) {
+          pakaiCustomAudio = false;
+        }
+      }
+
       const steps = [
-        { delay: 0,    key: '3',  num: '3',   sub: 'BERSIAP...',    sound: '3' },
-        { delay: 850,  key: '2',  num: '2',   sub: 'BERSIAP...',    sound: '2' },
-        { delay: 1700, key: '1',  num: '1',   sub: 'SIAP MULAI!',   sound: '1' },
-        { delay: 2550, key: 'go', num: 'GO!', sub: 'LOMBA DIMULAI!', sound: 'GO', startNow: true }
+        { delay: 0,    key: '3',  num: '3',   sub: 'BERSIAP',        sound: '3' },
+        { delay: 840,  key: '2',  num: '2',   sub: 'FOKUS',          sound: '2' },
+        { delay: 1680, key: '1',  num: '1',   sub: 'SIAP MULAI',     sound: '1' },
+        { delay: 2520, key: 'go', num: 'GO!', sub: 'LOMBA DIMULAI!', sound: 'GO', startNow: true }
       ];
 
       steps.forEach(s => {
         const tid = setTimeout(() => {
           if (!startCountdownActive) return;
           tampilkanStepCountdownMulai(s.key, s.num, s.sub);
-          putarSuaraStartCountdown(s.sound);
+          if (!pakaiCustomAudio) {
+            putarSuaraStartCountdown(s.sound);
+          }
           if (s.startNow) {
             startCountdownActive = false;
             mulaiTimerLangsung(true);
