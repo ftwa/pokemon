@@ -9188,7 +9188,18 @@
         .trim();
 
       const FISH_TIER_CORRECTIONS = {
-        'panther eel': { t: 'secret', r: 'Secret' }
+        'panther eel': { t: 'secret', r: 'Secret' },
+        'king crab': { t: 'secret', r: 'Secret' },
+        'hammerhead shark': { t: 'mitos', r: 'Mythic' },
+        'manta ray': { t: 'mitos', r: 'Mythic' },
+        'dotted stingray': { t: 'mitos', r: 'Mythic' },
+        'plasma shark': { t: 'mitos', r: 'Mythic' },
+        'thresher shark': { t: 'mitos', r: 'Mythic' },
+        'blueflame ray': { t: 'mitos', r: 'Mythic' },
+        'strippled seahorse': { t: 'mitos', r: 'Mythic' },
+        'abyss seahorse': { t: 'mitos', r: 'Mythic' },
+        'prismy seahorse': { t: 'mitos', r: 'Mythic' },
+        'loggerhead turtle': { t: 'mitos', r: 'Mythic' }
       };
 
       const buildMeta = (key, entry) => {
@@ -9282,23 +9293,28 @@
         const alasan = (row.big > 0 || row.shiny > 0 || row.mutasi > 0)
           ? `${labelKategori} normal diabaikan (Dasar 0)`
           : `Tier ${labelKategori} bernilai 0`;
-        return { poin: 0, rincian: alasan, kategori: labelKategori, valid: false };
+        return { poin: 0, rincian: alasan, kategori: labelKategori, valid: false, hasBig, hasShiny, hasMutasi };
       }
-      return { poin: total, rincian: rincian.join(', '), kategori: labelKategori, valid: true };
+      return { poin: total, rincian: rincian.join(', '), kategori: labelKategori, valid: true, hasBig, hasShiny, hasMutasi };
     }
 
-    function hitungPoinAutoClient(tierStr, namaIkan, varianStr) {
+    function hitungPoinAutoClient(tierStr, namaIkan, varianStr, tierSource = '') {
       const tierClean = String(tierStr || '').toLowerCase().trim();
       const namaClean = String(namaIkan || '').toLowerCase().trim();
       const varianClean = String(varianStr || '').toLowerCase().trim();
+      const srcClean = String(tierSource || '').toLowerCase().trim();
       const rules = autoConfig.rules || {};
+
+      // Cari metadata ikan di DB (dipakai untuk kecocokan eksak Ikan Khusus, auto-deteksi mutasi baru, gambar & fallback tier)
+      const dbFish = cariInfoIkanDb(namaIkan);
+      const resolvedFishName = (dbFish && dbFish.name) ? dbFish.name.toLowerCase().trim() : namaClean;
 
       const targetKhusus = String(rules.khususNama || '').toLowerCase().trim();
       let isKhusus = false;
-      if (targetKhusus && namaClean) {
-        const escK = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      if (targetKhusus && resolvedFishName) {
         const list = targetKhusus.split(',').map(s => s.trim()).filter(Boolean);
-        if (list.some(k => new RegExp(`(?:^|[^a-z0-9])${escK(k)}(?:$|[^a-z0-9])`).test(namaClean))) isKhusus = true;
+        // Cocokkan eksak agar "Manta Ray" tidak salah kena "Starlight Manta Ray" / "Hammerhead Shark" tidak kena "Cosmic Hammerhead Shark"
+        if (list.some(k => resolvedFishName === k || namaClean === k)) isKhusus = true;
       }
 
       const teksCek = `${namaIkan} ${varianStr}`.toUpperCase();
@@ -9306,7 +9322,19 @@
       const varianTokens = varianClean.split(',').map(v => v.trim()).filter(v => v && !bukanMutasi.includes(v));
       const hasBig = /\bBIG\b/.test(teksCek);
       const hasShiny = /\bSHINY\b/.test(teksCek);
-      const hasMutasi = varianTokens.length > 0;
+      let hasMutasi = varianTokens.length > 0;
+
+      // Auto-deteksi mutasi baru yang belum masuk KNOWN_VARIANTS inject.lua (jika ada kata sisa di depan nama dasar ikan)
+      if (!hasMutasi && dbFish && dbFish.name && namaClean) {
+        const baseLower = dbFish.name.toLowerCase().trim();
+        if (namaClean.length > baseLower.length && namaClean.endsWith(baseLower)) {
+          const prefixRem = namaClean.slice(0, namaClean.length - baseLower.length)
+            .replace(/\b(big|shiny|a|an)\b/gi, ' ')
+            .replace(/[^a-z0-9]+/gi, ' ')
+            .trim();
+          if (prefixRem.length >= 2) hasMutasi = true;
+        }
+      }
 
       const isExplicitKhususTier = tierClean.includes('khusus') || tierClean.includes('special');
       const khususRow = getMatrixRow('khusus');
@@ -9314,21 +9342,26 @@
         return hitungDariBarisMatriks(khususRow, 'KHUSUS', hasBig, hasShiny, hasMutasi);
       }
 
-      // PRIORITAS 1: Cek database resmi 419 ikan Fish It dulu agar tier ikan seperti
-      // Dotted Stingray (Legend 1 in 91K), Plasma Shark (Legend 1 in 225K), Blob Shark (Secret 1 in 250K),
-      // King Crab (Mitos 1 in 1.2M), Aurora Narwhal (Mitos 1 in 2K) 100% AKURAT!
+      const tierFromChat = mapTierKeKategori(tierClean);
       let kategori = 'NORMAL';
-      const dbFish = cariInfoIkanDb(namaIkan);
-      if (dbFish && dbFish.tier) {
+
+      // PRIORITAS 1: Jika inject.lua v2 membaca warna RGB resmi langsung pada NAMA IKAN di chat game ('fish_rgb'),
+      // percaya penuh tier real-time dari eksekutor! Database hanya untuk gambar/pulau/katalog (tidak menimpa tier game).
+      if (srcClean === 'fish_rgb' && tierFromChat !== 'NORMAL') {
+        kategori = tierFromChat;
+      }
+      // PRIORITAS 2: Jika tag warna chat tercampur warna mutasi ('mut_rgb_ambiguous') atau inject.lua versi lama,
+      // gunakan Database ikan resmi terlebih dahulu agar tidak tertipu warna mutasi (ALBINO/GHOST/ELEMENTAL/CORRUPT).
+      if (kategori === 'NORMAL' && dbFish && dbFish.tier) {
         kategori = mapTierKeKategori(dbFish.tier);
       }
-      // PRIORITAS 2: Jika ikan baru belum ada di DB, gunakan tier dari inject.lua (warna RGB chat / odds)
+      // PRIORITAS 3: Fallback terakhir ke tier dari inject.lua (odds / warna chat) untuk ikan baru yang belum ada di DB
       if (kategori === 'NORMAL') {
-        kategori = mapTierKeKategori(tierClean);
+        kategori = tierFromChat;
       }
 
       if (kategori === 'NORMAL') {
-        return { poin: 0, rincian: 'Bukan tier turnamen', kategori: 'NORMAL', valid: false };
+        return { poin: 0, rincian: 'Bukan tier turnamen', kategori: 'NORMAL', valid: false, hasBig, hasShiny, hasMutasi };
       }
 
       const keyMap = {
@@ -9488,8 +9521,8 @@
         }
       }
 
-      // Hitung poin sesuai aturan live di Pokédex UI (authoritative fish_database.js -> fallback RGB tier)
-      const kalkulasi = hitungPoinAutoClient(rawTier, rawFish, rawVariant);
+      // Hitung poin sesuai aturan live di Pokédex UI (Prioritas: warna resmi nama ikan dari inject.lua v2 -> fallback DB -> odds)
+      const kalkulasi = hitungPoinAutoClient(rawTier, rawFish, rawVariant, evt.tierSource || '');
       if (!kalkulasi.valid || kalkulasi.poin <= 0) return;
 
       const cleanVar = (rawVariant && !['none', '-', ''].includes(rawVariant.toLowerCase())) ? rawVariant : '';
@@ -9520,9 +9553,6 @@
 
       // Catat statistik tangkapan per pemain (tampil saat hover Display Name di Mode Auto)
       if (typeof catatStatistikTangkapanPemain === 'function') {
-        const teksVar = `${rawFish} ${rawVariant}`.toUpperCase();
-        const bukanMutasi = ['none', '-', 'no', 'normal', '', 'shiny', 'big'];
-        const varTok = String(rawVariant || '').toLowerCase().split(',').map(v => v.trim()).filter(v => v && !bukanMutasi.includes(v));
         catatStatistikTangkapanPemain(p, {
           fishName: (fishInfoDb && fishInfoDb.name) ? fishInfoDb.name : rawFish,
           fullFish,
@@ -9530,9 +9560,9 @@
           poin: finalPoin,
           rincian: finalRincian,
           img: fishInfoDb ? fishInfoDb.img : '',
-          hasBig: /\bBIG\b/.test(teksVar),
-          hasShiny: /\bSHINY\b/.test(teksVar),
-          hasMutasi: varTok.length > 0,
+          hasBig: Boolean(kalkulasi.hasBig),
+          hasShiny: Boolean(kalkulasi.hasShiny),
+          hasMutasi: Boolean(kalkulasi.hasMutasi),
           time: jam
         });
       }

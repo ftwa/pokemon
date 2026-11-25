@@ -119,78 +119,240 @@ local PROTECTED_FISH_LIST = {
 table.sort(PROTECTED_FISH_LIST, function(a, b) return #a > #b end)
 
 -- ============================================================
--- 2. DETEKSI TIER (RGB + HEX SETELAH "obtained") & PEMISAH VARIAN
+-- 2. DETEKSI TIER (STACK PARSER TAG <font> NAMA IKAN) & PEMISAH VARIAN
 -- ============================================================
 local function classifyRgbColor(r, g, b)
     -- FORGOTTEN: Ungu / Violet / Magenta terang atau Putih-Prismatik
     if (r >= 150 and b >= 200 and g <= 155) or (r >= 225 and g >= 225 and b >= 225) then
         return "FORGOTTEN"
     -- SECRET: Teal / Cyan / Hijau Mint cerah (misal rgb(24, 255, 152) atau rgb(56, 220, 255))
-    elseif (g >= 170 and b >= 110 and r <= 140) or (g >= 200 and r <= 100) then
+    elseif (g >= 170 and b >= 110 and r <= 150) or (g >= 200 and r <= 110) then
         return "SECRET"
     -- MYTHIC: Merah terang / Crimson (misal rgb(255, 45, 45))
-    elseif r >= 200 and g <= 100 and b <= 110 then
+    elseif r >= 200 and g <= 115 and b <= 125 then
         return "MYTHIC"
     -- LEGENDARY: Oranye / Emas / Kuning (misal rgb(255, 185, 43))
-    elseif r >= 200 and g >= 120 and b <= 100 then
+    elseif r >= 200 and g >= 120 and b <= 110 then
         return "LEGENDARY"
     end
     return nil
 end
 
-local function determineTier(rawText, cleanText)
-    -- PENTING: Hanya baca tag <font color=...> SETELAH kata "obtained"
-    -- agar warna nama pemain (misal ungu rgb(107,50,124)) TIDAK salah dibaca sebagai tier ikan!
-    local afterObtained = rawText:match("[Oo]btained(.*)") or rawText
-
-    -- 1. Cek format rgb(R, G, B) yang dipakai Fish It modern
-    for rStr, gStr, bStr in afterObtained:gmatch('color=["\']rgb%(%s*(%d+)%s*,%s*(%d+)%s*,%s*(%d+)%s*%)["\']') do
-        local tierFromRgb = classifyRgbColor(tonumber(rStr) or 0, tonumber(gStr) or 0, tonumber(bStr) or 0)
-        if tierFromRgb then
-            return tierFromRgb
-        end
+local function parseColorAttr(tagStr)
+    local rStr, gStr, bStr = tagStr:match('color%s*=%s*["\']%s*rgb%(%s*(%d+)%s*,%s*(%d+)%s*,%s*(%d+)%s*%)%s*["\']')
+    if rStr then
+        return tonumber(rStr) or 0, tonumber(gStr) or 0, tonumber(bStr) or 0
     end
-
-    -- 2. Cek format HEX (#RRGGBB) jika ada
-    for hex in afterObtained:gmatch('color=["\']#?(%x%x%x%x%x%x)["\']') do
-        local r = tonumber(hex:sub(1, 2), 16) or 0
-        local g = tonumber(hex:sub(3, 4), 16) or 0
-        local b = tonumber(hex:sub(5, 6), 16) or 0
-        local tierFromHex = classifyRgbColor(r, g, b)
-        if tierFromHex then
-            return tierFromHex
-        end
+    local hex = tagStr:match('color%s*=%s*["\']%s*#?(%x%x%x%x%x%x)%s*["\']')
+    if hex then
+        return tonumber(hex:sub(1, 2), 16) or 0, tonumber(hex:sub(3, 4), 16) or 0, tonumber(hex:sub(5, 6), 16) or 0
     end
+    return nil
+end
 
-    -- 3. Fallback berdasarkan teks odds (hanya jika tidak ada warna di chat)
+local function parseChanceNumber(cleanText)
     local chanceStr = cleanText:match("with%s+a%s+1%s+in%s+([%w%.,]+)%s+chance")
-    if chanceStr then
-        local upper = string.upper(chanceStr)
-        local num = tonumber(string.match(upper, "[%d%.]+")) or 0
-        local effectiveNum = num
-        if string.find(upper, "M") then
-            effectiveNum = num * 1000000
-        elseif string.find(upper, "K") then
-            effectiveNum = num * 1000
-        else
-            local rawDigits = string.gsub(chanceStr, "[^%d]", "")
-            effectiveNum = tonumber(rawDigits) or num
-        end
+    if not chanceStr then return 0 end
+    local upper = string.upper(chanceStr)
+    local num = tonumber(string.match(upper, "[%d%.]+")) or 0
+    if string.find(upper, "M") then
+        return num * 1000000
+    elseif string.find(upper, "K") then
+        return num * 1000
+    else
+        local rawDigits = string.gsub(chanceStr, "[^%d]", "")
+        return tonumber(rawDigits) or num
+    end
+end
 
-        if effectiveNum >= 10000000 then
-            return "FORGOTTEN"
-        elseif effectiveNum >= 250000 then
-            return "SECRET"
-        elseif effectiveNum >= 50000 then
-            return "MYTHIC"
-        elseif effectiveNum >= 5000 then
-            return "LEGENDARY"
-        elseif effectiveNum >= 1000 then
-            return "RARE"
+local function tierFromOddsNum(effectiveNum)
+    if effectiveNum >= 10000000 then
+        return "FORGOTTEN"
+    elseif effectiveNum >= 250000 then
+        return "SECRET"
+    elseif effectiveNum >= 50000 then
+        return "MYTHIC"
+    elseif effectiveNum >= 5000 then
+        return "LEGENDARY"
+    elseif effectiveNum >= 1000 then
+        return "RARE"
+    end
+    return "NORMAL"
+end
+
+local function isPureMutationText(txt)
+    local low = string.lower(tostring(txt or "")):match("^%s*(.-)%s*$") or ""
+    if low == "" then return false end
+    for _, v in ipairs(KNOWN_VARIANTS) do
+        if low == string.lower(v) then
+            return true
+        end
+    end
+    return false
+end
+
+local function determineTier(rawText, cleanText, baseFish, variantStr)
+    -- PENTING: Hanya baca segmen SETELAH kata "obtained" agar warna nama pemain tidak terbaca!
+    local afterObtained = rawText:match("[Oo]btained(.*)") or rawText
+    local effectiveOdds = parseChanceNumber(cleanText)
+
+    -- Cek apakah tangkapan punya mutasi non-Big/Shiny (seperti ALBINO/GHOST/CORRUPT/ELEMENTAL/HOLOGRAPHIC/DUSKBREAKER/GOLD)
+    local hasColoredMutation = false
+    if variantStr and variantStr ~= "" and string.lower(variantStr) ~= "none" then
+        for tok in string.gmatch(string.lower(variantStr), "[^,]+") do
+            local cleanTok = tok:match("^%s*(.-)%s*$") or ""
+            if cleanTok ~= "" and cleanTok ~= "big" and cleanTok ~= "shiny" and cleanTok ~= "none" then
+                hasColoredMutation = true
+                break
+            end
         end
     end
 
-    return "NORMAL"
+    -- 1. PARSER STACK TAG <font>: Melacak warna aktif di setiap potongan teks setelah "obtained"
+    --    Kebal terhadap tag sejajar maupun bersarang (<font color="MUT">ALBINO</font> <font color="TIER">Ikan</font>)!
+    local colorStack = {}
+    local plainSegments = {}
+    local fullPlain = ""
+    local fontTagCount = 0
+    local pos = 1
+    local len = #afterObtained
+
+    while pos <= len do
+        local tagStart, tagEnd = afterObtained:find("<[^>]+>", pos)
+        if not tagStart then
+            local chunk = afterObtained:sub(pos)
+            if #chunk > 0 then
+                local top = colorStack[#colorStack]
+                table.insert(plainSegments, {
+                    startIdx = #fullPlain + 1,
+                    endIdx = #fullPlain + #chunk,
+                    text = chunk,
+                    tier = top and top.tier or nil,
+                    isWhite = top and top.isWhite or false,
+                    depth = #colorStack
+                })
+                fullPlain = fullPlain .. chunk
+            end
+            break
+        end
+
+        if tagStart > pos then
+            local chunk = afterObtained:sub(pos, tagStart - 1)
+            local top = colorStack[#colorStack]
+            table.insert(plainSegments, {
+                startIdx = #fullPlain + 1,
+                endIdx = #fullPlain + #chunk,
+                text = chunk,
+                tier = top and top.tier or nil,
+                isWhite = top and top.isWhite or false,
+                depth = #colorStack
+            })
+            fullPlain = fullPlain .. chunk
+        end
+
+        local tagStr = afterObtained:sub(tagStart, tagEnd)
+        local lowerTag = string.lower(tagStr)
+        if lowerTag:match("^<%s*/%s*font") then
+            if #colorStack > 0 then
+                table.remove(colorStack)
+            end
+        elseif lowerTag:match("^<%s*font%f[%s>]") then
+            local r, g, b = parseColorAttr(tagStr)
+            if r then
+                fontTagCount = fontTagCount + 1
+                local isW = (r >= 225 and g >= 225 and b >= 225)
+                table.insert(colorStack, { tier = classifyRgbColor(r, g, b), isWhite = isW })
+            else
+                local prev = colorStack[#colorStack]
+                table.insert(colorStack, { tier = prev and prev.tier or nil, isWhite = prev and prev.isWhite or false })
+            end
+        end
+
+        pos = tagEnd + 1
+    end
+
+    -- 1A. Cari segmen warna TERAKHIR yang valid (bukan teks mutasi tunggal) di seluruh afterObtained
+    --     (Menangani format Fish It: <font=MUT>ALBINO</font> <font=TIER>Ikan</font> MAUPUN <font=MUT>ALBINO Ikan</font> with a <font=TIER>1 in X</font>)
+    local lastTierSeg = nil
+    for i = #plainSegments, 1, -1 do
+        local seg = plainSegments[i]
+        local trimmedSeg = seg.text:match("^%s*(.-)%s*$") or ""
+        if seg.tier and #trimmedSeg > 0 and not isPureMutationText(trimmedSeg) then
+            -- Abaikan teks odds warna putih polos jika odds < 5 juta (bukan Forgotten asli)
+            local isWhiteLowOdds = seg.isWhite and trimmedSeg:find("1%s+in%s+") and effectiveOdds > 0 and effectiveOdds < 5000000
+            if not isWhiteLowOdds then
+                lastTierSeg = seg
+                break
+            end
+        end
+    end
+
+    -- 1B. Cari juga warna yang tepat membungkus baseFish (jika terpisah dari mutasi)
+    local fishSeg = nil
+    local targetLower = string.lower(tostring(baseFish or "")):match("^%s*(.-)%s*$") or ""
+    if #targetLower >= 2 then
+        local fullLower = string.lower(fullPlain)
+        local matchPos = nil
+        local searchFrom = 1
+        while true do
+            local s = string.find(fullLower, targetLower, searchFrom, true)
+            if not s then break end
+            matchPos = s
+            searchFrom = s + 1
+        end
+        if matchPos then
+            for _, seg in ipairs(plainSegments) do
+                if matchPos >= seg.startIdx and matchPos <= seg.endIdx and seg.tier then
+                    fishSeg = seg
+                    break
+                end
+            end
+        end
+    end
+
+    -- Pilih kandidat terbaik:
+    -- Jika ada tag warna terpisah setelah mutasi (misal pada nama ikan atau pada odds "1 in X"), ambil lastTierSeg!
+    local chosenSeg = lastTierSeg or fishSeg
+    if chosenSeg and chosenSeg.tier then
+        local chosenTier = chosenSeg.tier
+        local segLower = string.lower(chosenSeg.text or "")
+        local segContainsMutation = false
+        if hasColoredMutation and variantStr then
+            for tok in string.gmatch(string.lower(variantStr), "[^,]+") do
+                local cleanTok = tok:match("^%s*(.-)%s*$") or ""
+                if cleanTok ~= "" and cleanTok ~= "big" and cleanTok ~= "shiny" and cleanTok ~= "none" then
+                    if string.find(segLower, cleanTok, 1, true) then
+                        segContainsMutation = true
+                        break
+                    end
+                end
+            end
+        end
+        local isSharedMutTag = hasColoredMutation and (fontTagCount <= 1 or segContainsMutation)
+
+        -- Pengaman anti-palsu FORGOTTEN: ikan Forgotten asli selalu >= 1 in 5M;
+        -- jika warna putih/ungu muncul pada tangkapan bermutasi dengan odds < 5M (misal ALBINO/GHOST/CORRUPT 1 in 8K),
+        -- itu pasti warna mutasi, bukan Forgotten!
+        if chosenTier == "FORGOTTEN" and hasColoredMutation and effectiveOdds > 0 and effectiveOdds < 5000000 then
+            local oddsFallback = tierFromOddsNum(effectiveOdds)
+            if oddsFallback ~= "NORMAL" then
+                return oddsFallback, "mut_rgb_ambiguous"
+            end
+        end
+
+        if isSharedMutTag then
+            -- Tag warna dipakai bersama dengan teks mutasi (bukan tag terpisah khusus nama ikan/odds) -> tandai ambiguous agar DB bisa bantu!
+            return chosenTier, "mut_rgb_ambiguous"
+        end
+        return chosenTier, "fish_rgb"
+    end
+
+    -- 2. Fallback berdasarkan teks odds (hanya jika tidak ada warna tier di chat)
+    if effectiveOdds > 0 then
+        return tierFromOddsNum(effectiveOdds), "odds"
+    end
+
+    return "NORMAL", "none"
 end
 
 local function extractVariantsFromText(textChunk, detectedVariants)
@@ -261,7 +423,7 @@ end
 -- ============================================================
 -- 3. KIRIM TANGKAPAN MURNI KE LOKAL 0MS (POKÉDEX SCOREBOARD .EXE)
 -- ============================================================
-local function sendCatchToLocal(player, fish, variant, tier, displayName, userId)
+local function sendCatchToLocal(player, fish, variant, tier, displayName, userId, tierSource)
     if not httpRequest then return end
     if tier == "NORMAL" then return end
 
@@ -286,6 +448,8 @@ local function sendCatchToLocal(player, fish, variant, tier, displayName, userId
         variant = variant,
         tier = tier,
         kategori = tier,
+        tierSource = tierSource or "fish_rgb",
+        bridgeVersion = 2,
         source = "roblox_local",
         timestamp = tsMs
     })
@@ -299,7 +463,7 @@ local function sendCatchToLocal(player, fish, variant, tier, displayName, userId
                 Body = jsonBody
             })
             if res and (res.StatusCode == 200 or res.StatusCode == 201) then
-                print(string.format("⚡ [LOKAL 0MS] Masuk: %s -> %s [%s | %s]", mainDisplay, fish, tier, variant))
+                print(string.format("⚡ [LOKAL 0MS] Masuk: %s -> %s [%s/%s | %s]", mainDisplay, fish, tier, tostring(tierSource or "rgb"), variant))
             else
                 warn("⚠️ [LOKAL] PokedexScoreboard.exe belum terbuka! (status: " .. tostring(res and res.StatusCode or "offline") .. ")")
             end
@@ -331,6 +495,9 @@ local function processChatMessage(rawText)
         extractedPlayer, rawFishName = string.match(clean, "^(.-)%s+obtained%s+an?%s+(.-)%s+with")
     end
     if not extractedPlayer then
+        extractedPlayer, rawFishName = string.match(clean, "^(.-)%s+obtained%s+(.-)%s*%b()")
+    end
+    if not extractedPlayer then
         extractedPlayer, rawFishName = string.match(clean, "^(.-)%s+obtained%s+an?%s+(.-)$")
     end
 
@@ -360,10 +527,10 @@ local function processChatMessage(rawText)
     if not rawFishName then return end
 
     local baseFish, variant = splitFishAndVariant(rawFishName)
-    local tier = determineTier(rawText, clean)
+    local tier, tierSource = determineTier(rawText, clean, baseFish, variant)
 
-    print(string.format("🐟 [TANGKAPAN] %s (@%s) -> %s [%s | %s]", playerDisplayName, playerName, baseFish, tier, variant))
-    sendCatchToLocal(playerName, baseFish, variant, tier, playerDisplayName, playerUserId)
+    print(string.format("🐟 [TANGKAPAN] %s (@%s) -> %s [%s/%s | %s]", playerDisplayName, playerName, baseFish, tier, tostring(tierSource), variant))
+    sendCatchToLocal(playerName, baseFish, variant, tier, playerDisplayName, playerUserId, tierSource)
 end
 
 -- ============================================================
