@@ -341,6 +341,11 @@
       color: #047857;
       border-color: #6ee7b7;
     }
+    .rotom-timer-capsule.is-starting .rotom-timer-tag {
+      background: #fef3c7;
+      color: #92400e;
+      border-color: #f59e0b;
+    }
     .rotom-timer-capsule.is-warn .rotom-timer-tag {
       background: #fef3c7;
       color: #b45309;
@@ -432,6 +437,18 @@
       border-color: #b45309;
       color: #ffffff;
       box-shadow: 0 2px 6px rgba(217, 119, 6, 0.28);
+    }
+    .rotom-tbtn.play.counting-active {
+      background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%);
+      border-color: #991b1b;
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(220, 38, 38, 0.34);
+    }
+    .rotom-tbtn.play.resume-ready {
+      background: linear-gradient(180deg, #0ea5e9 0%, #0284c7 100%);
+      border-color: #0369a1;
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.30);
     }
     .rotom-timer-bar-track {
       position: absolute;
@@ -1517,30 +1534,6 @@
       box-shadow: inset 4px 0 0 #10b981;
     }
 
-    /* Garis Batas Zona Hadiah (0px perubahan tinggi tabel — anti goyang!) */
-    tr.is-prize-cutoff td {
-      box-shadow: inset 0 -2.5px 0 #f59e0b !important;
-    }
-    .prize-cutoff-badge {
-      position: absolute;
-      left: 4px;
-      bottom: -8px;
-      z-index: 16;
-      padding: 1px 6px;
-      border-radius: 999px;
-      background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
-      color: #ffffff;
-      border: 1px solid #fef3c7;
-      font-family: 'Outfit', sans-serif;
-      font-size: 8px;
-      font-weight: 900;
-      letter-spacing: 0.45px;
-      white-space: nowrap;
-      pointer-events: none;
-      box-shadow: 0 2px 6px rgba(217, 119, 6, 0.35);
-      line-height: 1.25;
-    }
-
     /* Soften empty seats so spectators focus immediately on active players */
     tbody tr.is-empty-row td {
       opacity: 0.52;
@@ -1631,15 +1624,15 @@
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 14.5px;
       font-weight: 800;
-      color: #075985;
+      color: #0c4a6e;
       overflow: hidden;
       text-overflow: ellipsis;
     }
     .sub-handle {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 10.5px;
-      font-weight: 700;
-      color: #475569;
+      font-size: 11px;
+      font-weight: 800;
+      color: #334155;
       overflow: hidden;
       text-overflow: ellipsis;
     }
@@ -1706,9 +1699,11 @@
       background: linear-gradient(180deg, #ffffff 0%, #e2e8f0 100%);
       border: 1.5px solid #94a3b8;
       color: #020617;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+      font-variant-numeric: tabular-nums;
       font-size: 19.5px;
       font-weight: 900;
+      letter-spacing: 0.2px;
       text-align: center;
       cursor: pointer;
       user-select: none;
@@ -1773,90 +1768,98 @@
     }
 
     /* ==========================================================================
-       5. 13 ELEMENTAL ROW COLORS (HIGH-CONTRAST MATCHED FOR LIGHT MODE)
+       5. 13 ELEMENTAL ROW COLORS (ULTRA-HIGH-CONTRAST FOR LIVESTREAM READABILITY)
        ========================================================================== */
-    tr.tag-blue td   { background: #dbeafe !important; border-color: #93c5fd !important; color: #0f172a !important; }
+    tr.tag-blue td   { background: #dbeafe !important; border-color: #60a5fa !important; color: #0f172a !important; }
     tr.tag-blue .td-no { background: #93c5fd !important; }
     tr.tag-blue .name-player { color: #0f172a !important; }
-    tr.tag-blue .name-display { color: #1d4ed8 !important; }
-    tr.tag-blue .score-val { background: #ffffff !important; border-color: #60a5fa !important; color: #1e3a8a !important; }
+    tr.tag-blue .name-display { color: #1e3a8a !important; }
+    tr.tag-blue .sub-handle { color: #1d4ed8 !important; }
+    tr.tag-blue .score-val { background: #ffffff !important; border-color: #2563eb !important; color: #1e3a8a !important; }
 
-    tr.tag-pink td   { background: #fce7f3 !important; border-color: #f9a8d4 !important; color: #500724 !important; }
+    tr.tag-pink td   { background: #fce7f3 !important; border-color: #f472b6 !important; color: #500724 !important; }
     tr.tag-pink .td-no { background: #f472b6 !important; }
-    tr.tag-pink .name-player { color: #831843 !important; }
-    tr.tag-pink .name-display { color: #be185d !important; }
-    tr.tag-pink .score-val { background: #ffffff !important; border-color: #f472b6 !important; color: #831843 !important; }
+    tr.tag-pink .name-player { color: #500724 !important; }
+    tr.tag-pink .name-display { color: #831843 !important; }
+    tr.tag-pink .sub-handle { color: #9d174d !important; }
+    tr.tag-pink .score-val { background: #ffffff !important; border-color: #db2777 !important; color: #831843 !important; }
 
     tr.tag-purple td { background: #581c87 !important; border-color: #7e22ce !important; color: #ffffff !important; }
     tr.tag-purple .td-no { background: #6b21a8 !important; }
     tr.tag-purple .name-player { color: #ffffff !important; }
-    tr.tag-purple .name-display { color: #e9d5ff !important; }
-    tr.tag-purple .sub-handle { color: #d8b4fe !important; }
+    tr.tag-purple .name-display { color: #f3e8ff !important; }
+    tr.tag-purple .sub-handle { color: #e9d5ff !important; }
     tr.tag-purple .score-val { background: #2e1065 !important; border-color: #c084fc !important; color: #ffffff !important; }
 
     tr.tag-red td    { background: #dc2626 !important; border-color: #b91c1c !important; color: #ffffff !important; }
     tr.tag-red .td-no { background: #991b1b !important; }
     tr.tag-red .name-player { color: #ffffff !important; }
-    tr.tag-red .name-display { color: #fee2e2 !important; }
-    tr.tag-red .sub-handle { color: #fecaca !important; }
+    tr.tag-red .name-display { color: #fef2f2 !important; }
+    tr.tag-red .sub-handle { color: #fee2e2 !important; }
     tr.tag-red .score-val { background: #ffffff !important; border-color: #fecaca !important; color: #991b1b !important; }
 
-    tr.tag-yellow td { background: #fefce8 !important; border-color: #fde68a !important; color: #422006 !important; }
-    tr.tag-yellow .td-no { background: #fef08a !important; }
-    tr.tag-yellow .name-player { color: #422006 !important; }
-    tr.tag-yellow .name-display { color: #92400e !important; }
-    tr.tag-yellow .score-val { background: #ffffff !important; border-color: #f59e0b !important; color: #78350f !important; }
+    tr.tag-yellow td { background: #fef9c3 !important; border-color: #eab308 !important; color: #1c1917 !important; }
+    tr.tag-yellow .td-no { background: #fde047 !important; }
+    tr.tag-yellow .name-player { color: #1c1917 !important; }
+    tr.tag-yellow .name-display { color: #451a03 !important; }
+    tr.tag-yellow .sub-handle { color: #713f12 !important; }
+    tr.tag-yellow .score-val { background: #fffbeb !important; border-color: #d97706 !important; color: #451a03 !important; }
 
-    tr.tag-green td  { background: #bbf7d0 !important; border-color: #4ade80 !important; color: #052e16 !important; }
-    tr.tag-green .td-no { background: #22c55e !important; }
-    tr.tag-green .name-player { color: #064e3b !important; }
-    tr.tag-green .name-display { color: #047857 !important; }
-    tr.tag-green .score-val { background: #ffffff !important; border-color: #22c55e !important; color: #065f46 !important; }
+    tr.tag-green td  { background: #dcfce7 !important; border-color: #22c55e !important; color: #052e16 !important; }
+    tr.tag-green .td-no { background: #4ade80 !important; }
+    tr.tag-green .name-player { color: #052e16 !important; }
+    tr.tag-green .name-display { color: #14532d !important; }
+    tr.tag-green .sub-handle { color: #166534 !important; }
+    tr.tag-green .score-val { background: #ffffff !important; border-color: #16a34a !important; color: #052e16 !important; }
 
-    tr.tag-orange td { background: #fed7aa !important; border-color: #fb923c !important; color: #431407 !important; }
-    tr.tag-orange .td-no { background: #f97316 !important; }
-    tr.tag-orange .name-player { color: #7c2d12 !important; }
-    tr.tag-orange .name-display { color: #c2410c !important; }
-    tr.tag-orange .score-val { background: #ffffff !important; border-color: #fb923c !important; color: #9a3412 !important; }
+    tr.tag-orange td { background: #ffedd5 !important; border-color: #f97316 !important; color: #431407 !important; }
+    tr.tag-orange .td-no { background: #fb923c !important; }
+    tr.tag-orange .name-player { color: #431407 !important; }
+    tr.tag-orange .name-display { color: #7c2d12 !important; }
+    tr.tag-orange .sub-handle { color: #9a3412 !important; }
+    tr.tag-orange .score-val { background: #ffffff !important; border-color: #ea580c !important; color: #7c2d12 !important; }
 
-    tr.tag-teal td   { background: #99f6e4 !important; border-color: #2dd4bf !important; color: #042f2e !important; }
-    tr.tag-teal .td-no { background: #14b8a6 !important; }
-    tr.tag-teal .name-player { color: #134e4a !important; }
-    tr.tag-teal .name-display { color: #0f766e !important; }
-    tr.tag-teal .score-val { background: #ffffff !important; border-color: #14b8a6 !important; color: #115e59 !important; }
+    tr.tag-teal td   { background: #ccfbf1 !important; border-color: #14b8a6 !important; color: #042f2e !important; }
+    tr.tag-teal .td-no { background: #2dd4bf !important; }
+    tr.tag-teal .name-player { color: #042f2e !important; }
+    tr.tag-teal .name-display { color: #134e4a !important; }
+    tr.tag-teal .sub-handle { color: #115e59 !important; }
+    tr.tag-teal .score-val { background: #ffffff !important; border-color: #0d9488 !important; color: #042f2e !important; }
 
     tr.tag-indigo td { background: #312e81 !important; border-color: #4338ca !important; color: #ffffff !important; }
     tr.tag-indigo .td-no { background: #4338ca !important; }
     tr.tag-indigo .name-player { color: #ffffff !important; }
-    tr.tag-indigo .name-display { color: #c7d2fe !important; }
-    tr.tag-indigo .sub-handle { color: #a5b4fc !important; }
+    tr.tag-indigo .name-display { color: #e0e7ff !important; }
+    tr.tag-indigo .sub-handle { color: #c7d2fe !important; }
     tr.tag-indigo .score-val { background: #1e1b4b !important; border-color: #818cf8 !important; color: #ffffff !important; }
 
-    tr.tag-cyan td   { background: #cffafe !important; border-color: #22d3ee !important; color: #083344 !important; }
-    tr.tag-cyan .td-no { background: #06b6d4 !important; }
-    tr.tag-cyan .name-player { color: #164e63 !important; }
-    tr.tag-cyan .name-display { color: #0e7490 !important; }
-    tr.tag-cyan .score-val { background: #ffffff !important; border-color: #22d3ee !important; color: #155e75 !important; }
+    tr.tag-cyan td   { background: #cffafe !important; border-color: #06b6d4 !important; color: #083344 !important; }
+    tr.tag-cyan .td-no { background: #22d3ee !important; }
+    tr.tag-cyan .name-player { color: #083344 !important; }
+    tr.tag-cyan .name-display { color: #164e63 !important; }
+    tr.tag-cyan .sub-handle { color: #155e75 !important; }
+    tr.tag-cyan .score-val { background: #ffffff !important; border-color: #0891b2 !important; color: #083344 !important; }
 
-    tr.tag-lime td   { background: #d9f99d !important; border-color: #a3e635 !important; color: #1a2e05 !important; }
-    tr.tag-lime .td-no { background: #84cc16 !important; }
-    tr.tag-lime .name-player { color: #365314 !important; }
-    tr.tag-lime .name-display { color: #4d7c0f !important; }
-    tr.tag-lime .score-val { background: #ffffff !important; border-color: #84cc16 !important; color: #3f6212 !important; }
+    tr.tag-lime td   { background: #ecfccb !important; border-color: #84cc16 !important; color: #1a2e05 !important; }
+    tr.tag-lime .td-no { background: #a3e635 !important; }
+    tr.tag-lime .name-player { color: #1a2e05 !important; }
+    tr.tag-lime .name-display { color: #365314 !important; }
+    tr.tag-lime .sub-handle { color: #3f6212 !important; }
+    tr.tag-lime .score-val { background: #ffffff !important; border-color: #65a30d !important; color: #1a2e05 !important; }
 
     tr.tag-rose td   { background: #9f1239 !important; border-color: #be123c !important; color: #ffffff !important; }
     tr.tag-rose .td-no { background: #be123c !important; }
     tr.tag-rose .name-player { color: #ffffff !important; }
-    tr.tag-rose .name-display { color: #fecdd3 !important; }
-    tr.tag-rose .sub-handle { color: #fda4af !important; }
+    tr.tag-rose .name-display { color: #ffe4e6 !important; }
+    tr.tag-rose .sub-handle { color: #fecdd3 !important; }
     tr.tag-rose .score-val { background: #4c0519 !important; border-color: #fb7185 !important; color: #ffffff !important; }
 
     tr.tag-slate td  { background: #1e293b !important; border-color: #334155 !important; color: #f8fafc !important; }
     tr.tag-slate .td-no { background: #334155 !important; }
     tr.tag-slate .name-player { color: #f8fafc !important; }
-    tr.tag-slate .name-display { color: #93c5fd !important; }
-    tr.tag-slate .sub-handle { color: #94a3b8 !important; }
-    tr.tag-slate .score-val { background: #0f172a !important; border-color: #64748b !important; color: #38bdf8 !important; }
+    tr.tag-slate .name-display { color: #bae6fd !important; }
+    tr.tag-slate .sub-handle { color: #cbd5e1 !important; }
+    tr.tag-slate .score-val { background: #0f172a !important; border-color: #64748b !important; color: #7dd3fc !important; }
 
     /* ==========================================================================
        6. BRIGHT POKÉDEX LOG AKTIVITAS PANEL
@@ -4036,6 +4039,16 @@
       background: linear-gradient(180deg, #fb923c 0%, #ea580c 100%);
       border-color: #fed7aa;
     }
+    body.theme-arena-glossy .rotom-tbtn.play.counting-active {
+      background: linear-gradient(180deg, #fb7185 0%, #e11d48 100%);
+      border-color: #fecdd3;
+      color: #ffffff;
+    }
+    body.theme-arena-glossy .rotom-tbtn.play.resume-ready {
+      background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+      border-color: #bae6fd;
+      color: #ffffff;
+    }
     body.theme-arena-glossy .rotom-timer-bar-track {
       left: 24px;
       right: 24px;
@@ -4123,23 +4136,24 @@
       border-right: 1.5px solid #fde047 !important;
     }
     body.theme-arena-glossy tr.is-rank-1 .rank-num-pill {
-      background: rgba(255, 255, 255, 0.55);
-      color: #422006;
+      background: rgba(255, 255, 255, 0.72);
+      color: #291303;
       border-radius: 999px;
     }
     body.theme-arena-glossy tr.is-rank-1 .name-player,
     body.theme-arena-glossy tr.is-rank-1 .name-display {
-      color: #422006 !important;
+      color: #291303 !important;
     }
     body.theme-arena-glossy tr.is-rank-1 .sub-handle {
-      color: #78350f !important;
+      color: #451a03 !important;
     }
     body.theme-arena-glossy tr.is-rank-1 .score-val {
-      background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%) !important;
+      background: linear-gradient(180deg, #b45309 0%, #78350f 100%) !important;
       border: 1.5px solid #fef08a !important;
       color: #ffffff !important;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.48) !important;
       border-radius: 999px !important;
-      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.55), 0 3px 8px rgba(180, 83, 9, 0.38) !important;
+      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.35), 0 3px 8px rgba(120, 53, 15, 0.45) !important;
     }
 
     body.theme-arena-glossy tr.is-rank-2:not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td,
@@ -4156,23 +4170,24 @@
       border-right: 1.5px solid #7dd3fc !important;
     }
     body.theme-arena-glossy tr.is-rank-2 .rank-num-pill {
-      background: rgba(255, 255, 255, 0.55);
-      color: #082f49;
+      background: rgba(255, 255, 255, 0.72);
+      color: #041f35;
       border-radius: 999px;
     }
     body.theme-arena-glossy tr.is-rank-2 .name-player,
     body.theme-arena-glossy tr.is-rank-2 .name-display {
-      color: #082f49 !important;
+      color: #041f35 !important;
     }
     body.theme-arena-glossy tr.is-rank-2 .sub-handle {
-      color: #0c4a6e !important;
+      color: #082f49 !important;
     }
     body.theme-arena-glossy tr.is-rank-2 .score-val {
-      background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%) !important;
+      background: linear-gradient(180deg, #2563eb 0%, #1e40af 100%) !important;
       border: 1.5px solid #bae6fd !important;
       color: #ffffff !important;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.42) !important;
       border-radius: 999px !important;
-      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.55), 0 3px 8px rgba(29, 78, 216, 0.38) !important;
+      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.45), 0 3px 8px rgba(29, 78, 216, 0.42) !important;
     }
 
     body.theme-arena-glossy tr.is-rank-3:not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td,
@@ -4189,23 +4204,24 @@
       border-right: 1.5px solid #fda4af !important;
     }
     body.theme-arena-glossy tr.is-rank-3 .rank-num-pill {
-      background: rgba(255, 255, 255, 0.55);
-      color: #4c0519;
+      background: rgba(255, 255, 255, 0.72);
+      color: #2d0311;
       border-radius: 999px;
     }
     body.theme-arena-glossy tr.is-rank-3 .name-player,
     body.theme-arena-glossy tr.is-rank-3 .name-display {
-      color: #4c0519 !important;
+      color: #2d0311 !important;
     }
     body.theme-arena-glossy tr.is-rank-3 .sub-handle {
-      color: #881337 !important;
+      color: #4c0519 !important;
     }
     body.theme-arena-glossy tr.is-rank-3 .score-val {
-      background: linear-gradient(180deg, #f43f5e 0%, #be123c 100%) !important;
+      background: linear-gradient(180deg, #e11d48 0%, #9f1239 100%) !important;
       border: 1.5px solid #fecdd3 !important;
       color: #ffffff !important;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.42) !important;
       border-radius: 999px !important;
-      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.55), 0 3px 8px rgba(190, 18, 60, 0.38) !important;
+      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.45), 0 3px 8px rgba(159, 18, 57, 0.42) !important;
     }
 
     /* ZONA HADIAH #4 (UNGU LEMBUT GLOSSY) & #5 (HIJAU MINT GLOSSY) — SINKRON PANEL BENTO */
@@ -4223,23 +4239,24 @@
       border-right: 1.5px solid #c084fc !important;
     }
     body.theme-arena-glossy tr.is-rank-4 .rank-num-pill {
-      background: rgba(255, 255, 255, 0.65);
-      color: #4c1d95;
+      background: rgba(255, 255, 255, 0.75);
+      color: #2e1065;
       border-radius: 999px;
     }
     body.theme-arena-glossy tr.is-rank-4 .name-player,
     body.theme-arena-glossy tr.is-rank-4 .name-display {
-      color: #3b0764 !important;
+      color: #2e1065 !important;
     }
     body.theme-arena-glossy tr.is-rank-4 .sub-handle {
-      color: #6b21a8 !important;
+      color: #4c1d95 !important;
     }
     body.theme-arena-glossy tr.is-rank-4 .score-val {
-      background: linear-gradient(180deg, #a855f7 0%, #7e22ce 100%) !important;
+      background: linear-gradient(180deg, #9333ea 0%, #6b21a8 100%) !important;
       border: 1.5px solid #e9d5ff !important;
       color: #ffffff !important;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.38) !important;
       border-radius: 999px !important;
-      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.52), 0 3px 8px rgba(126, 34, 206, 0.34) !important;
+      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.45), 0 3px 8px rgba(107, 33, 168, 0.38) !important;
     }
 
     body.theme-arena-glossy tr.is-rank-5:not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td,
@@ -4256,8 +4273,8 @@
       border-right: 1.5px solid #4ade80 !important;
     }
     body.theme-arena-glossy tr.is-rank-5 .rank-num-pill {
-      background: rgba(255, 255, 255, 0.65);
-      color: #064e3b;
+      background: rgba(255, 255, 255, 0.75);
+      color: #052e16;
       border-radius: 999px;
     }
     body.theme-arena-glossy tr.is-rank-5 .name-player,
@@ -4265,23 +4282,15 @@
       color: #052e16 !important;
     }
     body.theme-arena-glossy tr.is-rank-5 .sub-handle {
-      color: #166534 !important;
+      color: #14532d !important;
     }
     body.theme-arena-glossy tr.is-rank-5 .score-val {
-      background: linear-gradient(180deg, #22c55e 0%, #059669 100%) !important;
+      background: linear-gradient(180deg, #16a34a 0%, #047857 100%) !important;
       border: 1.5px solid #bbf7d0 !important;
       color: #ffffff !important;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.38) !important;
       border-radius: 999px !important;
-      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.52), 0 3px 8px rgba(5, 150, 105, 0.34) !important;
-    }
-
-    /* Garis Batas Tipis Zona Hadiah di Tema Arena 3D (masuk celah 5px antar baris, 0px tambah tinggi!) */
-    body.theme-arena-glossy tr.is-prize-cutoff td {
-      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.68), 0 3.5px 0 -0.8px rgba(245, 158, 11, 0.88) !important;
-    }
-    body.theme-arena-glossy .prize-cutoff-badge {
-      left: 14px;
-      bottom: -9px;
+      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.45), 0 3px 8px rgba(4, 120, 87, 0.38) !important;
     }
 
     /* SEAMLESS GLOSSY 3D RANK-OVERTAKE ANIMATIONS (ANTI WARNA TERBELAH DI KOLOM NO!) */
@@ -4346,17 +4355,164 @@
       min-width: 62px;
       padding: 3px 12px;
       border-radius: 999px;
-      font-size: 17.5px;
-      background: linear-gradient(180deg, #4f9cf9 0%, #2563eb 58%, #1d4ed8 100%);
+      font-size: 18px;
+      background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 60%, #1e40af 100%);
       border: 1.5px solid #93c5fd;
       color: #ffffff;
-      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.55), inset 0 -2px 0 rgba(30, 58, 138, 0.28), 0 3px 8px rgba(37, 99, 235, 0.28);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.45), inset 0 -2px 0 rgba(30, 58, 138, 0.32), 0 3px 8px rgba(29, 78, 216, 0.32);
     }
     body.theme-arena-glossy tr.is-empty-row .score-val {
       background: linear-gradient(180deg, #e8f4ff 0%, #cfe7fc 100%);
       border-color: #bae6fd;
       color: #64748b;
+      text-shadow: none;
       box-shadow: inset 0 1px 0 #ffffff;
+    }
+
+    /* SEAMLESS GLOSSY 3D ELEMENTAL TAG ROWS (ANTI KOTAK WARNA TERBELAH & KONTRAS TAJAM) */
+    body.theme-arena-glossy tr.tag-yellow:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3):not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td,
+    body.theme-arena-glossy tr.tag-yellow:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3):not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td.td-no {
+      background: linear-gradient(180deg, #fefce8 0%, #fef08a 100%) !important;
+      border-top: 1.5px solid #fef9c3 !important;
+      border-bottom: 1.5px solid #eab308 !important;
+    }
+    body.theme-arena-glossy tr.tag-yellow:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3) td:first-child { border-left: 1.5px solid #facc15 !important; }
+    body.theme-arena-glossy tr.tag-yellow:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3) td:last-child  { border-right: 1.5px solid #facc15 !important; }
+    body.theme-arena-glossy tr.tag-yellow:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3) .score-val {
+      background: linear-gradient(180deg, #d97706 0%, #92400e 100%) !important;
+      border: 1.5px solid #fef08a !important;
+      color: #ffffff !important;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.42) !important;
+    }
+
+    body.theme-arena-glossy tr.tag-blue:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3):not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td,
+    body.theme-arena-glossy tr.tag-blue:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3):not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td.td-no {
+      background: linear-gradient(180deg, #eff6ff 0%, #bfdbfe 100%) !important;
+      border-top: 1.5px solid #dbeafe !important;
+      border-bottom: 1.5px solid #3b82f6 !important;
+    }
+    body.theme-arena-glossy tr.tag-blue:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3) .score-val {
+      background: linear-gradient(180deg, #2563eb 0%, #1e3a8a 100%) !important;
+      border: 1.5px solid #bfdbfe !important;
+      color: #ffffff !important;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.38) !important;
+    }
+
+    body.theme-arena-glossy tr.tag-pink:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3):not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td,
+    body.theme-arena-glossy tr.tag-pink:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3):not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td.td-no {
+      background: linear-gradient(180deg, #fdf2f8 0%, #fbcfe8 100%) !important;
+      border-top: 1.5px solid #fce7f3 !important;
+      border-bottom: 1.5px solid #ec4899 !important;
+    }
+    body.theme-arena-glossy tr.tag-pink:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3) .score-val {
+      background: linear-gradient(180deg, #db2777 0%, #9d174d 100%) !important;
+      border: 1.5px solid #fbcfe8 !important;
+      color: #ffffff !important;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.38) !important;
+    }
+
+    body.theme-arena-glossy tr.tag-green:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3):not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td,
+    body.theme-arena-glossy tr.tag-green:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3):not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td.td-no {
+      background: linear-gradient(180deg, #f0fdf4 0%, #bbf7d0 100%) !important;
+      border-top: 1.5px solid #dcfce7 !important;
+      border-bottom: 1.5px solid #22c55e !important;
+    }
+    body.theme-arena-glossy tr.tag-green:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3) .score-val {
+      background: linear-gradient(180deg, #16a34a 0%, #166534 100%) !important;
+      border: 1.5px solid #bbf7d0 !important;
+      color: #ffffff !important;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.38) !important;
+    }
+
+    body.theme-arena-glossy tr.tag-orange:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3):not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td,
+    body.theme-arena-glossy tr.tag-orange:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3):not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td.td-no {
+      background: linear-gradient(180deg, #fff7ed 0%, #fed7aa 100%) !important;
+      border-top: 1.5px solid #ffedd5 !important;
+      border-bottom: 1.5px solid #f97316 !important;
+    }
+    body.theme-arena-glossy tr.tag-orange:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3) .score-val {
+      background: linear-gradient(180deg, #ea580c 0%, #9a3412 100%) !important;
+      border: 1.5px solid #fed7aa !important;
+      color: #ffffff !important;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.38) !important;
+    }
+
+    body.theme-arena-glossy tr.tag-teal:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3):not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td,
+    body.theme-arena-glossy tr.tag-teal:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3):not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td.td-no {
+      background: linear-gradient(180deg, #f0fdfa 0%, #99f6e4 100%) !important;
+      border-top: 1.5px solid #ccfbf1 !important;
+      border-bottom: 1.5px solid #14b8a6 !important;
+    }
+    body.theme-arena-glossy tr.tag-teal:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3) .score-val {
+      background: linear-gradient(180deg, #0d9488 0%, #115e59 100%) !important;
+      border: 1.5px solid #99f6e4 !important;
+      color: #ffffff !important;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.38) !important;
+    }
+
+    body.theme-arena-glossy tr.tag-cyan:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3):not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td,
+    body.theme-arena-glossy tr.tag-cyan:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3):not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td.td-no {
+      background: linear-gradient(180deg, #ecfeff 0%, #a5f3fc 100%) !important;
+      border-top: 1.5px solid #cffafe !important;
+      border-bottom: 1.5px solid #06b6d4 !important;
+    }
+    body.theme-arena-glossy tr.tag-cyan:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3) .score-val {
+      background: linear-gradient(180deg, #0891b2 0%, #155e75 100%) !important;
+      border: 1.5px solid #a5f3fc !important;
+      color: #ffffff !important;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.38) !important;
+    }
+
+    body.theme-arena-glossy tr.tag-lime:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3):not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td,
+    body.theme-arena-glossy tr.tag-lime:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3):not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td.td-no {
+      background: linear-gradient(180deg, #f7fee7 0%, #d9f99d 100%) !important;
+      border-top: 1.5px solid #ecfccb !important;
+      border-bottom: 1.5px solid #84cc16 !important;
+    }
+    body.theme-arena-glossy tr.tag-lime:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3) .score-val {
+      background: linear-gradient(180deg, #65a30d 0%, #3f6212 100%) !important;
+      border: 1.5px solid #d9f99d !important;
+      color: #ffffff !important;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.38) !important;
+    }
+
+    body.theme-arena-glossy tr.tag-purple:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3):not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td,
+    body.theme-arena-glossy tr.tag-purple:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3):not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td.td-no {
+      background: linear-gradient(180deg, #6b21a8 0%, #4c1d95 100%) !important;
+      border-top: 1.5px solid #9333ea !important;
+      border-bottom: 1.5px solid #3b0764 !important;
+    }
+    body.theme-arena-glossy tr.tag-purple:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3) .rank-num-pill,
+    body.theme-arena-glossy tr.tag-red:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3) .rank-num-pill,
+    body.theme-arena-glossy tr.tag-indigo:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3) .rank-num-pill,
+    body.theme-arena-glossy tr.tag-rose:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3) .rank-num-pill,
+    body.theme-arena-glossy tr.tag-slate:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3) .rank-num-pill {
+      color: #ffffff !important;
+    }
+    body.theme-arena-glossy tr.tag-red:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3):not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td,
+    body.theme-arena-glossy tr.tag-red:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3):not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td.td-no {
+      background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%) !important;
+      border-top: 1.5px solid #f87171 !important;
+      border-bottom: 1.5px solid #7f1d1d !important;
+    }
+    body.theme-arena-glossy tr.tag-indigo:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3):not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td,
+    body.theme-arena-glossy tr.tag-indigo:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3):not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td.td-no {
+      background: linear-gradient(180deg, #4338ca 0%, #1e1b4b 100%) !important;
+      border-top: 1.5px solid #6366f1 !important;
+      border-bottom: 1.5px solid #1e1b4b !important;
+    }
+    body.theme-arena-glossy tr.tag-rose:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3):not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td,
+    body.theme-arena-glossy tr.tag-rose:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3):not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td.td-no {
+      background: linear-gradient(180deg, #be123c 0%, #881337 100%) !important;
+      border-top: 1.5px solid #fb7185 !important;
+      border-bottom: 1.5px solid #4c0519 !important;
+    }
+    body.theme-arena-glossy tr.tag-slate:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3):not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td,
+    body.theme-arena-glossy tr.tag-slate:not(.is-rank-1):not(.is-rank-2):not(.is-rank-3):not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td.td-no {
+      background: linear-gradient(180deg, #334155 0%, #0f172a 100%) !important;
+      border-top: 1.5px solid #64748b !important;
+      border-bottom: 1.5px solid #020617 !important;
     }
     body.theme-arena-glossy .team-divider-row td {
       border-radius: 12px !important;
@@ -5017,6 +5173,154 @@
       font-size: 9.5px;
       font-weight: 700;
       color: #64748b;
+    }
+
+    /* ==========================================================================
+       18. START MATCH COUNTDOWN OVERLAY (3 -> 2 -> 1 -> GO! — TANPA BLUR LAYAR)
+       ========================================================================== */
+    .start-cd-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 25500;
+      pointer-events: none;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+    }
+    .start-cd-overlay.show {
+      display: flex;
+    }
+    .start-cd-stage {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      animation: startCdPop 0.42s cubic-bezier(0.22, 1.38, 0.36, 1) forwards;
+    }
+    .start-cd-overlay.is-exit .start-cd-stage {
+      animation: startCdExit 0.28s ease-in forwards;
+    }
+    .start-cd-ring {
+      position: absolute;
+      width: 196px;
+      height: 196px;
+      border-radius: 999px;
+      border: 6px solid var(--cd-ring, rgba(245, 158, 11, 0.85));
+      opacity: 0;
+      animation: startCdRingWave 0.78s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .start-cd-stage.step-go .start-cd-ring {
+      width: 266px;
+      height: 172px;
+      border-radius: 56px;
+    }
+    .start-cd-badge {
+      position: relative;
+      width: 176px;
+      height: 176px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--cd-bg, linear-gradient(180deg, #fbbf24 0%, #d97706 100%));
+      border: 6px solid #ffffff;
+      box-shadow:
+        0 0 0 4px var(--cd-outline, rgba(217, 119, 6, 0.45)),
+        0 24px 52px -10px rgba(15, 23, 42, 0.48),
+        0 10px 24px -6px var(--cd-glow, rgba(245, 158, 11, 0.55)),
+        inset 0 4px 2px rgba(255, 255, 255, 0.55),
+        inset 0 -8px 16px rgba(0, 0, 0, 0.18);
+      overflow: hidden;
+    }
+    .start-cd-badge::before {
+      content: '';
+      position: absolute;
+      top: 6px;
+      left: 16%;
+      right: 16%;
+      height: 40%;
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.48) 0%, rgba(255, 255, 255, 0.02) 100%);
+      pointer-events: none;
+    }
+    .start-cd-stage.step-go .start-cd-badge {
+      width: 254px;
+      height: 156px;
+      border-radius: 44px;
+    }
+    .start-cd-num {
+      position: relative;
+      z-index: 2;
+      font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+      font-size: 98px;
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -1px;
+      color: #ffffff;
+      text-shadow: 0 6px 0 rgba(0, 0, 0, 0.24), 0 12px 24px rgba(0, 0, 0, 0.30);
+      user-select: none;
+    }
+    .start-cd-stage.step-go .start-cd-num {
+      font-size: 86px;
+      letter-spacing: 2px;
+    }
+    .start-cd-sub {
+      padding: 5px 18px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.90);
+      border: 2px solid #ffffff;
+      color: #ffffff;
+      font-family: 'Outfit', sans-serif;
+      font-size: 13.5px;
+      font-weight: 900;
+      letter-spacing: 1.6px;
+      text-transform: uppercase;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.32);
+    }
+    .start-cd-stage.step-3 {
+      --cd-bg: linear-gradient(180deg, #fbbf24 0%, #ea580c 100%);
+      --cd-outline: rgba(234, 88, 12, 0.48);
+      --cd-ring: rgba(245, 158, 11, 0.92);
+      --cd-glow: rgba(234, 88, 12, 0.58);
+    }
+    .start-cd-stage.step-2 {
+      --cd-bg: linear-gradient(180deg, #38bdf8 0%, #1d4ed8 100%);
+      --cd-outline: rgba(29, 78, 216, 0.48);
+      --cd-ring: rgba(56, 189, 248, 0.92);
+      --cd-glow: rgba(37, 99, 235, 0.58);
+    }
+    .start-cd-stage.step-1 {
+      --cd-bg: linear-gradient(180deg, #fb7185 0%, #dc2626 100%);
+      --cd-outline: rgba(220, 38, 38, 0.50);
+      --cd-ring: rgba(244, 63, 94, 0.92);
+      --cd-glow: rgba(220, 38, 38, 0.60);
+    }
+    .start-cd-stage.step-go {
+      --cd-bg: linear-gradient(180deg, #34d399 0%, #059669 100%);
+      --cd-outline: rgba(250, 204, 21, 0.72);
+      --cd-ring: rgba(16, 185, 129, 0.95);
+      --cd-glow: rgba(5, 150, 105, 0.62);
+    }
+    .start-cd-stage.step-go .start-cd-sub {
+      background: linear-gradient(90deg, #065f46 0%, #047857 100%);
+      border-color: #fef08a;
+      color: #fef9c3;
+    }
+    @keyframes startCdPop {
+      0% { transform: scale(0.36); opacity: 0; }
+      58% { transform: scale(1.10); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes startCdRingWave {
+      0% { transform: scale(0.75); opacity: 0.92; }
+      100% { transform: scale(1.68); opacity: 0; }
+    }
+    @keyframes startCdExit {
+      0% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(1.22); opacity: 0; }
     }
   </style>
 </head>
@@ -5746,6 +6050,9 @@
   <div id="tcgNotifBackdrop"></div>
   <div id="centerNotifPopup" class="tcg-toast-card" aria-live="polite"></div>
 
+  <!-- OVERLAY COUNTDOWN MULAI LOMBA (3 -> 2 -> 1 -> GO!) -->
+  <div id="startCountdownOverlay" class="start-cd-overlay" aria-live="assertive" aria-hidden="true"></div>
+
   <script>
     /* =========================================================================
        1. CONSTANTS, 13 ELEMENTAL THEMES & STATE PERSISTENCE
@@ -6280,9 +6587,6 @@
           else if (i === 2 && filled) tr.classList.add('is-rank-3');
           else if (i === 3 && filled && prizeZoneCount >= 4) tr.classList.add('is-rank-4');
           else if (i === 4 && filled && prizeZoneCount >= 5) tr.classList.add('is-rank-5');
-          if (prizeZoneCount >= 1 && prizeZoneCount <= 9 && i === prizeZoneCount - 1) {
-            tr.classList.add('is-prize-cutoff');
-          }
         }
         if (p.colorTag && ELEMENTAL_COLORS[p.colorTag]) {
           tr.classList.add(`tag-${p.colorTag}`);
@@ -6305,12 +6609,9 @@
 
         const isAutoOn = Boolean(typeof autoConfig !== 'undefined' && autoConfig.enabled);
         const dispCellTitle = (filled && isAutoOn) ? '' : 'Klik untuk cari akun Roblox';
-        const cutoffBadgeHtml = (!isDuo && prizeZoneCount >= 1 && prizeZoneCount <= 9 && i === prizeZoneCount - 1)
-          ? `<span class="prize-cutoff-badge">▲ ZONA TOP ${prizeZoneCount}</span>`
-          : '';
 
         tr.innerHTML = `
-          <td class="td-no"><span class="rank-num-pill">${rankLabel}</span>${cutoffBadgeHtml}</td>
+          <td class="td-no"><span class="rank-num-pill">${rankLabel}</span></td>
           <td class="cell-click" onclick="mulaiEditInlineNama(${i}, event)" title="Klik untuk edit nama pemain langsung">
             <div class="player-cell-flex">
               ${
@@ -9304,6 +9605,9 @@
     };
     let timerRemainingSec = 15 * 60;
     let timerRunning = false;
+    let timerHasStarted = false;
+    let startCountdownActive = false;
+    let startCountdownTimers = [];
     let timerEndTimestamp = 0;
     let timerIntervalId = null;
     let timerLastBeepSec = -1;
@@ -9396,6 +9700,104 @@
       playSynthTone(523.25, 0.50, 0.70, 'triangle', 0.24);
     }
 
+    function putarSuaraStartCountdown(step) {
+      if (!timerConfig.soundEnabled) return;
+      if (step === 'GO') {
+        // Fanfare mulai lomba (cerah & tegas)
+        playSynthTone(1046.5, 0, 0.22, 'triangle', 0.30);
+        playSynthTone(1318.5, 0.05, 0.24, 'triangle', 0.26);
+        playSynthTone(1567.98, 0.10, 0.36, 'sawtooth', 0.20);
+      } else {
+        const freqMap = { '3': 659.25, '2': 783.99, '1': 987.77 };
+        playSynthTone(freqMap[String(step)] || 783.99, 0, 0.16, 'triangle', 0.28);
+      }
+    }
+
+    function batalkanCountdownMulai() {
+      startCountdownTimers.forEach(id => clearTimeout(id));
+      startCountdownTimers = [];
+      startCountdownActive = false;
+      const ov = document.getElementById('startCountdownOverlay');
+      if (ov) {
+        ov.classList.remove('show', 'is-exit');
+        ov.setAttribute('aria-hidden', 'true');
+        ov.innerHTML = '';
+      }
+    }
+
+    function tampilkanStepCountdownMulai(stepKey, labelNum, subText) {
+      const ov = document.getElementById('startCountdownOverlay');
+      if (!ov) return;
+      ov.classList.remove('is-exit');
+      ov.classList.add('show');
+      ov.setAttribute('aria-hidden', 'false');
+      ov.innerHTML = `
+        <div class="start-cd-stage step-${stepKey}">
+          <div class="start-cd-ring"></div>
+          <div class="start-cd-badge">
+            <span class="start-cd-num">${labelNum}</span>
+          </div>
+          <div class="start-cd-sub">${subText}</div>
+        </div>
+      `;
+    }
+
+    function mulaiTimerLangsung(dariCountdown = false) {
+      timerRunning = true;
+      timerHasStarted = true;
+      timerEndTimestamp = Date.now() + timerRemainingSec * 1000;
+      if (timerIntervalId) clearInterval(timerIntervalId);
+      timerIntervalId = setInterval(tickTimerMatch, 150);
+      renderTimerUI();
+      tambahLog(
+        'TIMER ⏱️',
+        dariCountdown
+          ? `Lomba dimulai! (${formatWaktuTimer(timerRemainingSec)})`
+          : `Timer dilanjutkan (${formatWaktuTimer(timerRemainingSec)})`
+      );
+    }
+
+    function mulaiCountdownAwalLomba() {
+      batalkanCountdownMulai();
+      startCountdownActive = true;
+      renderTimerUI();
+
+      const steps = [
+        { delay: 0,    key: '3',  num: '3',   sub: 'BERSIAP...',    sound: '3' },
+        { delay: 850,  key: '2',  num: '2',   sub: 'BERSIAP...',    sound: '2' },
+        { delay: 1700, key: '1',  num: '1',   sub: 'SIAP MULAI!',   sound: '1' },
+        { delay: 2550, key: 'go', num: 'GO!', sub: 'LOMBA DIMULAI!', sound: 'GO', startNow: true }
+      ];
+
+      steps.forEach(s => {
+        const tid = setTimeout(() => {
+          if (!startCountdownActive) return;
+          tampilkanStepCountdownMulai(s.key, s.num, s.sub);
+          putarSuaraStartCountdown(s.sound);
+          if (s.startNow) {
+            startCountdownActive = false;
+            mulaiTimerLangsung(true);
+            const fadeTid = setTimeout(() => {
+              const ov = document.getElementById('startCountdownOverlay');
+              if (ov) ov.classList.add('is-exit');
+            }, 560);
+            const hideTid = setTimeout(() => {
+              if (!startCountdownActive) {
+                const ov = document.getElementById('startCountdownOverlay');
+                if (ov) {
+                  ov.classList.remove('show', 'is-exit');
+                  ov.setAttribute('aria-hidden', 'true');
+                  ov.innerHTML = '';
+                }
+              }
+            }, 860);
+            startCountdownTimers.push(fadeTid, hideTid);
+          }
+        }, s.delay);
+        startCountdownTimers.push(tid);
+      });
+    }
+
     function renderTimerUI() {
       const capsule = document.getElementById('rotomTimerCapsule');
       const disp = document.getElementById('rotomTimerDisplay');
@@ -9412,10 +9814,26 @@
         : 0;
       bar.style.width = `${pct.toFixed(1)}%`;
 
-      capsule.classList.remove('is-running', 'is-warn', 'is-critical', 'is-timeup', 'is-double-point');
-      btn.classList.toggle('paused-active', timerRunning);
-      btn.innerHTML = timerRunning ? '<span>⏸</span><span>Jeda</span>' : '<span>▶</span><span>Mulai</span>';
-      btn.title = timerRunning ? 'Jeda Timer' : 'Mulai Timer';
+      capsule.classList.remove('is-running', 'is-starting', 'is-warn', 'is-critical', 'is-timeup', 'is-double-point');
+      btn.classList.remove('paused-active', 'counting-active', 'resume-ready');
+
+      const isPausedResume = !timerRunning && !startCountdownActive && timerHasStarted && sec > 0;
+      if (startCountdownActive) {
+        btn.classList.add('counting-active');
+        btn.innerHTML = '<span>✕</span><span>Batal</span>';
+        btn.title = 'Batalkan Countdown Mulai';
+      } else if (timerRunning) {
+        btn.classList.add('paused-active');
+        btn.innerHTML = '<span>⏸</span><span>Jeda</span>';
+        btn.title = 'Jeda Timer';
+      } else if (isPausedResume) {
+        btn.classList.add('resume-ready');
+        btn.innerHTML = '<span>▶</span><span>Lanjut</span>';
+        btn.title = 'Lanjutkan Timer (langsung tanpa countdown)';
+      } else {
+        btn.innerHTML = '<span>▶</span><span>Mulai</span>';
+        btn.title = 'Mulai Lomba (Countdown 3-2-1-GO!)';
+      }
 
       const btn2x = document.getElementById('btnDoublePoint');
       if (btn2x) {
@@ -9426,7 +9844,10 @@
         capsule.classList.add('is-double-point');
       }
 
-      if (sec === 0) {
+      if (startCountdownActive) {
+        capsule.classList.add('is-starting');
+        tag.textContent = 'SIAP...';
+      } else if (sec === 0) {
         capsule.classList.add('is-timeup');
         tag.textContent = 'TIME UP';
       } else if (timerRunning && sec <= 10) {
@@ -9438,7 +9859,7 @@
       } else if (timerRunning) {
         capsule.classList.add('is-running');
         tag.textContent = 'LIVE';
-      } else if (sec < timerConfig.durationSec) {
+      } else if (timerHasStarted || sec < timerConfig.durationSec) {
         tag.textContent = 'PAUSED';
       } else {
         tag.textContent = 'READY';
@@ -9475,6 +9896,7 @@
       if (timerRemainingSec <= 0) {
         timerRemainingSec = 0;
         timerRunning = false;
+        timerHasStarted = false;
         if (timerIntervalId) {
           clearInterval(timerIntervalId);
           timerIntervalId = null;
@@ -9492,8 +9914,16 @@
     }
 
     function toggleTimerStartPause() {
+      // Jika sedang countdown 3-2-1, klik tombol membatalkan countdown
+      if (startCountdownActive) {
+        batalkanCountdownMulai();
+        renderTimerUI();
+        tambahLog('TIMER ⏱️', 'Countdown mulai dibatalkan.');
+        return;
+      }
+
       if (timerRunning) {
-        // Pause
+        // Pause (tetap tandai timerHasStarted = true agar Lanjut nanti TANPA countdown!)
         timerRunning = false;
         if (timerIntervalId) {
           clearInterval(timerIntervalId);
@@ -9504,23 +9934,29 @@
         return;
       }
 
-      // Jika sedang di 00:00, reset otomatis ke durasi awal sebelum mulai
+      // Jika sedang di 00:00, reset otomatis ke durasi awal & mulai dengan countdown 3-2-1-GO!
       if (timerRemainingSec <= 0) {
         timerRemainingSec = timerConfig.durationSec;
         timerLastBeepSec = -1;
         timerWarnPlayed = false;
+        timerAutoDoubleTriggered = false;
+        timerHasStarted = false;
       }
 
-      timerRunning = true;
-      timerEndTimestamp = Date.now() + timerRemainingSec * 1000;
-      if (timerIntervalId) clearInterval(timerIntervalId);
-      timerIntervalId = setInterval(tickTimerMatch, 150);
-      renderTimerUI();
-      tambahLog('TIMER ⏱️', `Timer dimulai (${formatWaktuTimer(timerRemainingSec)})`);
+      // Lanjut dari Jeda -> langsung jalan TANPA countdown!
+      if (timerHasStarted) {
+        mulaiTimerLangsung(false);
+        return;
+      }
+
+      // Mulai baru dari READY / setelah Reset -> tampilkan Countdown 3-2-1-GO!
+      mulaiCountdownAwalLomba();
     }
 
     function resetTimerMatch() {
+      batalkanCountdownMulai();
       timerRunning = false;
+      timerHasStarted = false;
       if (timerIntervalId) {
         clearInterval(timerIntervalId);
         timerIntervalId = null;
@@ -10237,6 +10673,10 @@
         return;
       }
       if (e.key === 'Escape') {
+        if (startCountdownActive) {
+          batalkanCountdownMulai();
+          renderTimerUI();
+        }
         tutupModalEditKursi();
         tutupModalReset();
         tutupModalPreset();
