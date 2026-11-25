@@ -9305,16 +9305,16 @@
       const srcClean = String(tierSource || '').toLowerCase().trim();
       const rules = autoConfig.rules || {};
 
-      // Cari metadata ikan di DB (dipakai untuk kecocokan eksak Ikan Khusus, auto-deteksi mutasi baru, gambar & fallback tier)
+      // Cari metadata ikan di DB (dipakai untuk auto-deteksi mutasi baru, gambar & fallback tier)
       const dbFish = cariInfoIkanDb(namaIkan);
-      const resolvedFishName = (dbFish && dbFish.name) ? dbFish.name.toLowerCase().trim() : namaClean;
+      const namaTanpaBigShiny = namaClean.replace(/\b(big|shiny)\b/gi, ' ').replace(/\s+/g, ' ').trim();
 
       const targetKhusus = String(rules.khususNama || '').toLowerCase().trim();
       let isKhusus = false;
-      if (targetKhusus && resolvedFishName) {
+      if (targetKhusus && namaClean) {
         const list = targetKhusus.split(',').map(s => s.trim()).filter(Boolean);
-        // Cocokkan eksak agar "Manta Ray" tidak salah kena "Starlight Manta Ray" / "Hammerhead Shark" tidak kena "Cosmic Hammerhead Shark"
-        if (list.some(k => resolvedFishName === k || namaClean === k)) isKhusus = true;
+        // Cocokkan eksak pada nama tangkapan bersih agar "Manta Ray" tidak pernah kena "Starlight Manta Ray" / ikan baru lain
+        if (list.some(k => namaClean === k || namaTanpaBigShiny === k)) isKhusus = true;
       }
 
       const teksCek = `${namaIkan} ${varianStr}`.toUpperCase();

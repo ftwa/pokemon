@@ -271,23 +271,22 @@ local function determineTier(rawText, cleanText, baseFish, variantStr)
         pos = tagEnd + 1
     end
 
-    -- 1A. Cari segmen warna TERAKHIR yang valid (bukan teks mutasi tunggal) di seluruh afterObtained
-    --     (Menangani format Fish It: <font=MUT>ALBINO</font> <font=TIER>Ikan</font> MAUPUN <font=MUT>ALBINO Ikan</font> with a <font=TIER>1 in X</font>)
-    local lastTierSeg = nil
-    for i = #plainSegments, 1, -1 do
-        local seg = plainSegments[i]
-        local trimmedSeg = seg.text:match("^%s*(.-)%s*$") or ""
-        if seg.tier and #trimmedSeg > 0 and not isPureMutationText(trimmedSeg) then
-            -- Abaikan teks odds warna putih polos jika odds < 5 juta (bukan Forgotten asli)
-            local isWhiteLowOdds = seg.isWhite and trimmedSeg:find("1%s+in%s+") and effectiveOdds > 0 and effectiveOdds < 5000000
-            if not isWhiteLowOdds then
-                lastTierSeg = seg
-                break
+    -- Helper cek apakah segmen teks berisi kata mutasi berwarna (menandakan tag dipakai bersama mutasi+ikan)
+    local function segHasColoredMut(txt)
+        if not hasColoredMutation or not variantStr then return false end
+        local segLow = string.lower(tostring(txt or ""))
+        for tok in string.gmatch(string.lower(variantStr), "[^,]+") do
+            local cleanTok = tok:match("^%s*(.-)%s*$") or ""
+            if cleanTok ~= "" and cleanTok ~= "big" and cleanTok ~= "shiny" and cleanTok ~= "none" then
+                if string.find(segLow, cleanTok, 1, true) then
+                    return true
+                end
             end
         end
+        return false
     end
 
-    -- 1B. Cari juga warna yang tepat membungkus baseFish (jika terpisah dari mutasi)
+    -- 1A. Cari warna yang TEPAT membungkus baseFish (nama ikan)
     local fishSeg = nil
     local targetLower = string.lower(tostring(baseFish or "")):match("^%s*(.-)%s*$") or ""
     if #targetLower >= 2 then
@@ -303,34 +302,46 @@ local function determineTier(rawText, cleanText, baseFish, variantStr)
         if matchPos then
             for _, seg in ipairs(plainSegments) do
                 if matchPos >= seg.startIdx and matchPos <= seg.endIdx and seg.tier then
-                    fishSeg = seg
+                    local isWhiteLow = seg.isWhite and effectiveOdds > 0 and effectiveOdds < 5000000
+                    if not isWhiteLow then
+                        fishSeg = seg
+                    end
                     break
                 end
             end
         end
     end
 
+    -- 1B. Cari segmen warna TERAKHIR yang valid (bukan mutasi tunggal, bukan berat/tanda baca, bukan putih pada odds < 5M)
+    --     Berguna jika mutasi & nama ikan berbagi 1 tag tapi odds "1 in X" punya tag warna tier sendiri!
+    local lastTierSeg = nil
+    for i = #plainSegments, 1, -1 do
+        local seg = plainSegments[i]
+        local trimmedSeg = seg.text:match("^%s*(.-)%s*$") or ""
+        local isWhiteLow = seg.isWhite and effectiveOdds > 0 and effectiveOdds < 5000000
+        local isOnlyWeightOrPunct = (not trimmedSeg:find("%a")) or (string.lower(trimmedSeg):match("^%(?%s*[%d%.,]+%s*kg%s*%)?$") ~= nil)
+        if seg.tier and #trimmedSeg > 0 and not isWhiteLow and not isOnlyWeightOrPunct and not isPureMutationText(trimmedSeg) then
+            lastTierSeg = seg
+            break
+        end
+    end
+
     -- Pilih kandidat terbaik:
-    -- Jika ada tag warna terpisah setelah mutasi (misal pada nama ikan atau pada odds "1 in X"), ambil lastTierSeg!
-    local chosenSeg = lastTierSeg or fishSeg
+    -- 1) Jika fishSeg murni membungkus nama ikan (TIDAK mengandung kata mutasi berwarna), pakai fishSeg langsung!
+    --    (Kebal terhadap tag warna berat (120kg) atau warna odds berbeda di belakang nama ikan!)
+    -- 2) Jika fishSeg bercampur mutasi atau nil, pakai lastTierSeg (misal warna pada "1 in X" atau tag terpisah setelah mutasi).
+    local chosenSeg = nil
+    if fishSeg and not segHasColoredMut(fishSeg.text) then
+        chosenSeg = fishSeg
+    else
+        chosenSeg = lastTierSeg or fishSeg
+    end
+
     if chosenSeg and chosenSeg.tier then
         local chosenTier = chosenSeg.tier
-        local segLower = string.lower(chosenSeg.text or "")
-        local segContainsMutation = false
-        if hasColoredMutation and variantStr then
-            for tok in string.gmatch(string.lower(variantStr), "[^,]+") do
-                local cleanTok = tok:match("^%s*(.-)%s*$") or ""
-                if cleanTok ~= "" and cleanTok ~= "big" and cleanTok ~= "shiny" and cleanTok ~= "none" then
-                    if string.find(segLower, cleanTok, 1, true) then
-                        segContainsMutation = true
-                        break
-                    end
-                end
-            end
-        end
-        local isSharedMutTag = hasColoredMutation and (fontTagCount <= 1 or segContainsMutation)
+        local isSharedMutTag = hasColoredMutation and (fontTagCount <= 1 or segHasColoredMut(chosenSeg.text))
 
-        -- Pengaman anti-palsu FORGOTTEN: ikan Forgotten asli selalu >= 1 in 5M;
+        -- Pengaman anti-palsu FORGOTTEN: ikan Forgotten asli selalu >= 1 in 12M (batas aman 5M);
         -- jika warna putih/ungu muncul pada tangkapan bermutasi dengan odds < 5M (misal ALBINO/GHOST/CORRUPT 1 in 8K),
         -- itu pasti warna mutasi, bukan Forgotten!
         if chosenTier == "FORGOTTEN" and hasColoredMutation and effectiveOdds > 0 and effectiveOdds < 5000000 then
