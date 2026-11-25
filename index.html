@@ -1491,6 +1491,56 @@
       box-shadow: inset 4px 0 0 #ea580c;
     }
 
+    /* Zona Hadiah #4 (Ungu Lembut) & #5 (Hijau Mint) — Sinkron Otomatis dengan Panel Bento */
+    tr.is-rank-4 .rank-num-pill {
+      background: linear-gradient(180deg, #f3e8ff 0%, #d8b4fe 100%);
+      color: #3b0764;
+      border-color: #a855f7;
+      box-shadow: 0 2px 6px rgba(147, 51, 234, 0.25);
+    }
+    tr.is-rank-4:not([class*="tag-"]) td {
+      background: linear-gradient(90deg, #faf5ff 0%, #f3e8ff 100%) !important;
+    }
+    tr.is-rank-4:not([class*="tag-"]) td:first-child {
+      box-shadow: inset 4px 0 0 #9333ea;
+    }
+    tr.is-rank-5 .rank-num-pill {
+      background: linear-gradient(180deg, #dcfce7 0%, #86efac 100%);
+      color: #052e16;
+      border-color: #22c55e;
+      box-shadow: 0 2px 6px rgba(16, 185, 129, 0.25);
+    }
+    tr.is-rank-5:not([class*="tag-"]) td {
+      background: linear-gradient(90deg, #f0fdf4 0%, #dcfce7 100%) !important;
+    }
+    tr.is-rank-5:not([class*="tag-"]) td:first-child {
+      box-shadow: inset 4px 0 0 #10b981;
+    }
+
+    /* Garis Batas Zona Hadiah (0px perubahan tinggi tabel — anti goyang!) */
+    tr.is-prize-cutoff td {
+      box-shadow: inset 0 -2.5px 0 #f59e0b !important;
+    }
+    .prize-cutoff-badge {
+      position: absolute;
+      left: 4px;
+      bottom: -8px;
+      z-index: 16;
+      padding: 1px 6px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+      color: #ffffff;
+      border: 1px solid #fef3c7;
+      font-family: 'Outfit', sans-serif;
+      font-size: 8px;
+      font-weight: 900;
+      letter-spacing: 0.45px;
+      white-space: nowrap;
+      pointer-events: none;
+      box-shadow: 0 2px 6px rgba(217, 119, 6, 0.35);
+      line-height: 1.25;
+    }
+
     /* Soften empty seats so spectators focus immediately on active players */
     tbody tr.is-empty-row td {
       opacity: 0.52;
@@ -2904,14 +2954,14 @@
     .fish-cat-name { font-size: 11px; font-weight: 800; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .fish-cat-sub { font-size: 9.5px; color: #0e7490; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    /* HYBRID MINI CATCH STACK (TENGAH-ATAS — MAKS 2 KARTU BESAR & SUPER JELAS) */
+    /* HYBRID MINI CATCH STACK (TENGAH-ATAS — MAKS 2 KARTU BESAR & SUPER JELAS TANPA TERPOTONG) */
     .mini-catch-stack {
       position: absolute;
       top: 4px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 235;
-      width: 420px;
+      width: 456px;
       max-width: calc(100vw - 24px);
       display: flex;
       flex-direction: column;
@@ -2922,8 +2972,8 @@
       position: relative;
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 9px 13px 9px 14px;
+      gap: 10px;
+      padding: 8px 12px 8px 13px;
       border-radius: 16px;
       background: rgba(255, 255, 255, 0.99);
       border: 2px solid #cbd5e1;
@@ -2952,8 +3002,8 @@
       100% { transform: scale(1); }
     }
     .mini-catch-av {
-      width: 46px;
-      height: 46px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
       object-fit: cover;
       border: 2.5px solid var(--mc-accent, #0284c7);
@@ -2961,23 +3011,23 @@
       flex-shrink: 0;
     }
     .mini-catch-av-fb {
-      width: 46px;
-      height: 46px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
       background: #0f172a;
       color: #ffffff;
       border: 2.5px solid var(--mc-accent, #0284c7);
       font-family: 'Outfit', sans-serif;
       font-weight: 900;
-      font-size: 18px;
+      font-size: 17px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
     }
     .mini-catch-fish {
-      width: 50px;
-      height: 50px;
+      width: 46px;
+      height: 46px;
       object-fit: contain;
       flex-shrink: 0;
       filter: drop-shadow(0 4px 7px rgba(15, 23, 42, 0.34));
@@ -2994,7 +3044,7 @@
     }
     .mini-catch-player {
       font-family: 'Outfit', sans-serif;
-      font-size: 16.5px;
+      font-size: 16px;
       font-weight: 900;
       color: #020617;
       white-space: nowrap;
@@ -3034,12 +3084,12 @@
     .mini-catch-pts {
       flex-shrink: 0;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 21px;
+      font-size: 20px;
       font-weight: 900;
       color: #047857;
       background: linear-gradient(180deg, #ecfdf5 0%, #d1fae5 100%);
       border: 2px solid #34d399;
-      padding: 5px 12px;
+      padding: 4px 11px;
       border-radius: 12px;
       box-shadow: 0 3px 8px rgba(16, 185, 129, 0.22);
     }
@@ -4037,8 +4087,8 @@
     body.theme-arena-glossy tbody tr:nth-child(even):not([class*="tag-"]) td.td-no {
       background: linear-gradient(180deg, #f2f9ff 0%, #e0f1ff 100%) !important;
     }
-    body.theme-arena-glossy tbody tr:hover:not([class*="tag-"]):not(.is-rank-1):not(.is-rank-2):not(.is-rank-3) td,
-    body.theme-arena-glossy tbody tr:hover:not([class*="tag-"]):not(.is-rank-1):not(.is-rank-2):not(.is-rank-3) td.td-no {
+    body.theme-arena-glossy tbody tr:hover:not([class*="tag-"]):not(.is-rank-1):not(.is-rank-2):not(.is-rank-3):not(.is-rank-4):not(.is-rank-5) td,
+    body.theme-arena-glossy tbody tr:hover:not([class*="tag-"]):not(.is-rank-1):not(.is-rank-2):not(.is-rank-3):not(.is-rank-4):not(.is-rank-5) td.td-no {
       background: linear-gradient(180deg, #e8f6ff 0%, #d3ecff 100%) !important;
     }
     body.theme-arena-glossy tbody tr td:first-child {
@@ -4156,6 +4206,82 @@
       color: #ffffff !important;
       border-radius: 999px !important;
       box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.55), 0 3px 8px rgba(190, 18, 60, 0.38) !important;
+    }
+
+    /* ZONA HADIAH #4 (UNGU LEMBUT GLOSSY) & #5 (HIJAU MINT GLOSSY) — SINKRON PANEL BENTO */
+    body.theme-arena-glossy tr.is-rank-4:not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td,
+    body.theme-arena-glossy tr.is-rank-4:not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td.td-no {
+      background: linear-gradient(180deg, #f7f0ff 0%, #ead5ff 58%, #dcc0fc 100%) !important;
+      border-top: 1.5px solid #faf5ff !important;
+      border-bottom: 1.5px solid #a855f7 !important;
+      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.72) !important;
+    }
+    body.theme-arena-glossy tr.is-rank-4 td:first-child {
+      border-left: 1.5px solid #c084fc !important;
+    }
+    body.theme-arena-glossy tr.is-rank-4 td:last-child {
+      border-right: 1.5px solid #c084fc !important;
+    }
+    body.theme-arena-glossy tr.is-rank-4 .rank-num-pill {
+      background: rgba(255, 255, 255, 0.65);
+      color: #4c1d95;
+      border-radius: 999px;
+    }
+    body.theme-arena-glossy tr.is-rank-4 .name-player,
+    body.theme-arena-glossy tr.is-rank-4 .name-display {
+      color: #3b0764 !important;
+    }
+    body.theme-arena-glossy tr.is-rank-4 .sub-handle {
+      color: #6b21a8 !important;
+    }
+    body.theme-arena-glossy tr.is-rank-4 .score-val {
+      background: linear-gradient(180deg, #a855f7 0%, #7e22ce 100%) !important;
+      border: 1.5px solid #e9d5ff !important;
+      color: #ffffff !important;
+      border-radius: 999px !important;
+      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.52), 0 3px 8px rgba(126, 34, 206, 0.34) !important;
+    }
+
+    body.theme-arena-glossy tr.is-rank-5:not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td,
+    body.theme-arena-glossy tr.is-rank-5:not(.row-rank-up):not(.row-rank-crown):not(.row-rank-down):not(.row-score-pop) td.td-no {
+      background: linear-gradient(180deg, #ecfdf5 0%, #bbf7d0 58%, #86efac 100%) !important;
+      border-top: 1.5px solid #f0fdf4 !important;
+      border-bottom: 1.5px solid #22c55e !important;
+      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.72) !important;
+    }
+    body.theme-arena-glossy tr.is-rank-5 td:first-child {
+      border-left: 1.5px solid #4ade80 !important;
+    }
+    body.theme-arena-glossy tr.is-rank-5 td:last-child {
+      border-right: 1.5px solid #4ade80 !important;
+    }
+    body.theme-arena-glossy tr.is-rank-5 .rank-num-pill {
+      background: rgba(255, 255, 255, 0.65);
+      color: #064e3b;
+      border-radius: 999px;
+    }
+    body.theme-arena-glossy tr.is-rank-5 .name-player,
+    body.theme-arena-glossy tr.is-rank-5 .name-display {
+      color: #052e16 !important;
+    }
+    body.theme-arena-glossy tr.is-rank-5 .sub-handle {
+      color: #166534 !important;
+    }
+    body.theme-arena-glossy tr.is-rank-5 .score-val {
+      background: linear-gradient(180deg, #22c55e 0%, #059669 100%) !important;
+      border: 1.5px solid #bbf7d0 !important;
+      color: #ffffff !important;
+      border-radius: 999px !important;
+      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.52), 0 3px 8px rgba(5, 150, 105, 0.34) !important;
+    }
+
+    /* Garis Batas Tipis Zona Hadiah di Tema Arena 3D (masuk celah 5px antar baris, 0px tambah tinggi!) */
+    body.theme-arena-glossy tr.is-prize-cutoff td {
+      box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.68), 0 3.5px 0 -0.8px rgba(245, 158, 11, 0.88) !important;
+    }
+    body.theme-arena-glossy .prize-cutoff-badge {
+      left: 14px;
+      bottom: -9px;
     }
 
     /* SEAMLESS GLOSSY 3D RANK-OVERTAKE ANIMATIONS (ANTI WARNA TERBELAH DI KOLOM NO!) */
@@ -6087,6 +6213,14 @@
       if (!skipRender) renderPokedexTables();
     }
 
+    function getJumlahZonaHadiah() {
+      if (typeof infoPanelConfig !== 'undefined' && infoPanelConfig && Array.isArray(infoPanelConfig.prizes)) {
+        const cnt = infoPanelConfig.prizes.filter(p => (p && (String(p.text || '').trim() || String(p.rank || '').trim()))).length;
+        return Math.max(0, Math.min(10, cnt));
+      }
+      return 4;
+    }
+
     function renderPokedexTables() {
       const tbL = document.getElementById('bodyLeft');
       const tbR = document.getElementById('bodyRight');
@@ -6094,6 +6228,7 @@
       tbR.innerHTML = '';
 
       const isDuo = db.gameMode === 'duo';
+      const prizeZoneCount = isDuo ? 0 : getJumlahZonaHadiah();
       document.getElementById('btnModeToggle').textContent = isDuo ? 'TIM DUO' : 'SOLO (20)';
       document.getElementById('labelSesiAktif').textContent = db.activeSession;
 
@@ -6143,6 +6278,11 @@
           if (i === 0 && filled) tr.classList.add('is-rank-1');
           else if (i === 1 && filled) tr.classList.add('is-rank-2');
           else if (i === 2 && filled) tr.classList.add('is-rank-3');
+          else if (i === 3 && filled && prizeZoneCount >= 4) tr.classList.add('is-rank-4');
+          else if (i === 4 && filled && prizeZoneCount >= 5) tr.classList.add('is-rank-5');
+          if (prizeZoneCount >= 1 && prizeZoneCount <= 9 && i === prizeZoneCount - 1) {
+            tr.classList.add('is-prize-cutoff');
+          }
         }
         if (p.colorTag && ELEMENTAL_COLORS[p.colorTag]) {
           tr.classList.add(`tag-${p.colorTag}`);
@@ -6165,9 +6305,12 @@
 
         const isAutoOn = Boolean(typeof autoConfig !== 'undefined' && autoConfig.enabled);
         const dispCellTitle = (filled && isAutoOn) ? '' : 'Klik untuk cari akun Roblox';
+        const cutoffBadgeHtml = (!isDuo && prizeZoneCount >= 1 && prizeZoneCount <= 9 && i === prizeZoneCount - 1)
+          ? `<span class="prize-cutoff-badge">▲ ZONA TOP ${prizeZoneCount}</span>`
+          : '';
 
         tr.innerHTML = `
-          <td class="td-no"><span class="rank-num-pill">${rankLabel}</span></td>
+          <td class="td-no"><span class="rank-num-pill">${rankLabel}</span>${cutoffBadgeHtml}</td>
           <td class="cell-click" onclick="mulaiEditInlineNama(${i}, event)" title="Klik untuk edit nama pemain langsung">
             <div class="player-cell-flex">
               ${
@@ -6823,6 +6966,34 @@
       return '#0284c7';
     }
 
+    function ringkasDetailMiniCatch(extraDetail = '', totalPoin = 0) {
+      const raw = String(extraDetail || '').trim();
+      if (!raw) return `Total ${totalPoin}`;
+      const is2x = /×2|\bx2\b/i.test(raw);
+      const cleanRaw = raw.replace(/\s*×2\b/gi, '').trim();
+      const shortMap = {
+        legend: 'lgnd',
+        legendary: 'lgnd',
+        mitos: 'mitos',
+        mythic: 'mitos',
+        secret: 'sc',
+        forgotten: 'frg',
+        khusus: 'khs',
+        mutasi: 'mut',
+        shiny: 'shiny',
+        big: 'big'
+      };
+      const parts = cleanRaw.split(',').map(seg => {
+        const s = seg.trim();
+        const m = /^([a-zA-Z\s]+?)\s*([+-]\d+)$/.exec(s);
+        if (!m) return s;
+        const words = m[1].trim().toLowerCase().split(/\s+/).map(w => shortMap[w] || w);
+        return `${m[2]} ${words.join(' ')}`;
+      }).filter(Boolean);
+      const ringkas = parts.join(', ') + (is2x ? ' ×2' : '');
+      return `${ringkas} • Total ${totalPoin}`;
+    }
+
     function tampilkanMiniCatchToast(seatIdx, deltaPoin, labelAtas = 'TAMBAH POIN', extraDetail = '', fishMeta = null, kategori = '') {
       const stack = document.getElementById('miniCatchStack');
       const p = getSeat(seatIdx);
@@ -6862,7 +7033,7 @@
             <span class="mini-catch-player">${escapeHtml(nama)}</span>
           </div>
           <div class="mini-catch-fishname">${escapeHtml(fishTitle)}</div>
-          <div class="mini-catch-sub">${escapeHtml((extraDetail ? extraDetail + ' • ' : '') + `Total: ${p.poin || 0} Pts`)}</div>
+          <div class="mini-catch-sub">${escapeHtml(ringkasDetailMiniCatch(extraDetail, p.poin || 0))}</div>
         </div>
         ${fishImgHtml}
         <div class="mini-catch-pts">${deltaPoin >= 0 ? '+' : ''}${deltaPoin}</div>
@@ -9809,7 +9980,7 @@
         points: (draftPanelModal.points || []).filter(p => p.label || p.value)
       };
       simpanPanelInfoBento();
-      renderInfoPanelBento();
+      renderPokedexTables();
       tutupModalPanelInfo();
       tambahLog('PANEL', `Isi Panel Bento B5 disimpan (${infoPanelConfig.title || 'Info Lomba'})`);
     }
